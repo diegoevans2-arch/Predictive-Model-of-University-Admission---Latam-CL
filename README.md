@@ -480,7 +480,7 @@ Si utilizas este código, los hallazgos metodológicos o las predicciones genera
   author = {Pérez Paz, Diego Evans},
   year   = {2026},
   month  = {6},
-  note   = {Disponible en \url{https://github.com/diegoevans2-arch/Predictive-model-of-university-admission}}
+  note   = {Disponible en \url{https://github.com/diegoevans2-arch/Predictive-Model-of-University-Admission---Latam-CL}}
 }
 ```
 
