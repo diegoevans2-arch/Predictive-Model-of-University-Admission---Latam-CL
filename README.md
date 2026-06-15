@@ -486,7 +486,7 @@ Si utilizas este código, los hallazgos metodológicos o las predicciones genera
 
 ### APA 7
 
-> Pérez Paz, D. E. (2026). *Predicción de la dinámica de matrícula universitaria en Chile mediante machine learning: un marco replicable con integración multifuente, validación temporal y tratamiento empírico del shock pandémico*. https://github.com/diegoevans2-arch/Predictive-model-of-university-admission
+> Pérez Paz, D. E. (2026). *Predicción de la dinámica de matrícula universitaria en Chile mediante machine learning: un marco replicable con integración multifuente, validación temporal y tratamiento empírico del shock pandémico*. https://github.com/diegoevans2-arch/Predictive-Model-of-University-Admission---Latam-CL
 
 ---
 
@@ -496,7 +496,7 @@ Si utilizas este código, los hallazgos metodológicos o las predicciones genera
 
 [![GitHub](https://img.shields.io/badge/GitHub-diegoevans2--arch-181717?style=flat-square&logo=github)](https://github.com/diegoevans2-arch)
 
-Para consultas sobre el código, replicación o colaboración académica, abre un [issue](https://github.com/diegoevans2-arch/Predictive-model-of-university-admission/issues) en el repositorio.
+Para consultas sobre el código, replicación o colaboración académica, abre un [issue](https://github.com/diegoevans2-arch/Predictive-Model-of-University-Admission---Latam-CL/issues) en el repositorio.
 
 ---
 
