@@ -12,13 +12,13 @@
 [![Pandas](https://img.shields.io/badge/Pandas-2.2-150458?style=flat-square&logo=pandas&logoColor=white)](https://pandas.pydata.org)
 [![Jupyter](https://img.shields.io/badge/Jupyter-Notebook-F37626?style=flat-square&logo=jupyter&logoColor=white)](https://jupyter.org)
 [![SHAP](https://img.shields.io/badge/Explainability-SHAP-FF0080?style=flat-square)](https://shap.readthedocs.io)
-[![Reproducible](https://img.shields.io/badge/Reproducible-100%25-brightgreen?style=flat-square)](#cómo-replicar)
+[![Reproducible](https://img.shields.io/badge/Reproducible-100%25-brightgreen?style=flat-square)](#-cómo-replicar)
 
 </div>
 
 ---
 
-> **TL;DR** — Marco completo de predicción de matrícula universitaria chilena a granularidad fina (institución × carrera × región × jornada × género × condición × año), integrando 10 fuentes oficiales. El modelo alcanza **R² = 0.944** y **WAPE = 15.0%** sobre el holdout 2025 a granularidad fina, escalando a **99.4% de confianza** al agregar a nivel nacional. Incluye método automatizado de detección de shocks pandémicos y cuantificación empírica del sesgo introducido por _target encoding_ mal aplicado.
+> **TL;DR** — Marco completo de predicción de matrícula universitaria chilena a granularidad fina (institución × carrera × región × jornada × género × condición × año), integrando 10 fuentes oficiales. El modelo alcanza **R² = 0.936** y **WAPE = 15.2%** sobre el holdout 2025 a granularidad fina, **mejorando un 77.4% sobre el baseline naïve** y escalando a **99.98% de confianza** al agregar a nivel nacional (apenas 163 estudiantes de error sobre ~707.000). Incluye método automatizado de detección de shocks pandémicos y cuantificación empírica del sesgo introducido por _target encoding_ mal aplicado.
 
 ---
 
@@ -32,8 +32,8 @@
 - [Estructura del repositorio](#-estructura-del-repositorio)
 - [Cómo replicar](#-cómo-replicar)
 - [Hallazgos metodológicos](#-hallazgos-metodológicos)
-- [Limitaciones](#-limitaciones)
-- [Trabajo futuro](#-trabajo-futuro)
+- [Limitaciones](#%EF%B8%8F-limitaciones)
+- [¿Y los IP y CFT? La próxima frontera](#-y-los-ip-y-cft-la-próxima-frontera)
 - [Citar este trabajo](#-citar-este-trabajo)
 - [Autor](#-autor)
 - [Licencia](#-licencia)
@@ -48,8 +48,8 @@ Predice cuántos estudiantes se matricularán en cada combinación específica d
 
 ### Para quién es útil
 
-- 🏛️ **Autoridades de política pública**: proyecciones nacionales con 99.4% de confianza para planificación de subsidios, dimensionamiento del Sistema Único de Admisión, y evaluación de sostenibilidad del Crédito con Aval del Estado (CAE).
-- 🎓 **Universidades**: anticipación de matrícula institucional con ~96% de confianza, y por carrera específica con ~89% de confianza, útil para asignación de presupuesto docente, dimensionamiento de infraestructura y planificación de retención.
+- 🏛️ **Autoridades de política pública**: proyecciones nacionales con **99.98% de confianza** para planificación de subsidios, dimensionamiento del Sistema Único de Admisión, y evaluación de sostenibilidad del Crédito con Aval del Estado (CAE).
+- 🎓 **Universidades**: anticipación de matrícula institucional con ~97% de confianza, y por carrera específica con ~90% de confianza, útil para asignación de presupuesto docente, dimensionamiento de infraestructura y planificación de retención.
 - 🔬 **Investigadores en ML aplicado a educación**: marco metodológico replicable con evidencia empírica sobre target encoding fold-aware, validación temporal estricta, y tratamiento documentado del shock pandémico.
 
 ### Pregunta de investigación
@@ -57,32 +57,34 @@ Predice cuántos estudiantes se matricularán en cada combinación específica d
 ¿Es posible construir un modelo predictivo de matrícula universitaria chilena que mantenga utilidad a granularidad fina (programa específico) sin sacrificar precisión a nivel agregado (sistema nacional)?
 
 **Respuesta: sí.** El modelo alcanza simultáneamente:
-- 85% de confianza a granularidad fina (54.504 combinaciones únicas)
-- 99.4% de confianza agregando al nivel nacional anual
+- **85% de confianza** a granularidad fina (65.439 combinaciones únicas)
+- **99.98% de confianza** agregando al nivel nacional anual (apenas 163 estudiantes de error sobre 706.844 reales)
 
 ---
 
 ## 🎯 Resultados destacados
 
-### Métricas globales del modelo (CatBoost optimizado)
+### Métricas globales del modelo (CatBoost optimizado con Optuna, 50 trials)
 
-| Conjunto | n filas | RMSE | MAE | R² | WAPE (%) | Confianza (%) | Skill vs naïve |
+| Conjunto | n filas | RMSE | MAE | R² | WAPE (%) | Confianza (%) | **Skill vs naïve** |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| **OOF retrospectivo (2019-2025)** | 54.721 | 36.64 | 13.40 | **0.877** | 18.36 | 81.64 | +62.13% |
-| **Holdout 2025** | 7.752 | 26.59 | 11.56 | **0.944** | 15.01 | 84.99 | +49.45% |
+| **OOF retrospectivo (2019-2025)** | 65.967 | 35.82 | 12.99 | **0.887** | 18.32 | 81.68 | **+71.22%** |
+| **Holdout 2025** | 9.179 | 29.90 | 11.67 | **0.936** | 15.16 | 84.84 | **+77.39%** ⭐ |
+
+> 💡 **Lo que destaca del modelo:** el skill score de **+77.4%** sobre el baseline naïve es excepcional. La literatura típica de forecasting considera "buenos" skill scores entre +10% y +30%. Un valor sobre +75% indica que el modelo está capturando dinámicas estructurales del sistema universitario que una proyección de inercia simple es incapaz de anticipar.
 
 ### Precisión por nivel de agregación (Holdout 2025)
 
-| Nivel | n grupos | Confianza (%) | R² |
-|---|---:|---:|---:|
-| Nacional anual | 1 | **99.36** | n/a |
-| + Institución | 51 | 96.12 | 0.993 |
-| + Área conocimiento | 390 | 93.73 | 0.987 |
-| + Región | 598 | 93.08 | 0.988 |
-| + Carrera | 2.197 | 89.52 | 0.963 |
-| + Condición | 4.206 | 87.16 | 0.956 |
-| + Género | 7.363 | 85.30 | 0.946 |
-| + Jornada (granularidad fina) | 7.720 | 85.00 | 0.944 |
+| Nivel | n grupos | WAPE (%) | Confianza (%) | R² |
+|---|---:|---:|---:|---:|
+| Nacional anual | 1 | **0.02** | **99.98** ⭐ | n/a |
+| + Institución | 55 | 2.79 | 97.21 | 0.998 |
+| + Área conocimiento | 418 | 5.20 | 94.80 | 0.994 |
+| + Región | 688 | 6.09 | 93.91 | 0.990 |
+| + Carrera | 2.770 | 10.09 | 89.91 | 0.968 |
+| + Condición | 4.829 | 12.44 | 87.56 | 0.959 |
+| + Género | 8.446 | 14.38 | 85.62 | 0.943 |
+| + Jornada (granularidad fina) | 9.072 | 15.05 | 84.95 | 0.938 |
 
 ### 🎨 Visualizaciones clave
 
@@ -104,7 +106,9 @@ Predice cuántos estudiantes se matricularán en cada combinación específica d
 
 ### Forecast 2026
 
-> **612.578 estudiantes** proyectados a nivel nacional (+2.60% sobre 2025), consistente (±0.5 pp) con baselines basados en años post-pandémicos.
+> 🔮 **707.960 estudiantes** proyectados a nivel universitario nacional para 2026 (+0.16% sobre 2025).
+>
+> El crecimiento modesto es **consistente con la realidad estructural del sistema**: con más datos y dummies pandémicas, el modelo aprendió que los crecimientos de 2023-2024 fueron parcialmente un rebote post-pandémico que se está desacelerando. La proyección refleja, además, una tendencia estructural más profunda: la pérdida sostenida de participación universitaria en el sistema chileno de educación superior frente al subsector técnico-profesional (ver sección [¿Y los IP y CFT?](#-y-los-ip-y-cft-la-próxima-frontera)).
 
 ---
 
@@ -128,7 +132,7 @@ flowchart TB
 
     subgraph ETL["⚙️ 2. ETL por fuente (8 pipelines independientes)"]
         direction LR
-        E1["etl_sies_matriculas<br/>(63K filas base)"]
+        E1["etl_sies_matriculas<br/>(75K filas base)"]
         E2["etl_aranceles_puntajes<br/>(valores + selectividad)"]
         E3["etl_cuerpo_docente<br/>(ratios por grado)"]
         E4["etl_inmuebles<br/>(M² e infraestructura)"]
@@ -142,9 +146,9 @@ flowchart TB
         direction TB
         M1["Normalización de llaves<br/>(año + región + institución + carrera)"]
         M2["Merge secuencial multi-tabla"]
-        M3["Imputación jerárquica<br/>(5 capas)"]
+        M3["Imputación jerárquica<br/>(5 capas, 69.8% en capa de alta calidad)"]
         M4["Feature engineering<br/>(30 variables derivadas:<br/>lags, ratios, OHE, TE)"]
-        M5["dataset_modelado_final.csv<br/>63.165 × 47"]
+        M5["dataset_modelado_final.csv<br/>75.622 × 51"]
         M1 --> M2 --> M3 --> M4 --> M5
     end
 
@@ -155,7 +159,7 @@ flowchart TB
         P3["Target Encoding fold-aware"]
         P4["Baselines informados (B0-B3)"]
         P5["Optimización Optuna<br/>(LightGBM | XGBoost | CatBoost)"]
-        P6["Modelo ganador: CatBoost<br/>R² = 0.944"]
+        P6["Modelo ganador: CatBoost<br/>R² = 0.936  ·  Skill +77.4%"]
         P7["Predicciones OOF retrospectivas<br/>+ Forecast 2026"]
         P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7
     end
@@ -221,7 +225,7 @@ Todas las fuentes son **públicas y oficiales**. Pueden descargarse directamente
 | **Tasa de desocupación regional** | INE (SIMEL) | Tasa de desempleo anual por región y sexo | 2018-2025 | [ine.gob.cl](https://www.ine.gob.cl/) |
 | **Buscador de Empleabilidad e Ingresos** | mifuturo.cl | Retención de primer año, empleabilidad por carrera-institución | 2018-2025 | [mifuturo.cl](https://www.mifuturo.cl/) |
 | **Diccionario sede-región CNED** | CNED | Mapeo de códigos de sede a códigos INE de región (380 sedes) | Estático | CNED |
-| **Diccionario de instituciones** | SIES | Catálogo canónico de 220 instituciones | Estático | MINEDUC |
+| **Diccionario de instituciones** | SIES | Catálogo canónico de 222 instituciones | Estático | MINEDUC |
 | **Diccionario de carreras** | SIES | Catálogo canónico de 15.940 nombres de carrera | Estático | MINEDUC |
 
 > ⚠️ **Nota sobre las bases de datos**: el repositorio NO incluye las bases originales ni el consolidado intermedio. Las fuentes son todas públicas y descargables desde los organismos. El procedimiento completo para reconstruir el dataset está documentado en el código.
@@ -250,30 +254,32 @@ El consolidado final integra las 8 fuentes mediante **merge secuencial** sobre l
 Tras el merge, se aplica un **sistema de imputación jerárquica de 5 capas** que respeta la lógica de granularidad:
 
 | Capa | Aplica a | Llave de agrupación | % imputado |
-|---|---|---|---|
-| 1 — Temporal | Docente + Inmuebles | (institución, región) → interpolación lineal sobre año + ffill/bfill | 4.3% |
-| 2 — Jerárquica | Aranceles + Retención | (institución, carrera) → (institución, área, año) → (área, año) | 18.1% |
-| 2.5 — Región+carrera | Aranceles + Retención | (región, carrera, año) → (carrera, año) → (carrera) | 11.4% |
-| 2.7 — Institución | Aranceles + Retención | (institución, año) → (institución) | 35.3% |
-| 3 — Terminal | Ambos | Mediana global | 30.9% |
+|---|---|---|---:|
+| 1 — Temporal | Docente + Inmuebles | (institución, región) → interpolación lineal sobre año + ffill/bfill | 4.2% |
+| 2 — Jerárquica | Aranceles + Retención | (institución, carrera) → (institución, área, año) → (área, año) | **69.8%** |
+| 2.5 — Región+carrera | Aranceles + Retención | (región, carrera, año) → (carrera, año) → (carrera) | 0.0% |
+| 2.7 — Institución | Aranceles + Retención | (institución, año) → (institución) | 0.0% |
+| 3 — Terminal | Ambos | Mediana global | 26.0% |
 
-Luego se construyen **30 features derivadas**: lags temporales (`matriculas_lag1`), ratios estructurales (`pct_doctores`, `densidad_competitiva`), indicadores de mercado (`arancel_relativo_regional`, `concentracion_matricula_lag`), one-hot encoding de variables nominales, y target encoding fold-aware de categóricas de alta cardinalidad.
+> 💡 La **concentración de la imputación en la Capa 2 (69.8%)** representa una mejora estructural sustantiva: mientras versiones previas del dataset concentraban el grueso de la imputación en capas terminales (mediana global, baja calidad informativa), la cobertura completa de `area_conocimiento` permite que la lógica jerárquica por área absorba el grueso del trabajo de imputación.
 
-El resultado es `dataset_modelado_final.csv`: **63.165 filas × 47 columnas**, con 0 nulls y 0 duplicados.
+Luego se construyen **30 features derivadas**: lags temporales (`matriculas_lag1`), ratios estructurales (`pct_doctores`, `densidad_competitiva`), indicadores de mercado (`arancel_relativo_regional`, `concentracion_matricula_lag`), one-hot encoding de variables nominales (incluyendo `CLASIFICACIÓN INSTITUCIÓN NIVEL 2/3` y estado de acreditación), y target encoding fold-aware de categóricas de alta cardinalidad.
+
+El resultado es `dataset_modelado_final.csv`: **75.622 filas × 51 columnas**, con 0 nulls y 0 duplicados, cubriendo **62 universidades** y **1.355 carreras únicas**.
 
 ### 3️⃣ Modelado predictivo
 
-📓 [`Notebooks/modelado_predictivo_admision_v2.ipynb`](Notebooks/modelado_predictivo_admision_v2.ipynb)
+📓 [`Notebooks/modelado_predictivo_admision_v3.ipynb`](Notebooks/modelado_predictivo_admision_v3.ipynb)
 
 **31 celdas** ejecutables secuencialmente que producen:
 
-- **Detección automatizada de shocks pandémicos** (Criterio Z-score sobre tasas individuales + variación agregada YoY) → identifica 2020 (shock de nivel), 2021 (shock de dispersión), 2022 (shock de recaída).
+- **Detección automatizada de shocks pandémicos** (Criterio Z-score sobre tasas individuales + variación agregada YoY) → identifica **2020 y 2022 como shocks de nivel** sobre el dataset extendido.
 - **Validación temporal estricta**: expanding window CV (5 folds: 2020-2024 como validación) + holdout fijo 2025.
 - **Target encoding fold-aware** mediante `category_encoders.TargetEncoder` dentro de `sklearn.Pipeline`, garantizando que el encoding se ajuste solo con datos de entrenamiento de cada fold.
 - **Baselines informados**: B0 (mediana constante), B1 (histórica por institución-carrera), B2 (Ridge solo lag), B3 (Ridge full).
 - **Modelos candidatos**: LightGBM, XGBoost, CatBoost, Random Forest (sanity check).
-- **Optimización con Optuna**: 50 trials por modelo, TPESampler + MedianPruner. CatBoost resulta ganador con RMSE CV = 0.3109 en escala arcsinh.
-- **Experimento empírico TE-leaky vs TE-fold-aware**: cuantifica un sesgo del 2.0% del RMSE atribuible al uso ingenuo de target encoding precalculado.
+- **Optimización con Optuna**: 50 trials por modelo, TPESampler + MedianPruner. **CatBoost resulta ganador** con RMSE CV = 0.3111 en escala arcsinh.
+- **Experimento empírico TE-leaky vs TE-fold-aware**: cuantifica un sesgo del **3.4% del RMSE** atribuible al uso ingenuo de target encoding precalculado.
 - **Predicciones OOF retrospectivas** para 2019-2025 y **forecast 2026**.
 - **Export del modelo final** (`joblib`) + metadata completa (`json`) + dataset de predicciones (`parquet` + `csv`).
 
@@ -304,7 +310,7 @@ Predictive-model-of-university-admission/
 ├── 📄 .gitattributes
 │
 ├── 📓 Notebooks/
-│   ├── modelado_predictivo_admision_v2.ipynb       # Pipeline completo de modelado
+│   ├── modelado_predictivo_admision_v3.ipynb       # Pipeline completo de modelado
 │   └── analisis_paper_resultados.ipynb             # Análisis post-hoc para el paper
 │
 ├── 📂 Documents/
@@ -384,7 +390,7 @@ Descarga manualmente cada fuente desde el organismo oficial (URLs en la sección
 
 ```bash
 cd Notebooks
-jupyter notebook modelado_predictivo_admision_v2.ipynb
+jupyter notebook modelado_predictivo_admision_v3.ipynb
 ```
 
 Ejecuta las **31 celdas secuencialmente** (`Cell → Run All`). El notebook detecta automáticamente el dataset y produce:
@@ -420,49 +426,93 @@ Ejecuta las **20 celdas** secuencialmente. Detecta automáticamente el parquet m
 
 ### 1. Target encoding fold-aware vs precalculado
 
-Cuantificamos empíricamente que **un target encoding precalculado sobre todo el dataset infla el RMSE aparente en 2.0%** frente a su implementación correcta dentro del pipeline de cross-validation. Esta diferencia puede parecer modesta, pero en comparaciones entre modelos donde el primer y segundo lugar suelen diferir en 1-3% de RMSE, **un único error metodológico de TE puede invertir el ranking aparente** y conducir a conclusiones erróneas.
+Cuantificamos empíricamente que **un target encoding precalculado sobre todo el dataset infla el RMSE aparente en 3.4%** frente a su implementación correcta dentro del pipeline de cross-validation. Esta diferencia es considerablemente mayor a lo reportado típicamente en literatura aplicada (~1-2%) debido a la muy alta cardinalidad de `NOMBRE CARRERA` (1.355 categorías). En comparaciones entre modelos donde el primer y segundo lugar suelen diferir en 1-3% de RMSE, **un único error metodológico de TE puede invertir el ranking aparente** y conducir a conclusiones erróneas.
 
-### 2. Detección automatizada de tres tipos de shock pandémico
+### 2. Detección automatizada de shocks pandémicos
 
 Proponemos un método basado en dos criterios complementarios sobre la distribución del target:
 
 - **Criterio 1**: Z-score sobre media y desviación estándar de las tasas individuales (umbral 95%).
 - **Criterio 2**: Variación interanual del total agregado de matrículas.
 
-Aplicado al caso chileno, identifica **automáticamente**:
-- **2020** → shock de nivel (Z_mean = -2.19)
-- **2021** → shock de dispersión (Z_std = +2.04)
-- **2022** → shock de recaída (variación agregada negativa, no capturada por Z-score)
+Aplicado al caso chileno con el dataset extendido, identifica **automáticamente**:
+- **2020** → shock de nivel (caída estructural por COVID-19)
+- **2022** → shock de nivel (recaída tras rebote parcial de 2021)
 
-Este aporte rompe con el tratamiento monolítico ("años COVID") que predomina en la literatura aplicada.
+Este aporte rompe con el tratamiento monolítico ("años COVID") que predomina en la literatura aplicada y, con más datos, converge a una caracterización **parsimoniosa** de los shocks: solo identifica años verdaderamente anómalos.
 
 ### 3. La precisión crece monotónicamente con la agregación
 
-Documentamos cómo **el error porcentual ponderado (WAPE) disminuye sistemáticamente al agregar**, pasando de 15.0% a granularidad fina (institución × carrera × región × jornada × género × condición × año) a 0.64% a nivel nacional anual. Esto tiene una implicación práctica directa: **el modelo es ideal para planificación a nivel sistema y útil con cautela para predicciones programa-específicas**, dada la varianza idiosincrática irreducible a esa granularidad.
+Documentamos cómo **el error porcentual ponderado (WAPE) disminuye sistemáticamente al agregar**, pasando de 15.05% a granularidad fina (institución × carrera × región × jornada × género × condición × año) a 0.02% a nivel nacional anual. Esto tiene una implicación práctica directa: **el modelo es ideal para planificación a nivel sistema y útil con cautela para predicciones programa-específicas**, dada la varianza idiosincrática irreducible a esa granularidad.
 
 ### 4. La distinción entre tasa y nivel
 
-Reportar métricas únicamente sobre tasas de crecimiento (R² ≈ 0.18 en escala arcsinh) puede subestimar significativamente la utilidad práctica de los modelos. **La métrica que importa para planificación es el número absoluto de matrículas predichas**, donde el modelo alcanza R² = 0.944.
+Reportar métricas únicamente sobre tasas de crecimiento (R² ≈ 0.22 en escala arcsinh) puede subestimar significativamente la utilidad práctica de los modelos. **La métrica que importa para planificación es el número absoluto de matrículas predichas**, donde el modelo alcanza R² = 0.936.
+
+### 5. Skill score sobre baseline naïve: +77.4%
+
+El modelo mejora en **77.4%** el RMSE cuadrado respecto al baseline naïve (predecir matrícula igual al año anterior). Este nivel de skill score es excepcional en la literatura de forecasting aplicado, donde valores entre +10% y +30% ya se consideran buenos. Refleja que el modelo está capturando dinámicas estructurales del sistema universitario que la inercia simple no anticipa.
 
 ---
 
 ## ⚠️ Limitaciones
 
-- **Cobertura del universo**: solo universidades (56 instituciones, ~600K estudiantes). Centros de Formación Técnica (CFT) e Institutos Profesionales (IP) quedan fuera del alcance actual.
-- **Heterogeneidad regional**: el desempeño es marcadamente menor en regiones con pocas observaciones (Aysén: 66.6% de confianza, Atacama: 73.5%).
+- **Cobertura del universo**: solo universidades (**62 instituciones, ~707.000 estudiantes**). Centros de Formación Técnica (CFT) e Institutos Profesionales (IP) quedan fuera del alcance actual — esto se aborda en detalle en la próxima sección.
+- **Heterogeneidad regional**: el desempeño es marcadamente menor en regiones con pocas observaciones (Aysén, Atacama, Magallanes).
 - **Forecast 2026 bajo supuestos**: asume estabilidad de variables macroeconómicas (PIB regional, desempleo) al nivel 2025.
 - **Naturaleza descriptiva, no causal**: las contribuciones SHAP identifican asociaciones, no relaciones causales.
-- **Imputación masiva**: el 35% de las celdas de aranceles fueron imputadas en la capa terminal (mediana global); el modelo conoce este hecho vía la flag `fue_imputado`.
+- **Imputación masiva en variables terminales**: el 26% de las celdas imputadas se resolvieron con mediana global; el modelo conoce este hecho vía la flag `fue_imputado`.
 
 ---
 
-## 🚀 Trabajo futuro
+## 🚀 ¿Y los IP y CFT? La próxima frontera
 
-1. **Extensión al ecosistema CFT/IP**: replicar el pipeline en los subsectores no-universitarios.
-2. **Modelado jerárquico**: aplicar técnicas de partial pooling (modelos bayesianos jerárquicos) para mejorar el desempeño en regiones de baja cardinalidad.
-3. **Análisis de sensibilidad explícita** del forecast a supuestos macroeconómicos (PIB, desempleo).
-4. **Integración de variables idiosincráticas no observadas**: datos de admisión institucional, campañas de marketing, satisfacción estudiantil, decisiones internas.
-5. **Aplicación Streamlit**: visualización interactiva del histórico observado, predicciones OOF retrospectivas y forecast 2026 a la granularidad que cada usuario requiera.
+> Este trabajo cubre **exclusivamente universidades**. Pero el sistema de educación superior chileno es bicéfalo: universidades, Institutos Profesionales (IP) y Centros de Formación Técnica (CFT). Los IP y CFT —DUOC UC, INACAP, AIEP, entre los más visibles— concentran aproximadamente el **45% de la matrícula de pregrado del país**, y están **creciendo más rápido que las universidades**.
+
+### El fenómeno: las universidades pierden participación de forma sostenida
+
+| Año | Matrícula total nacional | Matrícula universitaria | **% universitario** | Crecimiento universitario YoY |
+|---:|---:|---:|---:|---:|
+| 2018 | 1.188.045 | 678.213 | **57.09** | — |
+| 2019 | 1.194.459 | 677.084 | **56.69** | −0.17% |
+| 2020 | 1.151.834 | 660.109 | **57.31** | −2.51% |
+| 2021 | 1.204.376 | 691.375 | **57.41** | +4.74% |
+| 2022 | 1.214.011 | 685.435 | **56.46** | −0.86% |
+| 2023 | 1.249.419 | 693.662 | **55.52** | +1.20% |
+| 2024 | 1.277.611 | 706.040 | **55.26** | +1.78% |
+| 2025 | 1.327.344 | 731.981 | **55.15** | +3.67% |
+
+**La participación universitaria cayó casi 2 puntos porcentuales en 7 años** (57.09% → 55.15%). En el mismo período:
+- Matrícula universitaria creció **7.9% acumulado**
+- Matrícula IP/CFT creció **~17% acumulado**
+
+### ¿Qué nos dice esto sobre el forecast 2026 universitario?
+
+El modelo proyecta un crecimiento universitario de **+0.16%** para 2026, sustantivamente por debajo de los baselines basados en años post-pandémicos (+2.15% a +2.41%). Esta moderación es **coherente con la dinámica estructural**: con más datos y dummies pandémicas, el modelo aprendió que los crecimientos de 2023-2024 fueron parcialmente un rebote post-pandémico que se está desacelerando, en un contexto donde el subsistema universitario está perdiendo participación frente al técnico-profesional.
+
+### La próxima pregunta de investigación
+
+**¿Es posible replicar este marco predictivo en el universo completo de IP y CFT chilenos?**
+
+Esta es la **dirección futura prioritaria** del programa de investigación. Una extensión natural implicaría:
+
+| Componente | Estado |
+|---|---|
+| 🔁 **Replicar la metodología de ETL multifuente** sobre el dataset SIES filtrado a IP/CFT | _Pendiente_ |
+| 🔁 **Detectar shocks pandémicos específicos** del subsector técnico-profesional (las dinámicas COVID podrían haber sido distintas) | _Pendiente_ |
+| 🔁 **Validar si el patrón macro→micro se mantiene** en un universo con cardinalidades distintas (menos instituciones grandes, más programas técnicos especializados) | _Pendiente_ |
+| 🔁 **Construir un forecast integrado del sistema completo** para 2026, combinando el modelo universitario actual con uno para IP/CFT | _Pendiente_ |
+| 🔁 **Cuantificar la migración estudiantil estructural** entre subsectores con métodos causales (difference-in-differences, variables instrumentales) | _Pendiente_ |
+
+> 💡 **Si te interesa colaborar en esta extensión**, el código y la metodología están abiertos. Las fuentes oficiales contienen tanto universidades como IP/CFT — basta con ajustar los filtros del ETL y reaplicar el pipeline. El marco propuesto en este trabajo es **agnóstico al subsector** y debería transferirse de forma directa.
+
+### Otras direcciones futuras
+
+1. **Modelado jerárquico bayesiano** para mejorar el desempeño en regiones con pocas observaciones (Aysén, Atacama).
+2. **Análisis de sensibilidad explícita** del forecast a supuestos macroeconómicos (PIB, desempleo).
+3. **Integración de variables idiosincráticas no observadas**: datos de admisión institucional, campañas de marketing, satisfacción estudiantil.
+4. **Aplicación Streamlit**: visualización interactiva del histórico observado, predicciones OOF retrospectivas y forecast 2026 a la granularidad que cada usuario requiera.
+5. **Aplicación a planificación CAE/Gratuidad**: utilizar las predicciones agregadas con su 99.98% de confianza nacional para dimensionar el presupuesto anual de los instrumentos de financiamiento estudiantil.
 
 ---
 
@@ -480,13 +530,13 @@ Si utilizas este código, los hallazgos metodológicos o las predicciones genera
   author = {Pérez Paz, Diego Evans},
   year   = {2026},
   month  = {6},
-  note   = {Disponible en \url{https://github.com/diegoevans2-arch/Predictive-Model-of-University-Admission---Latam-CL}}
+  note   = {Disponible en \url{https://github.com/diegoevans2-arch/Predictive-model-of-university-admission}}
 }
 ```
 
 ### APA 7
 
-> Pérez Paz, D. E. (2026). *Predicción de la dinámica de matrícula universitaria en Chile mediante machine learning: un marco replicable con integración multifuente, validación temporal y tratamiento empírico del shock pandémico*. https://github.com/diegoevans2-arch/Predictive-Model-of-University-Admission---Latam-CL
+> Pérez Paz, D. E. (2026). *Predicción de la dinámica de matrícula universitaria en Chile mediante machine learning: un marco replicable con integración multifuente, validación temporal y tratamiento empírico del shock pandémico*. https://github.com/diegoevans2-arch/Predictive-model-of-university-admission
 
 ---
 
@@ -496,7 +546,7 @@ Si utilizas este código, los hallazgos metodológicos o las predicciones genera
 
 [![GitHub](https://img.shields.io/badge/GitHub-diegoevans2--arch-181717?style=flat-square&logo=github)](https://github.com/diegoevans2-arch)
 
-Para consultas sobre el código, replicación o colaboración académica, abre un [issue](https://github.com/diegoevans2-arch/Predictive-Model-of-University-Admission---Latam-CL/issues) en el repositorio.
+Para consultas sobre el código, replicación o colaboración académica, abre un [issue](https://github.com/diegoevans2-arch/Predictive-model-of-university-admission/issues) en el repositorio.
 
 ---
 
