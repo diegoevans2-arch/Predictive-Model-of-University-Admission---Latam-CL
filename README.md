@@ -530,13 +530,13 @@ Si utilizas este código, los hallazgos metodológicos o las predicciones genera
   author = {Pérez Paz, Diego Evans},
   year   = {2026},
   month  = {6},
-  note   = {Disponible en \url{https://github.com/diegoevans2-arch/Predictive-model-of-university-admission}}
+  note   = {Disponible en \url{https://github.com/diegoevans2-arch/Predictive-Model-of-University-Admission---Latam-CL}}
 }
 ```
 
 ### APA 7
 
-> Pérez Paz, D. E. (2026). *Predicción de la dinámica de matrícula universitaria en Chile mediante machine learning: un marco replicable con integración multifuente, validación temporal y tratamiento empírico del shock pandémico*. https://github.com/diegoevans2-arch/Predictive-model-of-university-admission
+> Pérez Paz, D. E. (2026). *Predicción de la dinámica de matrícula universitaria en Chile mediante machine learning: un marco replicable con integración multifuente, validación temporal y tratamiento empírico del shock pandémico*. https://github.com/diegoevans2-arch/Predictive-Model-of-University-Admission---Latam-CL
 
 ---
 
@@ -546,7 +546,7 @@ Si utilizas este código, los hallazgos metodológicos o las predicciones genera
 
 [![GitHub](https://img.shields.io/badge/GitHub-diegoevans2--arch-181717?style=flat-square&logo=github)](https://github.com/diegoevans2-arch)
 
-Para consultas sobre el código, replicación o colaboración académica, abre un [issue](https://github.com/diegoevans2-arch/Predictive-model-of-university-admission/issues) en el repositorio.
+
 
 ---
 
@@ -560,8 +560,6 @@ Las **fuentes de datos** son propiedad de sus respectivos organismos públicos (
 
 <div align="center">
 
-**¿Te resultó útil este trabajo?** ⭐ Considera darle una estrella al repositorio.
-
-_Construido con 🐍 Python, ❤️ rigor metodológico, y ☕ mucho café._
+**¿Te resultó útil este trabajo?**... Difundelo!
 
 </div>
