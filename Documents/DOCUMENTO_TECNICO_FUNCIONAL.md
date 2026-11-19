@@ -932,10 +932,10 @@ Predicción conforme dividida con α = 0,10. Con los residuos de calibración or
 
 Por nivel, la cobertura 2026 fue 98,1 % (N2), 96,6 % (N3), 94,8 % (N4), 91,8 % (N5), 92,8 % (N6), 92,6 % (N7) y 92,3 % (N8). Los intervalos son conservadores porque la calibración incluye los OOF tempranos, con sobrepredicción de hasta +6 %. Un ancho de 37 en una celda de 44 es honesto y poco informativo.
 
-> [!WARNING]
-> **⚠️ Corrida 2027 sin banda**
+> [!NOTE]
+> **Corrida 2027: banda calibrada (19-11-2026)**
 >
-> Los intervalos no se recalibraron para la re-estimación de noviembre de 2026. El pronóstico 2027 se publica sin intervalo (§22, P-05).
+> Mismo procedimiento sobre los residuos de la corrida 2027. Calibrada con el OOF 2019-2025, la cobertura en el holdout 2026 es de 92,35 % por celda (ancho mediano 36,5) y de 92,2 % a 94,3 % en N2-N8. Para el pronóstico se recalibra con el OOF 2019-2026. El total 2027 lleva un rango indicativo, no conforme, de 716.850 a 775.499 (§22, P-05 resuelto).
 
 ---
 
@@ -1400,7 +1400,7 @@ No medida.
 | P-02 | Corregir la región de Ñuble antes de las uniones institucionales | Datos | Docentes, inmuebles y aranceles de Ñuble. Es una versión metodológica nueva |
 | P-03 | ~~Corregir la metadata que registra cinco *folds*~~ **Resuelto el 19-11-2026**: la metadata registra siete *folds* con sus años, y el código los deriva de la partición ejecutada | Trazabilidad | Que la metadata diga lo ejecutado (siete) |
 | P-04 | Ablación de las tres variables con matrícula contemporánea | Método | Medir cuánto optimismo introducen |
-| P-05 | Recalibrar los intervalos conformes para la corrida 2027 | Método | Publicar el pronóstico 2027 con banda |
+| P-05 | ~~Recalibrar los intervalos conformes para la corrida 2027~~ **Resuelto el 19-11-2026** (§11) | Método | Publicar el pronóstico 2027 con banda |
 | P-06 | Evaluar interacción jornada × año | Método | Inflexiones de las modalidades no diurnas |
 | P-07 | Emparejar la validación *out-of-time* por código de carrera | Método | 31 celdas y 3.987 matrículas más en el contraste |
 | P-08 | Ampliar el rango de iteraciones de CatBoost | Método | Saber si el óptimo está fuera del rango |

@@ -508,8 +508,8 @@ sobre los residuos ordenados. Tres decisiones de diseño:
 
 La cobertura de la sección 5.5 corresponde a v4 y se mide calibrando con los residuos OOF 2019-2024,
 de modo que el holdout 2025 y el dato 2026 quedan fuera de la calibración. Las bandas que se publican
-en el tablero se recalibran después incluyendo 2025. Los intervalos del pronóstico 2027 todavía no se
-recalibran con los residuos de la corrida 2027; la sección 5.9 reporta sólo el puntual.
+en el tablero se recalibran después incluyendo 2025. Los intervalos del pronóstico 2027 se calibran con
+el mismo procedimiento sobre los residuos de la corrida 2027 (sección 5.9).
 
 Se requieren al menos 30 observaciones de calibración por estrato; por debajo de ese umbral no se
 emite intervalo conforme. La sección 5.5 documenta el caso del total nacional, donde esa regla se
@@ -872,6 +872,15 @@ Dos diferencias con la Tabla 5 conviene notar. El *skill* del holdout es menor e
 en N2 el porcentaje de instituciones dentro de ±10 % queda levemente por debajo del de la persistencia
 (90,6 % contra 92,5 %), aunque el WAPE institucional del modelo sea menor. El total institucional cae
 dentro de ±5 % en 41 de 53 instituciones y dentro de ±10 % en 48.
+
+**Banda al 90 %.** Los intervalos de la corrida 2027 se calibran con el procedimiento de la sección
+4.10 sobre sus propios residuos. Calibrados con el OOF 2019-2025, cubren en el holdout 2026 el 92,35 %
+de las celdas, con un ancho mediano de 36,5 matrículas, y entre 92,2 % y 94,3 % de los grupos en los
+niveles N2 a N8. Para el pronóstico se recalibran con el OOF 2019-2026. Por institución, la banda
+mediana mide 20,4 % del valor pronosticado. El total nacional no se conformaliza: con ocho
+observaciones anuales se informa sólo un rango indicativo, de 716.850 a 775.499 matrículas, construido
+con los errores agregados del OOF (−1,86 % a +6,17 %). Es conservador por la misma razón que en v4:
+los años OOF tempranos, entrenados con pocos datos, sobre-predecían.
 
 **Supuestos que el contraste pondrá a prueba.** Las exógenas de 2027 quedan congeladas en su último
 valor observado, y las de 2026 incluyen el PIB y la desocupación arrastrados desde 2025 (sección 3.2).

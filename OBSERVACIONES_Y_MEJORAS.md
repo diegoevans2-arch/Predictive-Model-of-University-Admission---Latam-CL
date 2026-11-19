@@ -24,7 +24,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 |---|---|---|---|---|
 | H-01 | PDF enlazado es v3 (707.960) | Alta | A + B-09 | PDF v4 generado; falta `git rm` del v3 |
 | H-02 | Congelamiento SHA-256 declarado como hecho; no existe | Alta | A + B-01 | README corregido; congelamiento pendiente |
-| H-03 | TL;DR: «toda predicción lleva intervalo al 90 %» | Alta | A + B-02 | README corregido; recalibración pendiente |
+| H-03 | TL;DR: «toda predicción lleva intervalo al 90 %» | Alta | A + B-02 | Resuelto (§D): banda 2027 calibrada; cobertura 92,35 % en el holdout 2026; TL;DR y §5.9 con el rango del total |
 | H-25 | Cambios documentales sin commit ni push | Alta | B-00 | Commit hecho (19-11-2026); push pendiente de aprobación del autor |
 | H-12 | Literatura insuficiente para IJF | Alta | C-01 | Pendiente (pista del manuscrito) |
 | H-16 | Huella del dataset cubre sólo 8.192 bytes (O-04) | Media | B-01 | Pendiente |
@@ -255,6 +255,13 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 - **Metadata de `modelo_final_20261118_1345` reescrita** con un script que reconstruye la partición con la misma regla, verifica que el dataset sea el de la corrida (huella registrada) y guarda una copia del original. Resultado: `n_folds_cv` 5 → **7**, validación 2019-2025, con n de validación 9.424 / 9.321 / 9.230 / 9.161 / 9.038 / 9.176 / 9.043 (iguales a las filas OOF por año). Queda un registro de la corrección dentro de la propia metadata (`correcciones_metadata`).
 - **Prueba:** `n_folds_cv == len(folds_cv) == años de entrenamiento − 1` falla con la metadata original (5 ≠ 7) y pasa con la corregida.
 - **Para el congelamiento (B-01), pendiente de decisión del autor:** otros dos campos de la metadata arrastran rótulos de la corrida anterior: `metrics_holdout_2025` (el holdout es 2026; las métricas son las de 2026) y `supuestos_forecast_2026`, cuyo texto dice «matrículas reales 2025» y «universo 2025» (para el forecast 2027 corresponde 2026). No se tocaron.
+
+### B-02 · Intervalos conformes de la corrida 2027 (P-05) — resuelto
+- **Método:** el mismo de v4 (paper §4.10). El script nuevo reutiliza las funciones del de v4 sin modificarlas y toma los años de la metadata de la corrida. No toca el modelo ni la tabla de predicciones: escribe archivos nuevos (celdas del forecast con `pi90_lo` y `pi90_hi`, bandas por institución y un JSON con la calibración).
+- **Años de calibración:** para medir la cobertura, OOF 2019-2025 (64.393 celdas), evaluada en el holdout 2026 (9.069 celdas con real). Para el pronóstico, OOF 2019-2026 (73.462 celdas).
+- **Cobertura en el holdout 2026:** celda **92,35 %** (objetivo 90 %), ancho mediano 36,5 matrículas. N2 94,3 %, N3 93,7 %, N4 93,7 %, N5 92,2 %, N6 93,3 %, N7 93,0 %, N8 92,7 %. Ancho relativo mediano por institución: 20,5 %. N1 no se calibra: siete observaciones.
+- **Forecast 2027:** las 9.069 celdas tienen banda, que siempre contiene al puntual. Por institución, la banda mediana mide 20,4 % del pronóstico. Total: puntual 761.058 (sin cambio) y rango indicativo **716.850 – 775.499**, construido con los errores agregados OOF de −1,86 % (2021) a +6,17 % (2022); no es conforme.
+- **Propagado** al TL;DR, a la sección del pronóstico y a las Limitaciones del README, al paper (§4.10 y §5.9) y al documento técnico (§11 y P-05). El texto «pendientes de recalibración» ya no aparece en el README.
 
 ---
 
