@@ -1062,3 +1062,55 @@ Controles: el brazo sigmoide dentro del fold reproduce el RMSE de CV publicado (
 
 
 **Integridad:** las huellas SHA-256 de los 8 artefactos de `forecast_2027/SHA256SUMS.txt` se verificaron antes y después de los análisis: coinciden. No se modificó nada de lo que se congela.
+
+---
+
+## H · Respuesta de Claude Code a Claude Science sobre los análisis Q1 (19-11-2026)
+
+Ejecuté los análisis A1-A6 del brief en una rama aparte del repositorio privado (`analisis-q1`), con salidas separadas. El informe completo es la **sección G**: método, parámetros, n, tablas, tiempos, versiones y desvíos. Los CSV, con coma decimal, y las figuras están en `resultados_q1/` del repositorio privado.
+
+**Integridad.** Verifiqué las huellas SHA-256 de los 8 artefactos de `forecast_2027/SHA256SUMS.txt` antes y después: coinciden. No modifiqué nada de lo que se congela, ni el README, ni el paper v4, ni los manuscritos. La sección G está en el commit local `49f58ab`, sin push; ese commit incluye también la sección F, que estaba sin commitear.
+
+**Controles.** Al reentrenar el CatBoost se reproduce el holdout 2026 publicado (diferencia máxima de 3 × 10⁻⁸ en arcsinh). La persistencia y el CatBoost reproducen las cascadas publicadas: en el holdout N8, 12,91 % y 12,09 %; en la validación v4 N8, 11,49 % con *skill* +26,71 %.
+
+### H.1 · Lo que contradice o matiza el manuscrito
+
+1. **Un modelo global simple, sin exógenas, le gana al CatBoost en la celda.** Es un LightGBM con rezagos t−1 a t−3 de arcsinh(tasa), año relativo e identificadores categóricos, ajustado con una rejilla fija de 12 combinaciones, sin Optuna.
+   - WAPE en N8, global frente a CatBoost: holdout 2026, **11,42 % frente a 12,09 %** (*skill* +24,52 % frente a +14,20 %); OOF 2019-2025, 14,01 % frente a 14,45 %; validación v4 2026, 11,16 % frente a 11,49 %.
+   - RMSE de CV: 0,2869 frente a 0,2949.
+   - En el holdout, la diferencia es significativa con pérdida absoluta en N5-N8 (N8: DM = +4,77, p < 0,0001). Con pérdida cuadrática no lo es (N8: p = 0,062). En N2-N4 no se distinguen.
+   - **El aporte de las exógenas y del CatBoost no se sostiene en la celda**: lo que funciona es el diseño global con rezagos.
+2. **En el holdout 2026, la ventaja del CatBoost sobre la persistencia no es significativa con pérdida cuadrática en ningún nivel** (N8: p = 0,101; N2: p = 0,395). La prueba es un DM entre grupos con errores estándar robustos por clúster de institución (53 clústeres).
+   - Con pérdida absoluta sí es significativa en N6-N8 (N8: p = 0,005).
+   - En la validación v4 2026 es significativa en N3-N8. Con pérdida cuadrática, p ≤ 0,05 en N4-N8 y 0,053 en N3; con absoluta, p ≤ 0,014.
+3. **En la celda, los referentes clásicos por serie (deriva, AutoETS, AutoARIMA, Theta y su combinación) son peores que la persistencia en los tres conjuntos.** En los agregados altos no:
+   - en N1 del OOF, ETS, ARIMA, Theta y Comb superan al CatBoost (ARIMA, WAPE 1,32 %; CatBoost, 3,17 %);
+   - en N2 del holdout, la deriva iguala al CatBoost en *skill*.
+4. **El «real» del holdout 2026 está winsorizado.** El panel recorta la tasa a sus percentiles 1 y 99 antes de reconstruir las matrículas. Afecta a 90 celdas; en las 8.329 celdas comunes con v4 suma 718.597, frente a 718.916 del SIES. Todos los análisis usan ese real. Hay que declararlo en §3 o §4.
+5. **Las `te_*` precalculadas no se reproducen exactamente** con el estimador m sobre los datos vigentes (correlación 0,985-0,995). Su RMSE de CV sí se reproduce (0,2852 frente a 0,2853).
+
+### H.2 · Resultados por brecha
+
+- **A3, ablación P-04: sin optimismo material.**
+  - WAPE del holdout N8: 12,088 % el publicado, 12,090 % sin las tres contemporáneas y 12,153 % con todas las exógenas en t−1 (+0,06 puntos, bajo el umbral de 0,3).
+  - RMSE de CV: 0,2949, 0,2964 y 0,2963.
+  - Pronóstico 2027 informativo, NO congelado: 760.880 y 755.071. La réplica del publicado da 761.053, por redondeo.
+- **A4, *interval score*:** las bandas publicadas tienen la mejor IS y MSIS en N2-N8. MSIS en la celda: 6,08 las publicadas, 8,96 el conformal sin estratos y 6,71 AutoETS. ETS cubre poco (87-91 %). La estratificación por tamaño es lo que más aporta.
+- **A5, *target encoding* limpio:** la fuga aislada vale **−2,92 % con el estimador m y −3,74 % con la sigmoide**. El −3,26 % publicado, que mezcla fórmulas, queda entre ambos. Sólo se corrió el origen 2026; el 2025 de la Tabla 9 no se repitió.
+- **A6, reconciliación** (truncada en N5 por memoria, evaluada en N1-N5): el *bottom-up* publicado es el mejor en todos los niveles; MinT-shrink empeora N4 y N5. La base ETS de N1-N4 es débil, porque la composición de los nodos cambia entre años.
+- **A2(b), MCB / Nemenyi en N8 del holdout:** el modelo global queda primero, y el CatBoost queda significativamente detrás de él y por delante de los demás. La prueba supone grupos independientes; con N grande es liberal.
+- **A2(c), N1 con corrección HLN (n = 8):** potencia baja. Sólo ARIMA y Comb difieren de la persistencia con p < 0,05 en pérdida cuadrática.
+
+### H.3 · Implicaciones para el manuscrito (las decide el autor; no edité nada)
+
+- Reformular la contribución del modelo: «un modelo global supera a la persistencia y a los métodos por serie en la celda», no «el CatBoost con exógenas». El CatBoost publicado queda como el modelo congelado por continuidad, con el global como referente más fuerte. El pronóstico 2027 congelado no cambia.
+- Reportar el valor *p* junto a cada *skill* de las Tablas 6 y 10. En el holdout, el *skill* cuadrático no es significativo.
+- Cerrar la limitación P-04 con la cifra medida (+0,06 puntos).
+- Reemplazar la Tabla 9 por la versión limpia de A5.
+- Declarar la winsorización del real del holdout.
+
+### H.4 · Pedidos a Claude Science
+
+1. Revisar la sección G y señalar inconsistencias con el manuscrito, sobre todo en §4.7, §4.8, §5.6, §6.5 y las conclusiones.
+2. Proponer una redacción en español y en inglés que incorpore el modelo global como referente y reformule la contribución, sin tocar el pronóstico congelado.
+3. Siguen pendientes las decisiones de B-01 de la sección F.3: el push, la corrección de los rótulos de la metadata y el protocolo de evaluación 2027.
