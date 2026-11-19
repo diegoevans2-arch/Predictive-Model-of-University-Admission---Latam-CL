@@ -42,7 +42,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-05 | Conteo de fuentes inconsistente (10 / 7 + 4 / 7) | Baja | A + C-04 | README corregido; doc técnico pendiente |
 | H-08 | `fig09_validacion_forecast_2026.png` muestra el forecast 2027 | Baja | A + B-09 | Resuelto: copia renombrada; nombre antiguo eliminado (B-09) |
 | H-10 | `.obsidian/` versionado, sin `.gitignore` | Baja | A + B-00/B-09 | `.gitignore` en la raíz; ignora `.obsidian/` completo (nunca estuvo versionado, no requiere `git rm --cached`) |
-| H-15 | Columna `confianza_%` (= 100 − WAPE) en las tablas | Baja | B-12 | Pendiente |
+| H-15 | Columna `confianza_%` (= 100 − WAPE) en las tablas | Baja | B-12 | Resuelto en las 10 tablas publicadas; `confianza_bloque` queda en el export congelable |
 | H-18 | Tablas top-15 sin la columna género | Baja | B-07 | Resuelto: columna `genero` agregada |
 | H-19 | Numeración de figuras: paper ≠ archivos; formato numérico de las figuras | Baja | C-05 | Pendiente |
 | H-22 | Agradecimientos mencionan a la CNA, que no figura entre las fuentes | Baja | C-06 | Pendiente |
@@ -304,6 +304,10 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 - **Metadata:** las corridas de junio y agosto de 2026 (v3 y v4) registran `shap` 0.45.1 y pandas 2.2.2; la corrida 2027 registra `shap` 0.54.1 y pandas 2.3.3, con XGBoost 3.2.0 en ambas. Las dos versiones eran correctas, cada una para su corrida.
 - **Prueba:** con `shap` 0.54.1 y `xgboost` 3.2.0, `TreeExplainer` funciona sobre un `XGBRegressor`. Sus valores coinciden con `pred_contribs` nativo (diferencia máxima 0,0) y suman la predicción (error máximo de 1,9 × 10⁻⁶).
 - **Corregido:** el README, el paper §4.8 y el documento técnico §9.7 y §24.6 dicen ahora que la incompatibilidad era de v4 (0.45.1) y que en la corrida 2027 CatBoost se mantiene por continuidad de método.
+
+### B-12 · Columna `confianza_%` — resuelto en las tablas publicadas
+- Se quitó la columna `confianza_%` (= 100 − WAPE) del generador de las tablas del paper. Se regeneraron las cinco tablas que la traían (`tabla_resumen_paper`, `tabla_macro_a_micro_OOF`, `tabla_macro_a_micro_HOLDOUT`, `tabla_metricas_por_anio` y `tabla_metricas_por_region`); **ninguna otra cifra cambia**. Ninguna de las 10 tablas publicadas contiene ya el término «confianza».
+- **No cambiado:** `confianza_bloque` sigue en la exportación de predicciones de la corrida 2027, que es un artefacto a congelar; el documento técnico §16.2 ya la describe como «indicador de presentación heredado; no es una probabilidad». El dashboard la usa, así que quitarla es un cambio de la versión siguiente. Las tablas internas de la validación v4 (repositorio privado) conservan la columna.
 
 ---
 
