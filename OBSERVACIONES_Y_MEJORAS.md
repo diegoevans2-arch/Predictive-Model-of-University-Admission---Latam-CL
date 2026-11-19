@@ -35,7 +35,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-11 | Peores celdas compatibles con defectos residuales de la llave del lag | Media | B-07 | Resuelto (§D): hipótesis rechazada; 49/50 (OOF) y 50/50 (holdout) de las peores celdas tienen lag fino |
 | H-13 | Historial git no auditado | Media | B-10 | Hecho (§D): el 761.058 aún no está en el remoto (sólo en commits locales); sin etiquetas; v3 en `b355c67` |
 | H-14 | Versión de SHAP inconsistente (0.45.1 vs 0.54.1) | Media | B-11 | Resuelto: 0.45.1 = v4, 0.54.1 = corrida 2027; justificación reformulada como continuidad de método |
-| H-17 | Ablación de variables con matrícula contemporánea (P-04) | Media | B-08 | Pendiente |
+| H-17 | Ablación de variables con matrícula contemporánea (P-04) | Media | B-08 | Bloqueado: requiere autorización para reentrenar (pista v5) |
 | H-20 | Conformal de Mondrian atribuido a Romano et al. (2019) | Media | C-02 | Pendiente |
 | H-21 | El Resumen afirma algo sobre la literatura latinoamericana sin citarla | Media | C-01 | Pendiente |
 | H-26 | El paper sigue llamando «pre-registrado» al pronóstico 2027 | Media | C-03 | Pendiente |
@@ -48,7 +48,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-22 | Agradecimientos mencionan a la CNA, que no figura entre las fuentes | Baja | C-06 | Pendiente |
 | H-23 | Clave BibTeX `evans2026…` con apellido Pérez Paz | Baja | C-06 | Pendiente |
 | H-24 | Doc técnico §16.3 desactualizado; periodo SIES 2018-2026 vs 2007-2026 | Baja | C-04 | Pendiente |
-| H-27 | Pendientes P-06 a P-09 y O-02 | Baja | B-13 | Backlog |
+| H-27 | Pendientes P-06 a P-09 y O-02 | Baja | B-13 | Backlog de la pista v5 (sin cambios) |
 
 ---
 
@@ -308,6 +308,12 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 ### B-12 · Columna `confianza_%` — resuelto en las tablas publicadas
 - Se quitó la columna `confianza_%` (= 100 − WAPE) del generador de las tablas del paper. Se regeneraron las cinco tablas que la traían (`tabla_resumen_paper`, `tabla_macro_a_micro_OOF`, `tabla_macro_a_micro_HOLDOUT`, `tabla_metricas_por_anio` y `tabla_metricas_por_region`); **ninguna otra cifra cambia**. Ninguna de las 10 tablas publicadas contiene ya el término «confianza».
 - **No cambiado:** `confianza_bloque` sigue en la exportación de predicciones de la corrida 2027, que es un artefacto a congelar; el documento técnico §16.2 ya la describe como «indicador de presentación heredado; no es una probabilidad». El dashboard la usa, así que quitarla es un cambio de la versión siguiente. Las tablas internas de la validación v4 (repositorio privado) conservan la columna.
+
+### B-08 · Ablación de las variables con matrícula contemporánea (P-04) — bloqueado
+- Exige reentrenar CatBoost sin `densidad_estudiantes_m2`, `ratio_docente_estudiante` y `matriculas_sobre_pib` (o con sus versiones de t−1), con los hiperparámetros y la semilla de la corrida, en los siete *folds*, en el holdout y en el refit. Es una pista separada que no toca el pronóstico congelado. **Necesita la autorización explícita del autor para reentrenar**, y conviene correrla en la rama `v5-mejoras` con un interruptor que omita Optuna y fije los `best_params` de la metadata. Cuando se ejecute, sus resultados se reportarán antes de llevarlos al paper (§6.5) y al documento técnico (§13.2).
+
+### B-13 · Backlog P-06 a P-09 y O-02 — sin cambios (pista de mejoras)
+- P-06 (jornada × año), P-07 (emparejar por código: 31 celdas y 3.987 matrículas), P-08 (rango de iteraciones de CatBoost), P-09 (repetir con el INE completo) y O-02 (desocupación 2025 con 10 de 12 trimestres) cambian el dataset o el modelo. Quedan para la versión siguiente, junto con B-04 (colapsar los duplicados de la llave fina), B-05 (Ñuble) y B-08. La rama `v5-mejoras` del repositorio privado ya tiene las correcciones de código de B-05 y B-07, sin ejecutar.
 
 ---
 
