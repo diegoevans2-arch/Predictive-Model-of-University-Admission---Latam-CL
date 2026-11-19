@@ -29,7 +29,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-12 | Literatura insuficiente para IJF | Alta | C-01 | Pendiente (pista del manuscrito) |
 | H-16 | Huella del dataset cubre sólo 8.192 bytes (O-04) | Media | B-01 | Pendiente |
 | H-04 | *Skill score* no definido en el README | Media | A | Aplicado |
-| H-06 | Signo del error 2021 distinto entre tablas | Media | B-03 | Pendiente |
+| H-06 | Signo del error 2021 distinto entre tablas | Media | B-03 | Resuelto: el generador tomaba `abs()`; ahora es pred − real. 2021 = −1,8621 y Arica y Parinacota = −0,3561; prueba de signo OK en los 8 años |
 | H-07 | N8 OOF = 73.349 grupos vs 73.462 filas | Media | B-04 | Pendiente |
 | H-09 | P-02 (Ñuble) y P-03 (metadata) ausentes de las Limitaciones | Media | A + B-05/B-06 | README corregido; correcciones pendientes |
 | H-11 | Peores celdas compatibles con defectos residuales de la llave del lag | Media | B-07 | Pendiente |
