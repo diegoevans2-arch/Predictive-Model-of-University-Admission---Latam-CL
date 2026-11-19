@@ -33,7 +33,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-07 | N8 OOF = 73.349 grupos vs 73.462 filas | Media | B-04 | Diagnosticado (§D): 113 filas duplicadas por sedes o versiones del plan; 2026 y 2027 sin duplicados. Corrección = versión nueva; nota al paper pendiente de decisión |
 | H-09 | P-02 (Ñuble) y P-03 (metadata) ausentes de las Limitaciones | Media | A + B-05/B-06 | README corregido; P-03 resuelto (B-06); P-02 (Ñuble): causa encontrada y corregida en `v5-mejoras`, sin ejecutar (requiere autorización: versión nueva) |
 | H-11 | Peores celdas compatibles con defectos residuales de la llave del lag | Media | B-07 | Resuelto (§D): hipótesis rechazada; 49/50 (OOF) y 50/50 (holdout) de las peores celdas tienen lag fino |
-| H-13 | Historial git no auditado | Media | B-10 | Pendiente |
+| H-13 | Historial git no auditado | Media | B-10 | Hecho (§D): el 761.058 aún no está en el remoto (sólo en commits locales); sin etiquetas; v3 en `b355c67` |
 | H-14 | Versión de SHAP inconsistente (0.45.1 vs 0.54.1) | Media | B-11 | Pendiente |
 | H-17 | Ablación de variables con matrícula contemporánea (P-04) | Media | B-08 | Pendiente |
 | H-20 | Conformal de Mondrian atribuido a Romano et al. (2019) | Media | C-02 | Pendiente |
@@ -292,6 +292,13 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 - `.obsidian/` nunca estuvo versionado: el `.gitignore` de B-00 lo ignora completo (no hubo `git rm --cached`).
 - README: se quitaron las dos líneas «pendiente de eliminación» y se reescribió la nota de «Estado y versiones» para decir que el PDF de v3 sigue en el historial.
 - `git grep` ya no encuentra referencias a los archivos eliminados fuera de este documento, que los cita como registro de la revisión.
+
+### B-10 · Auditoría del historial git — hecho
+- **El 761.058 todavía no está publicado en el remoto.** El primer commit que lo contiene es `9d92832` (19-11-2026 10:16, −03:00), que es local: `origin/main` sigue en `9bf4f56` (18-06-2026), y la rama `main` va 8 commits por delante. Ningún commit de `origin/main` contiene «761.058». En el repositorio privado, la rama `corrida-2027` tampoco tiene remoto. **Hoy no hay ninguna evidencia temporal externa del pronóstico 2027**, salvo lo que hayan publicado el dashboard u otros canales, que esta auditoría no revisó. Mientras no se haga el push, el README local dice «publicado en este repositorio», pero el remoto no lo muestra.
+- **Paper v3 en el historial:** sí. `Documents/OUTPUTS_PAPER/paper_modelo_matricula_chile_v3_FINAL.md` existe en `b355c67` («Update model V2», 17-06-2026 22:28, −04:00), que está en `origin/main`. Se eliminó del árbol en `9d92832`.
+- **Congelamiento v3 del 17-06-2026:** el README dice que el pronóstico v3 se congeló el 17 de junio. No hay etiqueta ni huella. La única evidencia es el commit `b355c67`, publicado en el remoto con fecha 17-06-2026, que sirve como sello si se acepta la fecha de GitHub. Conviene describirlo así: «publicado el 17-06-2026 (commit `b355c67`)».
+- **Etiquetas:** no hay ninguna, ni local (`git tag -l`) ni remota (`git ls-remote --tags origin`).
+- **Recomendación:** hacer el push de `main` cuanto antes. Fecharía en el remoto la publicación del 761.058 aunque el congelamiento formal (B-01) llegue después.
 
 ---
 
