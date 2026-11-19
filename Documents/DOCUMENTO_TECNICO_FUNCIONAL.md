@@ -495,6 +495,8 @@ Cada fila registra su *origen_lag*. Cada corrida imprime la composición sobre e
 
 En código y medio la razón debe rondar 1 y la tasa mediana no debe ser negativa. **Si el nivel medio vuelve a mostrar una tasa mediana cercana a −0,87 con razón cercana a 8, el escalado no se aplicó.** La llave por código recupera 42.641 matrículas en 1.041 celdas. En el dataset final: 97,94 % fino, 0,84 % código, 1,22 % medio.
 
+**¿Los errores extremos vienen de los respaldos?** No (auditoría del 19-11-2026, corrida 2027, [`tabla_peores_por_origen_lag.md`](OUTPUTS_PAPER/tablas/tabla_peores_por_origen_lag.md)). De las 50 peores celdas por error absoluto, 49 del OOF 2019-2025 y las 50 del holdout 2026 tienen lag **fino**, es decir, la misma celda con el mismo nombre de carrera en t−1. Los respaldos pesan el 1,1 % de la matrícula y tienen más error relativo (WAPE de 17-18 % con código y de 27-31 % con medio, contra 12-14 % con fino), pero no llegan al extremo de la distribución. Las celdas peor predichas son contracciones reales de programas que siguen con el mismo nombre (por ejemplo, Pedagogía en Educación Diferencial de la U. Los Leones, 2019-2020, o Ingeniería de Ejecución Industrial a distancia de la UDLA, 2026), no defectos de la llave.
+
 ### 6.5 · Los dos defectos que motivaron la v4
 
 La versión de junio de 2026 (v3) tenía dos defectos, detectados al contrastar su pronóstico 2026 con el dato real:

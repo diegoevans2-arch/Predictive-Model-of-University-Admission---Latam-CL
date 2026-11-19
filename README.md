@@ -347,7 +347,7 @@ Predictive-Model-of-University-Admission---Latam-CL/
 │       │   ├── fig11_shap_por_subgrupo.png
 │       │   └── fig12_caso_estudio_shap.png
 │       │
-│       └── tablas/                 # 9 tablas en formato Markdown
+│       └── tablas/                 # 10 tablas en formato Markdown
 │           ├── tabla_resumen_paper.md
 │           ├── tabla_macro_a_micro_OOF.md
 │           ├── tabla_macro_a_micro_HOLDOUT.md
@@ -356,7 +356,8 @@ Predictive-Model-of-University-Admission---Latam-CL/
 │           ├── tabla_backtesting_anual.md
 │           ├── tabla_shap_top5_resumen.md
 │           ├── tabla_top15_mejores_predicciones.md
-│           └── tabla_top15_peores_predicciones.md
+│           ├── tabla_top15_peores_predicciones.md
+│           └── tabla_peores_por_origen_lag.md   # errores por origen de la llave del lag (B-07)
 ```
 
 Las bases originales no se publican: son públicas y se descargan desde cada organismo (ver [Fuentes de datos](#-fuentes-de-datos)).

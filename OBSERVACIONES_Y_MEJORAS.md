@@ -31,8 +31,8 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-04 | *Skill score* no definido en el README | Media | A | Aplicado |
 | H-06 | Signo del error 2021 distinto entre tablas | Media | B-03 | Resuelto: el generador tomaba `abs()`; ahora es pred − real. 2021 = −1,8621 y Arica y Parinacota = −0,3561; prueba de signo OK en los 8 años |
 | H-07 | N8 OOF = 73.349 grupos vs 73.462 filas | Media | B-04 | Diagnosticado (§D): 113 filas duplicadas por sedes o versiones del plan; 2026 y 2027 sin duplicados. Corrección = versión nueva; nota al paper pendiente de decisión |
-| H-09 | P-02 (Ñuble) y P-03 (metadata) ausentes de las Limitaciones | Media | A + B-05/B-06 | README corregido; P-03 resuelto (B-06); P-02 (Ñuble) pendiente |
-| H-11 | Peores celdas compatibles con defectos residuales de la llave del lag | Media | B-07 | Pendiente |
+| H-09 | P-02 (Ñuble) y P-03 (metadata) ausentes de las Limitaciones | Media | A + B-05/B-06 | README corregido; P-03 resuelto (B-06); P-02 (Ñuble): causa encontrada y corregida en `v5-mejoras`, sin ejecutar (requiere autorización: versión nueva) |
+| H-11 | Peores celdas compatibles con defectos residuales de la llave del lag | Media | B-07 | Resuelto (§D): hipótesis rechazada; 49/50 (OOF) y 50/50 (holdout) de las peores celdas tienen lag fino |
 | H-13 | Historial git no auditado | Media | B-10 | Pendiente |
 | H-14 | Versión de SHAP inconsistente (0.45.1 vs 0.54.1) | Media | B-11 | Pendiente |
 | H-17 | Ablación de variables con matrícula contemporánea (P-04) | Media | B-08 | Pendiente |
@@ -43,7 +43,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-08 | `fig09_validacion_forecast_2026.png` muestra el forecast 2027 | Baja | A + B-09 | Copia renombrada; falta `git rm` |
 | H-10 | `.obsidian/` versionado, sin `.gitignore` | Baja | A + B-00/B-09 | `.gitignore` en la raíz; ignora `.obsidian/` completo (nunca estuvo versionado, no requiere `git rm --cached`) |
 | H-15 | Columna `confianza_%` (= 100 − WAPE) en las tablas | Baja | B-12 | Pendiente |
-| H-18 | Tablas top-15 sin la columna género | Baja | B-07 | Pendiente |
+| H-18 | Tablas top-15 sin la columna género | Baja | B-07 | Resuelto: columna `genero` agregada |
 | H-19 | Numeración de figuras: paper ≠ archivos; formato numérico de las figuras | Baja | C-05 | Pendiente |
 | H-22 | Agradecimientos mencionan a la CNA, que no figura entre las fuentes | Baja | C-06 | Pendiente |
 | H-23 | Clave BibTeX `evans2026…` con apellido Pérez Paz | Baja | C-06 | Pendiente |
@@ -262,6 +262,30 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 - **Cobertura en el holdout 2026:** celda **92,35 %** (objetivo 90 %), ancho mediano 36,5 matrículas. N2 94,3 %, N3 93,7 %, N4 93,7 %, N5 92,2 %, N6 93,3 %, N7 93,0 %, N8 92,7 %. Ancho relativo mediano por institución: 20,5 %. N1 no se calibra: siete observaciones.
 - **Forecast 2027:** las 9.069 celdas tienen banda, que siempre contiene al puntual. Por institución, la banda mediana mide 20,4 % del pronóstico. Total: puntual 761.058 (sin cambio) y rango indicativo **716.850 – 775.499**, construido con los errores agregados OOF de −1,86 % (2021) a +6,17 % (2022); no es conforme.
 - **Propagado** al TL;DR, a la sección del pronóstico y a las Limitaciones del README, al paper (§4.10 y §5.9) y al documento técnico (§11 y P-05). El texto «pendientes de recalibración» ya no aparece en el README.
+
+### B-05 · Ñuble antes de las uniones (P-02) — causa encontrada; corrección en la rama `v5-mejoras`, sin ejecutar
+- **Causa:** en la consolidación, la máscara `cod_region == 16` se evalúa **antes** de convertir `cod_region` a entero, así que no marca ninguna fila y la reparación del nombre de Ñuble (cuyo nombre en el diccionario del SIES viene con la codificación rota, `Ã‘uble`) no surte efecto. La salida guardada del notebook lo muestra: después de la «reparación», el diccionario sigue diciendo `Ã‘uble`, y el SIES queda con 3.147 filas sin código de región en esa etapa. La reparación posterior sólo corrige el PIB.
+- **Corrección:** mover la conversión a entero antes de la máscara y agregar un `assert` de que exactamente una fila del diccionario tiene el código 16. Está commiteada en la rama `v5-mejoras` del repositorio privado.
+- **Bloqueada:** no se ejecutó. Re-ejecutar la consolidación reescribe `dataset_modelado_final.csv`, que es el dataset del pronóstico 2027 a congelar (su huella está en la metadata), y medir el WAPE de Ñuble exige reentrenar (≈ 2,5 h con Optuna). Es la versión metodológica nueva de §24.6. **Requiere autorización del autor** para ejecutar la pista v5 con salidas separadas.
+
+### B-07 · Peores celdas por origen de la llave del lag — resuelto (hipótesis rechazada)
+- **Método:** la tabla de predicciones no trae `origen_lag`, pero sus filas no-forecast son el dataset de modelado fila a fila. El origen se unió por posición, verificando año, institución, carrera, género, condición, jornada y lag (100 % de coincidencia; la exportación redondea a entero el lag escalado de los respaldos). La participación de escalado se recalculó con la regla de la consolidación.
+- **Resultado:** de las 50 peores celdas por error absoluto, **49 del OOF 2019-2025 y las 50 del holdout 2026 tienen lag fino**. La única con respaldo es una de código, con participación 1,0. Los respaldos tienen más error relativo, pero pesan el 1,1 % de la matrícula y no explican el extremo de la distribución:
+
+| Conjunto | origen | celdas | WAPE | WAPE naïve | *skill* | MASE |
+|---|---|---:|---:|---:|---:|---:|
+| OOF 2019-2025 | fino | 63.154 | 14,33 % | 14,79 % | −3,24 % | 0,969 |
+| OOF 2019-2025 | código | 420 | 17,93 % | 17,41 % | −14,41 % | 1,030 |
+| OOF 2019-2025 | medio | 819 | 31,08 % | 32,44 % | +27,80 % | 0,958 |
+| Holdout 2026 | fino | 8.909 | 11,99 % | 12,81 % | +14,25 % | 0,936 |
+| Holdout 2026 | código | 63 | 16,84 % | 15,82 % | −15,55 % | 1,064 |
+| Holdout 2026 | medio | 97 | 27,29 % | 31,93 % | +29,10 % | 0,855 |
+
+- **Tasa de emparejamiento de la llave** (2019-2026): fino 98,10 % de las celdas (98,89 % de la matrícula), código 0,66 % (0,56 %), medio 1,25 % (0,56 %).
+- **Las celdas citadas en H-11** tienen lag fino: son contracciones reales de programas que conservan su nombre, no lags heredados de renombres. Las dos predicciones casi idénticas de «Ingeniería y Ciencias - Plan Común» de la U. de Chile (1.687,76 en 2020 y 1.687,50 en 2026) provienen de lags distintos (1.629 y 1.719): coinciden por azar, no porque se repita la celda.
+- **Tablas top-15:** ahora incluyen la columna `genero` y la celda queda identificada completa. Las cifras no cambian.
+- **`origen_lag` en la exportación:** se agregó al código de exportación en la rama `v5-mejoras`. No se regeneró la tabla de predicciones de la corrida 2027, porque es un artefacto a congelar.
+- **Publicado:** `Documents/OUTPUTS_PAPER/tablas/tabla_peores_por_origen_lag.md` y un párrafo en el documento técnico §6.4.
 
 ---
 
