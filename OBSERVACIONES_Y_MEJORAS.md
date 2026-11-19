@@ -34,7 +34,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-09 | P-02 (Ñuble) y P-03 (metadata) ausentes de las Limitaciones | Media | A + B-05/B-06 | README corregido; P-03 resuelto (B-06); P-02 (Ñuble): causa encontrada y corregida en `v5-mejoras`, sin ejecutar (requiere autorización: versión nueva) |
 | H-11 | Peores celdas compatibles con defectos residuales de la llave del lag | Media | B-07 | Resuelto (§D): hipótesis rechazada; 49/50 (OOF) y 50/50 (holdout) de las peores celdas tienen lag fino |
 | H-13 | Historial git no auditado | Media | B-10 | Hecho (§D): el 761.058 aún no está en el remoto (sólo en commits locales); sin etiquetas; v3 en `b355c67` |
-| H-14 | Versión de SHAP inconsistente (0.45.1 vs 0.54.1) | Media | B-11 | Pendiente |
+| H-14 | Versión de SHAP inconsistente (0.45.1 vs 0.54.1) | Media | B-11 | Resuelto: 0.45.1 = v4, 0.54.1 = corrida 2027; justificación reformulada como continuidad de método |
 | H-17 | Ablación de variables con matrícula contemporánea (P-04) | Media | B-08 | Pendiente |
 | H-20 | Conformal de Mondrian atribuido a Romano et al. (2019) | Media | C-02 | Pendiente |
 | H-21 | El Resumen afirma algo sobre la literatura latinoamericana sin citarla | Media | C-01 | Pendiente |
@@ -299,6 +299,11 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 - **Congelamiento v3 del 17-06-2026:** el README dice que el pronóstico v3 se congeló el 17 de junio. No hay etiqueta ni huella. La única evidencia es el commit `b355c67`, publicado en el remoto con fecha 17-06-2026, que sirve como sello si se acepta la fecha de GitHub. Conviene describirlo así: «publicado el 17-06-2026 (commit `b355c67`)».
 - **Etiquetas:** no hay ninguna, ni local (`git tag -l`) ni remota (`git ls-remote --tags origin`).
 - **Recomendación:** hacer el push de `main` cuanto antes. Fecharía en el remoto la publicación del 761.058 aunque el congelamiento formal (B-01) llegue después.
+
+### B-11 · Versión de SHAP — resuelto
+- **Metadata:** las corridas de junio y agosto de 2026 (v3 y v4) registran `shap` 0.45.1 y pandas 2.2.2; la corrida 2027 registra `shap` 0.54.1 y pandas 2.3.3, con XGBoost 3.2.0 en ambas. Las dos versiones eran correctas, cada una para su corrida.
+- **Prueba:** con `shap` 0.54.1 y `xgboost` 3.2.0, `TreeExplainer` funciona sobre un `XGBRegressor`. Sus valores coinciden con `pred_contribs` nativo (diferencia máxima 0,0) y suman la predicción (error máximo de 1,9 × 10⁻⁶).
+- **Corregido:** el README, el paper §4.8 y el documento técnico §9.7 y §24.6 dicen ahora que la incompatibilidad era de v4 (0.45.1) y que en la corrida 2027 CatBoost se mantiene por continuidad de método.
 
 ---
 

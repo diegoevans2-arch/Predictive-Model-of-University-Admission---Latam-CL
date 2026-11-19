@@ -373,7 +373,7 @@ El código no se publica, pero el método sí, con el detalle necesario para rec
 
 El entorno con que se produjeron las corridas usa Python 3.12, scikit-learn, LightGBM, XGBoost, CatBoost, Optuna, SHAP y `category_encoders`. La optimización con Optuna tarda del orden de horas en un equipo de escritorio.
 
-> ⚠️ `shap` 0.45.1 no puede explicar modelos de `xgboost` 3.x (`TreeExplainer` falla al leer `base_score`). Es una de las razones por las que el modelo final es CatBoost y no XGBoost, que ganó el tuning.
+> ⚠️ En la corrida v4, `shap` 0.45.1 no podía explicar modelos de `xgboost` 3.x (`TreeExplainer` fallaba al leer `base_score`), y por eso el modelo final fue CatBoost y no XGBoost, que ganó el tuning. La corrida 2027 usa `shap` 0.54.1, que sí explica `xgboost` 3.2.0; CatBoost se mantiene por **continuidad de método** entre corridas, para que el pronóstico 2027 sea el del mismo modelo validado en 2026.
 
 ---
 

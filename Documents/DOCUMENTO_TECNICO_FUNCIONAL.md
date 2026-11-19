@@ -770,7 +770,7 @@ Las iteraciones quedan en el límite superior: el óptimo podría estar fuera de
 
 ### 9.7 · Por qué CatBoost, aunque no gana el tuning
 
-Queda tercero a 0,0016 (0,5 %) del primero, menos que el sesgo del TE mal aplicado: la implementación de *boosting* es prácticamente indiferente. El modelo final está **fijado por protocolo** (D11): en la corrida original SHAP no podía explicar XGBoost 3 y la explicabilidad por fila es requisito; frente a LightGBM, la elección es de continuidad metodológica. Cambiarlo sería una versión metodológica nueva. Este documento no afirma que CatBoost sea superior.
+Queda tercero a 0,0016 (0,5 %) del primero, menos que el sesgo del TE mal aplicado: la implementación de *boosting* es prácticamente indiferente. El modelo final está **fijado por protocolo** (D11): en la corrida v4, SHAP 0.45.1 no podía explicar XGBoost 3 y la explicabilidad por fila es requisito. La corrida 2027 usa SHAP 0.54.1, que sí explica XGBoost 3.2.0 (verificado el 19-11-2026: `TreeExplainer` coincide con las contribuciones nativas de XGBoost), así que hoy la razón es sólo de continuidad metodológica, frente a XGBoost y frente a LightGBM. Cambiarlo sería una versión metodológica nueva. Este documento no afirma que CatBoost sea superior.
 
 ### 9.8 · *Clustering* descartado
 
@@ -1497,7 +1497,7 @@ Los parámetros metodológicos —llave del lag, lista de variables, semilla, en
 | 5 | Congelar el pronóstico (§24.5) | Antes del 30 de junio |
 | 6 | Ejecutar la etapa E | Al publicarse el SIES del año pronosticado |
 
-**Reproducibilidad.** Semilla 42 en todas las fuentes de aleatoriedad declaradas; no se ha verificado igualdad bit a bit entre equipos. Versiones registradas: pandas 2.3.3, LightGBM 4.6.0, XGBoost 3.2.0, CatBoost 1.2.10, Optuna 4.9.0, SHAP 0.54.1. Con los datos de la v4 original, la regeneración de ingesta y consolidación reprodujo byte a byte todas las tablas intermedias y el dataset.
+**Reproducibilidad.** Semilla 42 en todas las fuentes de aleatoriedad declaradas; no se ha verificado igualdad bit a bit entre equipos. Versiones registradas en la corrida 2027: pandas 2.3.3, LightGBM 4.6.0, XGBoost 3.2.0, CatBoost 1.2.10, Optuna 4.9.0, SHAP 0.54.1 (v4 usó pandas 2.2.2 y SHAP 0.45.1). Con los datos de la v4 original, la regeneración de ingesta y consolidación reprodujo byte a byte todas las tablas intermedias y el dataset.
 
 ---
 

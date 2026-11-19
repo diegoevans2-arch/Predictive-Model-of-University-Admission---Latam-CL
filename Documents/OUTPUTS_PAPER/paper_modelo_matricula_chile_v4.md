@@ -462,11 +462,13 @@ arcsinh.
 **Sobre la elección del modelo final.** Tras el tuning, CatBoost quedó **tercero** por RMSE de CV
 en ambas corridas: en la corrida 2027, 0,2949 frente a 0,2933 de XGBoost y 0,2943 de LightGBM (en v4,
 0,2986 frente a 0,2974 y 0,2982). Entre el primero y el tercero hay 0,5 %, menos que el sesgo medido
-en la sección 5.6. Se fija como modelo de producción por una razón de tooling que
-descarta a XGBoost: la versión de `shap` del entorno (0.45.1) es incompatible con la serialización de
-`base_score` de `xgboost` 3.x, y `TreeExplainer` falla sobre ese modelo. Esa razón no explica la
-preferencia sobre LightGBM, que `shap` sí puede explicar: la elección mantiene el modelo de las
-versiones anteriores y no tiene fundamento de desempeño. Con diferencias de este tamaño, cualquiera de
+en la sección 5.6. Se fijó como modelo de producción en v4 por una razón de tooling
+que descartaba a XGBoost: la versión de `shap` de ese entorno (0.45.1) era incompatible con la
+serialización de `base_score` de `xgboost` 3.x, y `TreeExplainer` fallaba sobre ese modelo. La corrida
+2027 se ejecutó con `shap` 0.54.1, que sí explica `xgboost` 3.2.0, así que esa razón ya no aplica: en
+esta corrida CatBoost se mantiene por continuidad de método. Tampoco hubo nunca una razón para
+preferirlo a LightGBM, que `shap` sí podía explicar: la elección mantiene el modelo de las versiones
+anteriores y no tiene fundamento de desempeño. Con diferencias de este tamaño, cualquiera de
 los tres habría servido. La decisión queda registrada en el pipeline y se mantiene entre corridas para
 que el pronóstico 2027 sea el del mismo método validado en 2026.
 
