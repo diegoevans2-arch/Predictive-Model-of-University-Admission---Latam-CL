@@ -30,7 +30,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-16 | Huella del dataset cubre sólo 8.192 bytes (O-04) | Media | B-01 | Pendiente |
 | H-04 | *Skill score* no definido en el README | Media | A | Aplicado |
 | H-06 | Signo del error 2021 distinto entre tablas | Media | B-03 | Resuelto: el generador tomaba `abs()`; ahora es pred − real. 2021 = −1,8621 y Arica y Parinacota = −0,3561; prueba de signo OK en los 8 años |
-| H-07 | N8 OOF = 73.349 grupos vs 73.462 filas | Media | B-04 | Pendiente |
+| H-07 | N8 OOF = 73.349 grupos vs 73.462 filas | Media | B-04 | Diagnosticado (§D): 113 filas duplicadas por sedes o versiones del plan; 2026 y 2027 sin duplicados. Corrección = versión nueva; nota al paper pendiente de decisión |
 | H-09 | P-02 (Ñuble) y P-03 (metadata) ausentes de las Limitaciones | Media | A + B-05/B-06 | README corregido; correcciones pendientes |
 | H-11 | Peores celdas compatibles con defectos residuales de la llave del lag | Media | B-07 | Pendiente |
 | H-13 | Historial git no auditado | Media | B-10 | Pendiente |
@@ -226,6 +226,29 @@ Estos cambios se guardaron en la carpeta local del repositorio, **excepto el `.g
 - Los Agradecimientos mencionan a la CNA, que no figura entre las fuentes (los años de acreditación llegan vía CNED INDICES). Aclararlo o quitarla.
 - Clave BibTeX `evans2026matricula`: el primer apellido es Pérez Paz; sugerencia: `perezpaz2026matricula`.
 - El README aún describe a SHAP 0.45.1 como la causa de descartar XGBoost (véase B-11).
+
+---
+
+## D · Resultados de la ejecución de la sección B (Claude Code, 19-11-2026)
+
+Cada tarea se ejecutó con el código y los datos del autor. Los commits del repositorio público llevan el ID de la tarea en el mensaje, y los cambios de código se registran en el repositorio privado del pipeline.
+
+### B-00 · Commit de la sección A — hecho
+- Se verificó la sección A: las huellas SHA-256 del README, del paper `.md`, del PDF v4 y de la fig09 renombrada coinciden con el registro de esta revisión; el diff del paper es una sola línea (la ruta de fig09) y el del README no cambia cifras de resultados. El PDF v4 contiene «761.058» y no contiene «707.960».
+- `.gitignore` creado en la raíz. `.obsidian/` **nunca estuvo versionado** (ningún archivo en `git ls-files`), así que no aplica `git rm --cached`: se ignora la carpeta completa.
+- Push: pendiente de aprobación del autor.
+
+### B-03 · Signo del error agregado — resuelto
+- **Causa:** `calcular_metricas()` calculaba `abs(sum(real) − sum(pred))`. Ahora es `sum(pred) − sum(real)`: positivo = sobreestimación, la misma convención de `tabla_backtesting_anual.md` y de fig08.
+- **Cifras que cambiaron** (salen de re-ejecutar el análisis; las figuras no cambian): `tabla_metricas_por_anio.md`, 2021: +1,8621 → **−1,8621**; `tabla_metricas_por_region.md`, Arica y Parinacota: +0,3561 → **−0,3561**. Las cascadas macro → micro no cambian: en todos sus niveles el error agregado es positivo.
+- **Prueba:** `sign(error_agregado_rel_%) == sign(sum(pred) − sum(real))` en los 8 años del OOF → OK. El paper y el documento técnico ya citaban −1,86 % y no citan el valor de Arica y Parinacota.
+
+### B-04 · 73.349 celdas frente a 73.462 filas — diagnosticado; corrección bloqueada (requiere versión nueva)
+- **Qué son:** 201 filas del OOF en 88 celdas comparten la llave fina; sobran **113**. En las 88 celdas la matrícula real y el lag son idénticos entre las filas repetidas: cada fila hereda el **total** de la celda, así que la celda se cuenta dos (o más) veces.
+- **Dónde:** Universidad La República, 2019 (49 filas), 2020 (26) y 2021 (26), y Universidad de Atacama, 2024 (100). **El holdout 2026 y el forecast 2027 no tienen duplicados** (9.069 filas = 9.069 celdas en ambos).
+- **Origen:** en el SIES crudo, la celda (institución × carrera × región × jornada) tiene más de un código de carrera: en 30 de las 45 celdas-jornada, por **varias sedes en la misma región**; en 15, por **versiones del plan** (sufijos V1, V2 del código). La consolidación conserva una fila por código y les fusiona el lag y la tasa calculados al grano de la celda, sin colapsarlas. Las mismas 113 filas están en el dataset de modelado (82.967 filas), es decir, también en el entrenamiento del modelo de la corrida 2027 (0,14 % de las filas con peso doble).
+- **Efecto medido en el OOF** (eliminando las filas sobrantes, sin reentrenar): n 73.462 → 73.349; WAPE 14,129 % → 14,124 %; WAPE naïve 14,632 % → 14,622 %; *skill* −0,47 % → −0,52 %; MASE 0,9656 → 0,9659. Matrícula real contada de más: 1.789 (2019), 546 (2020), 604 (2021) y 5.452 (2024).
+- **Por qué no se corrigió:** colapsar las filas cambia el grano del dataset y exige reentrenar, lo que movería el modelo de la corrida 2027 (§24.6). Queda como corrección de la versión metodológica siguiente. **Pendiente de decisión del autor:** agregar una nota al paper, al README y al documento técnico §8.1 que explique la diferencia con las cifras de arriba.
 
 ---
 
