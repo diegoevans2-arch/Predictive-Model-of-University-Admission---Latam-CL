@@ -1,0 +1,22 @@
+# Obsidian (configuración local del editor; no se versiona)
+.obsidian/
+
+# Python
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Artefactos de modelo (no se publican)
+# Ojo: si se publican las predicciones congeladas del pronóstico 2027,
+# deben quedar fuera de estas reglas (p. ej., con una excepción !forecast_2027/...).
+*.cbm
+*.pkl
+*.parquet
+catboost_info/

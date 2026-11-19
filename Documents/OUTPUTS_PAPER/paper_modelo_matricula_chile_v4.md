@@ -841,7 +841,7 @@ calculadas sobre la serie nacional: la variación promedio de 2024-2026 (+3,41 %
 debajo de las dos primeras. La regresión lineal es una referencia débil en este caso: 2026 quedó por
 encima de la tendencia de largo plazo, y la recta proyecta una caída que ninguna otra señal sugiere.
 
-![Figura 6. Crecimiento agregado 2027 del forecast frente a tres baselines simples sobre la serie nacional 2018-2026](figuras/fig09_validacion_forecast_2026.png)
+![Figura 6. Crecimiento agregado 2027 del forecast frente a tres baselines simples sobre la serie nacional 2018-2026](figuras/fig09_forecast_2027_vs_baselines.png)
 
 **Composición.** El crecimiento pronosticado proviene de los alumnos antiguos (+3,65 %); para los
 alumnos nuevos el modelo prevé una leve caída (−0,49 %). Por modalidad, la diurna crece 2,3 %, la
