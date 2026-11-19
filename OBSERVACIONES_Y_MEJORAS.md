@@ -388,3 +388,677 @@ No se borró ni se sobrescribió ningún archivo preexistente aparte del README 
 
 ---
 *Documento generado el 19-11-2026. Las cifras citadas se verificaron leyendo los archivos del repositorio; las que dependen del código o los datos (B-03, B-04, B-07) son observaciones de consistencia entre archivos publicados, no verificaciones contra los datos.*
+
+---
+
+## F · Respuesta de Claude Science a la sección E (19-11-2026)
+
+Revisé los textos nuevos del README, del paper (§4.8, §4.10, §5.5 y §5.9) y del documento técnico (§6.4 y §11). **Las cifras nuevas son consistentes**: el rango indicativo 2027 se reproduce con los errores agregados OOF de la tabla por año (761.058 / 1,061671 = 716.850; 761.058 / 0,981379 = 775.499); 92,35 % aparece igual en README, paper §5.9 y documento técnico §11.3; «siete observaciones» (v4, §5.5) y «ocho observaciones» (corrida 2027, §5.9) son correctas para cada corrida. La reformulación de §4.8 (CatBoost por continuidad de método, sin fundamento de desempeño) es honesta y conviene mantenerla tal cual.
+
+### F.1 · Inconsistencias que quedan
+
+| ID | Dónde | Problema | Acción sugerida |
+|---|---|---|---|
+| F-01 | README (TL;DR, §Pronóstico 2027) y paper §5.9 («se publica en este repositorio… y no se modificará después») | Según B-10, el 761.058 no está en `origin/main`. La frase es falsa en el remoto hasta el push | Se resuelve con el push. Si el push se demora, cambiar a «se publicará» |
+| F-02 | Títulos «Pronóstico 2027 (pre-registrado)» en README y paper §5.9, y el texto de §5.9 («éste es un pronóstico pre-registrado») frente a la nota «Congelamiento pendiente» del README | Contradicción interna mientras C-03 siga pendiente | Aplicar la redacción C-03 de F.2 después de B-01 |
+| F-03 | Paper §4.9 y tablas (8 menciones de «MASE») | La métrica divide por el MAE de la persistencia **del mismo período evaluado** (MASE nacional 0,006 con n = 1): es un MAE relativo (RelMAE; Davydenko & Fildes, 2013, *IJF* 29(3), doi:10.1016/j.ijforecast.2012.09.002), no el MASE de Hyndman & Koehler (2006), que escala por el naïve *in-sample*. El manuscrito para IJF ya la llama RelMAE | Renombrar la columna y el texto en el paper del repo y en el README (los valores no cambian), o agregar una nota que lo aclare. Un revisor de IJF lo marcará |
+| F-04 | Paper §4.10 («estratificación por tamaño», celdas de 10-13 a ≥168) frente a documento técnico §11.2 («deciles del lag») | Describen el mismo estrato con nombres distintos | Unificar: «estratos por deciles del lag (tamaño de la celda en t−1)» |
+| F-05 | Tasa de emparejamiento de la llave: README 97,9 % / 0,8 % / 1,2 % (82.967 filas del dataset), documento técnico §6.4 97,94 % / 0,84 % / 1,22 %, B-07 98,10 % / 0,66 % / 1,25 % (celdas 2019-2026) | Cifras correctas pero de universos distintos, sin rótulo en B-07 | Al citarlas, decir siempre el universo (dataset 2018-2026 o celdas evaluadas 2019-2026) |
+
+### F.2 · Redacción propuesta para C-03 (aplicar después del push, la etiqueta y el depósito)
+
+Hay un matiz. **«Pre-registro», en sentido estricto, es registrar el plan de análisis antes de ver los datos**, no solo fechar un pronóstico. Lo que el protocolo §24.5 produce es un **pronóstico *ex ante* con sello temporal externo**. Para que la evaluación de 2027 se acerque a un pre-registro de verdad, el paquete que se congela debería incluir también el **protocolo de evaluación**. Si no, cada decisión que se tome después de ver el dato es un grado de libertad del investigador. Ejemplo: emparejar por código en vez de por nombre mueve el WAPE de 11,49 % a 11,24 % (P-07).
+
+**Recomendación para B-01:** agregar a `forecast_2027/` un archivo `protocolo_evaluacion_2027.md`, incluido en `SHA256SUMS.txt`, que fije de antemano:
+1. la fuente y la edición del dato real (SIES, matrícula 2027, primera publicación);
+2. la regla de emparejamiento de celdas (nombre, con código como análisis secundario);
+3. el trato de los programas extinguidos y nuevos;
+4. las métricas primarias (WAPE, *skill*, RelMAE, % dentro de ±10 %), con la persistencia como referencia;
+5. los niveles N1-N8;
+6. la cobertura nominal de las bandas al 90 %;
+7. qué resultado se consideraría un fracaso del método.
+
+**Texto ES (README y paper §5.9; reemplaza «pre-registrado»):**
+
+> **Pronóstico 2027 (*ex ante*, con sello temporal externo).** El pronóstico se fijó el [FECHA] y se publicó en el repositorio remoto con la etiqueta anotada `forecast-2027-v4` (commit [HASH]). La etiqueta registra la huella SHA-256 de las predicciones ([HUELLA]), del modelo, de la metadata y del protocolo de evaluación. El paquete se depositó además en Zenodo (DOI [DOI], [FECHA]). Ambas fechas son anteriores a la publicación de la matrícula 2027 del SIES, prevista para julio de 2027, y quedan fuera del control del autor. El contraste contra el dato oficial seguirá el protocolo congelado y será la primera evaluación prospectiva del pipeline corregido. Las mejoras posteriores (pista v5) se evaluarán por separado y no reemplazan este pronóstico.
+
+**Texto EN (manuscrito IJF):**
+
+> **2027 forecast (ex ante, externally timestamped).** The forecast was fixed on [DATE] and published in the remote repository under the annotated tag `forecast-2027-v4` (commit [HASH]), which records the SHA-256 digests of the predictions ([DIGEST]), model, metadata and evaluation protocol; the package was also deposited on Zenodo (DOI [DOI], [DATE]). Both timestamps precede the official release of 2027 enrolment data (expected July 2027) and are outside the author's control. The comparison with official data will follow the frozen protocol and constitutes the first prospective evaluation of the corrected pipeline.
+
+Mientras no exista la etiqueta, el título correcto es «Pronóstico 2027 (*ex ante*; congelamiento en curso)».
+
+### F.3 · Sobre las decisiones pendientes de B-01
+
+- **Corregir antes de congelar los rótulos `metrics_holdout_2025` y `supuestos_forecast_2026`.** Recomendado. Congelar metadata con rótulos que contradicen la corrida deja una inconsistencia sellada para siempre. Como la huella todavía no se ha publicado, cambiarla hoy no cuesta nada.
+- **Publicar el CSV de predicciones.** Recomendado. Sin el archivo, la huella no se puede verificar de forma independiente. Los datos son agregados de fuentes públicas, sin información personal.
+- **Push de `main`: urgente**, como señala B-10. Puede hacerse antes de la etiqueta.
+
+### F.4 · Pedidos de la sección E
+
+1. Revisión de textos: hecha (F.1).
+2. Redacción de C-03: hecha (F.2).
+3. PDF v4: regenerado desde el `.md` vigente; se guardó en `Documents/paper_modelo_matricula_chile_v4.pdf`. Habrá que regenerarlo otra vez después de aplicar C-03.
+4. Literatura C-01: resuelta **en el manuscrito para IJF**, no en el paper del repo. Hay 65 referencias nuevas verificadas con DOI en CrossRef y por web, y en total 89 en `references.bib`. No se buscó en Scopus ni en WoS, porque no hay acceso desde esta herramienta; queda como pendiente del autor si quiere declarar una búsqueda sistemática.
+
+---
+
+## G · Resultados de los análisis Q1 (Claude Code, 19-11-2026)
+
+*Resultados de los análisis pedidos para el envío a IJF, ejecutados por Claude Code el 19-11-2026 en una rama aparte del repositorio privado (`analisis-q1`), con salidas separadas. Semilla 42 en todos los modelos. Las tablas completas, en CSV con coma decimal, y las figuras están en `resultados_q1/` del repositorio privado.*
+
+### Resultados que contradicen o matizan el paper (leer primero)
+
+1. **Un modelo global simple, sin exógenas, le gana al CatBoost en la celda fina.** El LightGBM global (solo rezagos de la tasa, año relativo e identificadores) obtiene en el holdout 2026 un WAPE de 11,42 % frente a 12,09 % del CatBoost (persistencia: 12,91 %), con *skill* de +24,52 % frente a +14,20 %. Lo mismo ocurre en el OOF 2019-2025 (14,01 % frente a 14,45 %) y en la validación v4 2026 (11,16 % frente a 11,49 %). Con pérdida absoluta, la diferencia es significativa en N5-N8 del holdout (N8: DM = +4,77, p < 0,0001); con pérdida cuadrática no lo es (N8: p = 0,0621). En N2-N4 los dos modelos no se distinguen. **El aporte del CatBoost con exógenas sobre un modelo global sin exógenas no se sostiene en la celda**: lo que funciona es el diseño global con rezagos.
+
+2. **En el holdout 2026, la ventaja del CatBoost sobre la persistencia no es significativa con pérdida cuadrática** en ningún nivel (N8: p = 0,1010; N2: p = 0,3946), con errores estándar por clúster de institución (53 clústeres). Con pérdida absoluta sí lo es en N6-N8. En la validación v4 2026, con pérdida cuadrática, p ≤ 0,05 en N4-N8 y 0,053 en N3; con pérdida absoluta, p ≤ 0,014 en N3-N8. El *skill* del holdout debe reportarse con su valor *p*.
+
+3. **En la celda (N8), los cinco referentes clásicos por serie (deriva, ETS, ARIMA, Theta y su combinación) tienen más WAPE que la persistencia en los tres conjuntos**, y el CatBoost y el modelo global les ganan. En los agregados altos el orden cambia: en N1 del OOF, ETS, ARIMA, Theta y Comb superan a la persistencia y al CatBoost (ARIMA: WAPE 1,32 % frente a 3,17 %), y en N2 del holdout la deriva iguala al CatBoost en *skill*. El resultado respalda un modelo global para la celda, no al CatBoost en particular, y muestra que para el total nacional un método por serie sobre la serie agregada es competitivo.
+
+4. **El «real» del holdout 2026 de la corrida 2027 está winsorizado**: el panel recorta la tasa de crecimiento a sus percentiles 1 y 99 antes de reconstruir las matrículas (90 celdas del holdout; en las 8.329 celdas comunes con la validación v4 suma 718.597 frente a 718.916 del SIES). Todos los análisis usan ese mismo real, por consistencia con el paper; conviene declararlo.
+
+5. **Las columnas `te_*` precalculadas del dataset no se reproducen** con el estimador *m* sobre las filas y el target vigentes (correlación 0,985-0,995): fueron calculadas sobre otra muestra. Su RMSE de CV sí se reproduce (0,2852 frente a 0,2853 publicado).
+
+### A1 · Referentes estadísticos clásicos por serie y modelo global simple
+
+**Método.** Cada celda es una serie anual. En el origen Y−1, la serie es: valor en Y−1 = el rezago de la celda en Y (así la persistencia es exactamente el baseline publicado); valores en s ≤ Y−2 = la matrícula real de la celda en s o, si la celda no estaba en el panel en s, su rezago en s+1; la serie se corta en el primer año sin dato; el rezago de 2018 da el valor de 2017. Con menos de 3 observaciones, todos los métodos caen a persistencia. Métodos (statsforecast 2.1.1): Naive (control), RWD (deriva), AutoETS sin estacionalidad (incluye amortiguado), AutoARIMA, Theta estándar y Comb = media de ETS, ARIMA y Theta; las predicciones se truncan en 0. Los niveles N1-N8 se obtienen por suma ascendente de las predicciones de celda, como la cascada publicada (el año entra en todas las llaves y se descartan los grupos con real = 0).
+
+**Modelo global.** LightGBM 4.6.0 sobre arcsinh(tasa) con rezagos t−1, t−2 y t−3 de arcsinh(tasa) de la celda, año relativo (año − 2018) e identificadores categóricos (institución, área, región, carrera, condición, género, jornada); sin exógenas ni nivel rezagado. Rejilla fija de 12 combinaciones (num_leaves {15, 31, 63} × min_child_samples {20, 100} × n_estimators {300, 800}; learning_rate 0,03; subsample y colsample 0,8) elegida por RMSE medio de CV en los 7 folds: num_leaves = 31, min_child_samples = 20, n_estimators = 300 (RMSE de CV en arcsinh 0,2869; el CatBoost publicado: 0,2949). Mismos orígenes: para cada Y se entrena con < Y.
+
+**Validación v4 2026.** Las 8.729 celdas del contraste v4; historia hasta 2024 desde el panel de la corrida 2027 y el rezago 2025 del archivo de la validación; el modelo global es el del origen 2026 (entrenado con < 2026). El CatBoost de esa fila es el modelo v4 publicado.
+
+**Controles.** La persistencia de este análisis reproduce la publicada (holdout N8: 12,91 %; CatBoost 12,09 %; validación v4 N8: 11,49 % y skill +26,71 %). Naive coincide con la persistencia en todos los niveles y se omite de las tablas (está en el CSV).
+
+**Celdas que caen a persistencia por tener menos de 3 observaciones** (iguales para todos los métodos por serie):
+
+| Año / conjunto | Celdas | Menos de 3 obs. |
+|---|---:|---:|
+| 2019 | 9.424 | 9.424 |
+| 2020 | 9.321 | 1.275 |
+| 2021 | 9.230 | 1.224 |
+| 2022 | 9.161 | 1.240 |
+| 2023 | 9.038 | 1.140 |
+| 2024 | 9.176 | 1.167 |
+| 2025 | 9.043 | 1.141 |
+| 2026 | 9.069 | 1.126 |
+| v4 2026 | 8.729 | 580 |
+
+En 2019 ninguna celda alcanza 3 observaciones (sólo 2017 y 2018): en ese año todos los métodos por serie son la persistencia.
+
+**Tiempo de cómputo** (un ajuste por serie y origen, los 8 orígenes y la validación v4 en un solo lote de 63.794 series):
+
+| Método | Segundos |
+|---|---:|
+| Naive | 1,0 |
+| RWD | 1,3 |
+| ETS | 85,9 |
+| ARIMA | 461,6 |
+| Theta | 4,5 |
+| Global LightGBM | 114,9 |
+
+#### A1 · Holdout 2026
+
+| Nivel | Método | Grupos | WAPE | Skill | RelMAE | ± 10 % | Error agregado |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| N1 Nacional | Persistencia | 1 | 2,60 % | +0,00 % | 1,0000 | 100,00 % | −2,60 % |
+| N1 Nacional | RWD | 1 | 1,03 % | +84,38 % | 0,3952 | 100,00 % | +1,03 % |
+| N1 Nacional | ETS | 1 | 2,37 % | +16,88 % | 0,9117 | 100,00 % | −2,37 % |
+| N1 Nacional | ARIMA | 1 | 1,79 % | +52,73 % | 0,6875 | 100,00 % | −1,79 % |
+| N1 Nacional | Theta | 1 | 1,29 % | +75,35 % | 0,4965 | 100,00 % | −1,29 % |
+| N1 Nacional | Comb | 1 | 1,81 % | +51,20 % | 0,6986 | 100,00 % | −1,81 % |
+| N1 Nacional | Global | 1 | 0,98 % | +85,72 % | 0,3779 | 100,00 % | +0,98 % |
+| N1 Nacional | CatBoost | 1 | 0,92 % | +87,55 % | 0,3529 | 100,00 % | +0,92 % |
+| N2 + Institución | Persistencia | 53 | 3,49 % | +0,00 % | 1,0000 | 92,45 % | −2,60 % |
+| N2 + Institución | RWD | 53 | 2,74 % | +43,94 % | 0,7856 | 86,79 % | +1,03 % |
+| N2 + Institución | ETS | 53 | 3,66 % | −9,87 % | 1,0496 | 90,57 % | −2,37 % |
+| N2 + Institución | ARIMA | 53 | 3,81 % | +1,60 % | 1,0926 | 88,68 % | −1,79 % |
+| N2 + Institución | Theta | 53 | 3,29 % | +25,30 % | 0,9431 | 88,68 % | −1,29 % |
+| N2 + Institución | Comb | 53 | 3,51 % | +10,03 % | 1,0062 | 90,57 % | −1,81 % |
+| N2 + Institución | Global | 53 | 2,52 % | +37,67 % | 0,7223 | 94,34 % | +0,98 % |
+| N2 + Institución | CatBoost | 53 | 2,60 % | +43,03 % | 0,7460 | 90,57 % | +0,92 % |
+| N3 + Área | Persistencia | 413 | 4,89 % | +0,00 % | 1,0000 | 77,48 % | −2,60 % |
+| N3 + Área | RWD | 413 | 4,36 % | +32,40 % | 0,8922 | 77,72 % | +1,03 % |
+| N3 + Área | ETS | 413 | 5,55 % | −22,36 % | 1,1340 | 73,85 % | −2,37 % |
+| N3 + Área | ARIMA | 413 | 6,09 % | −47,33 % | 1,2443 | 69,01 % | −1,79 % |
+| N3 + Área | Theta | 413 | 5,15 % | −1,97 % | 1,0531 | 74,09 % | −1,29 % |
+| N3 + Área | Comb | 413 | 5,39 % | −15,78 % | 1,1008 | 72,40 % | −1,81 % |
+| N3 + Área | Global | 413 | 4,07 % | +34,05 % | 0,8314 | 81,60 % | +0,98 % |
+| N3 + Área | CatBoost | 413 | 4,30 % | +34,20 % | 0,8795 | 80,87 % | +0,92 % |
+| N4 + Región | Persistencia | 647 | 5,15 % | +0,00 % | 1,0000 | 74,34 % | −2,60 % |
+| N4 + Región | RWD | 647 | 4,75 % | +27,73 % | 0,9223 | 73,72 % | +1,03 % |
+| N4 + Región | ETS | 647 | 5,91 % | −21,54 % | 1,1462 | 67,85 % | −2,37 % |
+| N4 + Región | ARIMA | 647 | 6,50 % | −58,45 % | 1,2622 | 62,44 % | −1,79 % |
+| N4 + Región | Theta | 647 | 5,53 % | −0,45 % | 1,0742 | 68,47 % | −1,29 % |
+| N4 + Región | Comb | 647 | 5,77 % | −16,60 % | 1,1208 | 67,08 % | −1,81 % |
+| N4 + Región | Global | 647 | 4,47 % | +27,27 % | 0,8670 | 76,66 % | +0,98 % |
+| N4 + Región | CatBoost | 647 | 4,68 % | +16,90 % | 0,9090 | 76,20 % | +0,92 % |
+| N5 + Carrera | Persistencia | 2.739 | 8,63 % | +0,00 % | 1,0000 | 56,33 % | −2,60 % |
+| N5 + Carrera | RWD | 2.739 | 8,52 % | +3,53 % | 0,9866 | 54,95 % | +1,03 % |
+| N5 + Carrera | ETS | 2.739 | 10,13 % | −11,82 % | 1,1739 | 49,69 % | −2,37 % |
+| N5 + Carrera | ARIMA | 2.739 | 11,10 % | −51,16 % | 1,2863 | 47,39 % | −1,79 % |
+| N5 + Carrera | Theta | 2.739 | 9,49 % | −3,14 % | 1,0990 | 50,97 % | −1,29 % |
+| N5 + Carrera | Comb | 2.739 | 9,85 % | −12,30 % | 1,1407 | 50,71 % | −1,81 % |
+| N5 + Carrera | Global | 2.739 | 7,81 % | +16,38 % | 0,9042 | 59,69 % | +0,98 % |
+| N5 + Carrera | CatBoost | 2.739 | 8,24 % | +8,60 % | 0,9545 | 57,36 % | +0,92 % |
+| N6 + Condición | Persistencia | 4.798 | 10,65 % | +0,00 % | 1,0000 | 48,06 % | −2,60 % |
+| N6 + Condición | RWD | 4.798 | 10,71 % | +1,32 % | 1,0058 | 47,98 % | +1,03 % |
+| N6 + Condición | ETS | 4.798 | 11,98 % | −6,20 % | 1,1250 | 43,43 % | −2,37 % |
+| N6 + Condición | ARIMA | 4.798 | 12,99 % | −41,18 % | 1,2197 | 41,62 % | −1,79 % |
+| N6 + Condición | Theta | 4.798 | 11,45 % | −1,86 % | 1,0754 | 44,23 % | −1,29 % |
+| N6 + Condición | Comb | 4.798 | 11,61 % | −6,77 % | 1,0904 | 45,00 % | −1,81 % |
+| N6 + Condición | Global | 4.798 | 9,45 % | +21,38 % | 0,8876 | 51,00 % | +0,98 % |
+| N6 + Condición | CatBoost | 4.798 | 10,05 % | +11,25 % | 0,9436 | 49,33 % | +0,92 % |
+| N7 + Género | Persistencia | 8.390 | 12,13 % | +0,00 % | 1,0000 | 41,81 % | −2,60 % |
+| N7 + Género | RWD | 8.390 | 12,40 % | −1,15 % | 1,0222 | 39,93 % | +1,03 % |
+| N7 + Género | ETS | 8.390 | 13,39 % | −7,78 % | 1,1042 | 38,70 % | −2,37 % |
+| N7 + Género | ARIMA | 8.390 | 14,68 % | −50,19 % | 1,2101 | 36,84 % | −1,79 % |
+| N7 + Género | Theta | 8.390 | 12,91 % | −4,38 % | 1,0641 | 39,21 % | −1,29 % |
+| N7 + Género | Comb | 8.390 | 13,04 % | −9,44 % | 1,0755 | 39,64 % | −1,81 % |
+| N7 + Género | Global | 8.390 | 10,86 % | +20,94 % | 0,8954 | 44,61 % | +0,98 % |
+| N7 + Género | CatBoost | 8.390 | 11,53 % | +5,09 % | 0,9508 | 42,62 % | +0,92 % |
+| N8 + Jornada | Persistencia | 9.069 | 12,91 % | +0,00 % | 1,0000 | 40,56 % | −2,60 % |
+| N8 + Jornada | RWD | 9.069 | 13,10 % | +3,45 % | 1,0144 | 38,80 % | +1,03 % |
+| N8 + Jornada | ETS | 9.069 | 14,29 % | −9,76 % | 1,1067 | 37,57 % | −2,37 % |
+| N8 + Jornada | ARIMA | 9.069 | 15,52 % | −45,24 % | 1,2021 | 35,96 % | −1,79 % |
+| N8 + Jornada | Theta | 9.069 | 13,68 % | −3,43 % | 1,0599 | 37,96 % | −1,29 % |
+| N8 + Jornada | Comb | 9.069 | 13,90 % | −8,86 % | 1,0765 | 38,46 % | −1,81 % |
+| N8 + Jornada | Global | 9.069 | 11,42 % | +24,52 % | 0,8842 | 43,26 % | +0,98 % |
+| N8 + Jornada | CatBoost | 9.069 | 12,09 % | +14,20 % | 0,9363 | 41,59 % | +0,92 % |
+
+#### A1 · OOF 2019-2025
+
+| Nivel | Método | Grupos | WAPE | Skill | RelMAE | ± 10 % | Error agregado |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| N1 Nacional | Persistencia | 7 | 1,83 % | +0,00 % | 1,0000 | 100,00 % | −0,15 % |
+| N1 Nacional | RWD | 7 | 2,44 % | −71,29 % | 1,3292 | 100,00 % | +1,76 % |
+| N1 Nacional | ETS | 7 | 1,68 % | +9,91 % | 0,9134 | 100,00 % | +0,01 % |
+| N1 Nacional | ARIMA | 7 | 1,32 % | +54,99 % | 0,7172 | 100,00 % | −0,03 % |
+| N1 Nacional | Theta | 7 | 1,62 % | +23,46 % | 0,8809 | 100,00 % | +0,40 % |
+| N1 Nacional | Comb | 7 | 1,51 % | +35,04 % | 0,8235 | 100,00 % | +0,13 % |
+| N1 Nacional | Global | 7 | 3,16 % | −248,25 % | 1,7208 | 100,00 % | +1,89 % |
+| N1 Nacional | CatBoost | 7 | 3,17 % | −186,69 % | 1,7276 | 100,00 % | +2,64 % |
+| N2 + Institución | Persistencia | 401 | 4,54 % | +0,00 % | 1,0000 | 80,30 % | −0,15 % |
+| N2 + Institución | RWD | 401 | 4,18 % | +33,17 % | 0,9190 | 80,30 % | +1,76 % |
+| N2 + Institución | ETS | 401 | 4,78 % | −5,10 % | 1,0520 | 79,80 % | +0,01 % |
+| N2 + Institución | ARIMA | 401 | 5,59 % | −54,30 % | 1,2299 | 77,06 % | −0,03 % |
+| N2 + Institución | Theta | 401 | 4,43 % | +14,81 % | 0,9737 | 80,05 % | +0,40 % |
+| N2 + Institución | Comb | 401 | 4,85 % | −8,91 % | 1,0675 | 79,80 % | +0,13 % |
+| N2 + Institución | Global | 401 | 4,92 % | +10,07 % | 1,0816 | 76,31 % | +1,89 % |
+| N2 + Institución | CatBoost | 401 | 4,71 % | +17,15 % | 1,0370 | 78,55 % | +2,64 % |
+| N3 + Área | Persistencia | 2.983 | 6,31 % | +0,00 % | 1,0000 | 68,79 % | −0,15 % |
+| N3 + Área | RWD | 2.983 | 5,98 % | +17,52 % | 0,9481 | 69,16 % | +1,76 % |
+| N3 + Área | ETS | 2.983 | 6,66 % | −6,65 % | 1,0550 | 67,21 % | +0,01 % |
+| N3 + Área | ARIMA | 2.983 | 8,09 % | −60,35 % | 1,2823 | 59,91 % | −0,03 % |
+| N3 + Área | Theta | 2.983 | 6,42 % | +4,97 % | 1,0165 | 68,32 % | +0,40 % |
+| N3 + Área | Comb | 2.983 | 6,85 % | −12,79 % | 1,0853 | 65,64 % | +0,13 % |
+| N3 + Área | Global | 2.983 | 6,32 % | +8,33 % | 1,0011 | 69,06 % | +1,89 % |
+| N3 + Área | CatBoost | 2.983 | 6,17 % | +11,91 % | 0,9779 | 68,82 % | +2,64 % |
+| N4 + Región | Persistencia | 5.273 | 6,85 % | +0,00 % | 1,0000 | 59,04 % | −0,15 % |
+| N4 + Región | RWD | 5.273 | 6,54 % | +1,58 % | 0,9553 | 59,80 % | +1,76 % |
+| N4 + Región | ETS | 5.273 | 7,22 % | −8,05 % | 1,0547 | 57,16 % | +0,01 % |
+| N4 + Región | ARIMA | 5.273 | 8,81 % | −72,43 % | 1,2870 | 51,15 % | −0,03 % |
+| N4 + Región | Theta | 5.273 | 6,97 % | −0,51 % | 1,0172 | 57,84 % | +0,40 % |
+| N4 + Región | Comb | 5.273 | 7,43 % | −15,23 % | 1,0855 | 56,02 % | +0,13 % |
+| N4 + Región | Global | 5.273 | 6,78 % | −7,89 % | 0,9902 | 60,46 % | +1,89 % |
+| N4 + Región | CatBoost | 5.273 | 6,72 % | −12,38 % | 0,9812 | 60,63 % | +2,64 % |
+| N5 + Carrera | Persistencia | 20.538 | 10,34 % | +0,00 % | 1,0000 | 48,27 % | −0,15 % |
+| N5 + Carrera | RWD | 20.538 | 10,08 % | −3,97 % | 0,9750 | 48,48 % | +1,76 % |
+| N5 + Carrera | ETS | 20.538 | 10,98 % | −10,58 % | 1,0620 | 46,22 % | +0,01 % |
+| N5 + Carrera | ARIMA | 20.538 | 13,53 % | −80,61 % | 1,3094 | 40,11 % | −0,03 % |
+| N5 + Carrera | Theta | 20.538 | 10,67 % | −2,48 % | 1,0326 | 46,52 % | +0,40 % |
+| N5 + Carrera | Comb | 20.538 | 11,33 % | −15,53 % | 1,0962 | 44,91 % | +0,13 % |
+| N5 + Carrera | Global | 20.538 | 9,81 % | +1,14 % | 0,9495 | 49,60 % | +1,89 % |
+| N5 + Carrera | CatBoost | 20.538 | 9,93 % | −2,08 % | 0,9610 | 48,80 % | +2,64 % |
+| N6 + Condición | Persistencia | 34.529 | 12,75 % | +0,00 % | 1,0000 | 42,07 % | −0,15 % |
+| N6 + Condición | RWD | 34.529 | 12,97 % | −9,44 % | 1,0167 | 40,85 % | +1,76 % |
+| N6 + Condición | ETS | 34.529 | 13,34 % | −7,87 % | 1,0461 | 40,62 % | +0,01 % |
+| N6 + Condición | ARIMA | 34.529 | 15,85 % | −70,60 % | 1,2427 | 36,31 % | −0,03 % |
+| N6 + Condición | Theta | 34.529 | 13,22 % | −2,49 % | 1,0366 | 40,31 % | +0,40 % |
+| N6 + Condición | Comb | 34.529 | 13,62 % | −11,47 % | 1,0681 | 40,09 % | +0,13 % |
+| N6 + Condición | Global | 34.529 | 12,03 % | +3,54 % | 0,9437 | 43,16 % | +1,89 % |
+| N6 + Condición | CatBoost | 34.529 | 12,42 % | −3,76 % | 0,9738 | 41,93 % | +2,64 % |
+| N7 + Género | Persistencia | 59.023 | 14,18 % | +0,00 % | 1,0000 | 37,81 % | −0,15 % |
+| N7 + Género | RWD | 59.023 | 14,65 % | −11,77 % | 1,0327 | 35,96 % | +1,76 % |
+| N7 + Género | ETS | 59.023 | 14,75 % | −7,68 % | 1,0403 | 36,71 % | +0,01 % |
+| N7 + Género | ARIMA | 59.023 | 17,48 % | −75,31 % | 1,2325 | 32,64 % | −0,03 % |
+| N7 + Género | Theta | 59.023 | 14,68 % | −3,61 % | 1,0348 | 36,26 % | +0,40 % |
+| N7 + Género | Comb | 59.023 | 15,01 % | −12,10 % | 1,0581 | 35,93 % | +0,13 % |
+| N7 + Género | Global | 59.023 | 13,38 % | +4,87 % | 0,9434 | 38,82 % | +1,89 % |
+| N7 + Género | CatBoost | 59.023 | 13,80 % | −2,90 % | 0,9732 | 37,51 % | +2,64 % |
+| N8 + Jornada | Persistencia | 64.280 | 14,90 % | +0,00 % | 1,0000 | 36,49 % | −0,15 % |
+| N8 + Jornada | RWD | 64.280 | 15,43 % | −14,92 % | 1,0352 | 34,61 % | +1,76 % |
+| N8 + Jornada | ETS | 64.280 | 15,50 % | −8,21 % | 1,0401 | 35,42 % | +0,01 % |
+| N8 + Jornada | ARIMA | 64.280 | 18,37 % | −77,16 % | 1,2327 | 31,51 % | −0,03 % |
+| N8 + Jornada | Theta | 64.280 | 15,44 % | −5,99 % | 1,0362 | 34,98 % | +0,40 % |
+| N8 + Jornada | Comb | 64.280 | 15,78 % | −13,73 % | 1,0588 | 34,64 % | +0,13 % |
+| N8 + Jornada | Global | 64.280 | 14,01 % | +5,15 % | 0,9404 | 37,50 % | +1,89 % |
+| N8 + Jornada | CatBoost | 64.280 | 14,45 % | −2,73 % | 0,9696 | 36,27 % | +2,64 % |
+
+#### A1 · Validación v4 2026
+
+| Nivel | Método | Grupos | WAPE | Skill | RelMAE | ± 10 % | Error agregado |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| N1 Nacional | Persistencia | 1 | 2,32 % | +0,00 % | 1,0000 | 100,00 % | −2,32 % |
+| N1 Nacional | RWD | 1 | 1,25 % | +71,08 % | 0,5378 | 100,00 % | +1,25 % |
+| N1 Nacional | ETS | 1 | 2,00 % | +25,69 % | 0,8621 | 100,00 % | −2,00 % |
+| N1 Nacional | ARIMA | 1 | 1,25 % | +70,97 % | 0,5388 | 100,00 % | −1,25 % |
+| N1 Nacional | Theta | 1 | 0,92 % | +84,28 % | 0,3964 | 100,00 % | −0,92 % |
+| N1 Nacional | Comb | 1 | 1,39 % | +64,11 % | 0,5991 | 100,00 % | −1,39 % |
+| N1 Nacional | Global | 1 | 0,79 % | +88,52 % | 0,3389 | 100,00 % | +0,79 % |
+| N1 Nacional | CatBoost | 1 | 0,01 % | +100,00 % | 0,0059 | 100,00 % | −0,01 % |
+| N2 + Institución | Persistencia | 53 | 3,26 % | +0,00 % | 1,0000 | 92,45 % | −2,32 % |
+| N2 + Institución | RWD | 53 | 2,78 % | +21,81 % | 0,8532 | 86,79 % | +1,25 % |
+| N2 + Institución | ETS | 53 | 3,47 % | −10,65 % | 1,0649 | 92,45 % | −2,00 % |
+| N2 + Institución | ARIMA | 53 | 3,57 % | −4,45 % | 1,0952 | 88,68 % | −1,25 % |
+| N2 + Institución | Theta | 53 | 3,11 % | +17,90 % | 0,9531 | 88,68 % | −0,92 % |
+| N2 + Institución | Comb | 53 | 3,29 % | +6,46 % | 1,0088 | 90,57 % | −1,39 % |
+| N2 + Institución | Global | 53 | 2,36 % | +25,29 % | 0,7224 | 94,34 % | +0,79 % |
+| N2 + Institución | CatBoost | 53 | 2,31 % | +48,46 % | 0,7083 | 92,45 % | −0,01 % |
+| N3 + Área | Persistencia | 408 | 4,76 % | +0,00 % | 1,0000 | 77,94 % | −2,32 % |
+| N3 + Área | RWD | 408 | 4,42 % | +24,11 % | 0,9290 | 76,72 % | +1,25 % |
+| N3 + Área | ETS | 408 | 5,42 % | −25,19 % | 1,1388 | 72,30 % | −2,00 % |
+| N3 + Área | ARIMA | 408 | 6,03 % | −53,77 % | 1,2672 | 69,12 % | −1,25 % |
+| N3 + Área | Theta | 408 | 5,13 % | −8,45 % | 1,0784 | 72,79 % | −0,92 % |
+| N3 + Área | Comb | 408 | 5,33 % | −20,65 % | 1,1184 | 72,06 % | −1,39 % |
+| N3 + Área | Global | 408 | 4,02 % | +36,14 % | 0,8436 | 81,37 % | +0,79 % |
+| N3 + Área | CatBoost | 408 | 3,74 % | +48,93 % | 0,7855 | 82,35 % | −0,01 % |
+| N4 + Región | Persistencia | 649 | 5,02 % | +0,00 % | 1,0000 | 73,19 % | −2,32 % |
+| N4 + Región | RWD | 649 | 4,85 % | +16,84 % | 0,9664 | 72,27 % | +1,25 % |
+| N4 + Región | ETS | 649 | 5,82 % | −25,51 % | 1,1596 | 66,41 % | −2,00 % |
+| N4 + Región | ARIMA | 649 | 6,49 % | −67,89 % | 1,2919 | 62,10 % | −1,25 % |
+| N4 + Región | Theta | 649 | 5,59 % | −9,81 % | 1,1143 | 67,18 % | −0,92 % |
+| N4 + Región | Comb | 649 | 5,73 % | −23,56 % | 1,1405 | 66,56 % | −1,39 % |
+| N4 + Región | Global | 649 | 4,38 % | +32,81 % | 0,8721 | 75,65 % | +0,79 % |
+| N4 + Región | CatBoost | 649 | 4,16 % | +37,52 % | 0,8293 | 76,43 % | −0,01 % |
+| N5 + Carrera | Persistencia | 2.668 | 8,48 % | +0,00 % | 1,0000 | 56,97 % | −2,32 % |
+| N5 + Carrera | RWD | 2.668 | 8,38 % | +2,78 % | 0,9877 | 55,17 % | +1,25 % |
+| N5 + Carrera | ETS | 2.668 | 10,06 % | −11,05 % | 1,1869 | 50,07 % | −2,00 % |
+| N5 + Carrera | ARIMA | 2.668 | 11,08 % | −46,74 % | 1,3062 | 47,04 % | −1,25 % |
+| N5 + Carrera | Theta | 2.668 | 9,41 % | −3,98 % | 1,1095 | 50,97 % | −0,92 % |
+| N5 + Carrera | Comb | 2.668 | 9,77 % | −11,43 % | 1,1527 | 51,12 % | −1,39 % |
+| N5 + Carrera | Global | 2.668 | 7,64 % | +18,92 % | 0,9005 | 59,97 % | +0,79 % |
+| N5 + Carrera | CatBoost | 2.668 | 7,59 % | +24,54 % | 0,8948 | 58,36 % | −0,01 % |
+| N6 + Condición | Persistencia | 4.633 | 10,47 % | +0,00 % | 1,0000 | 49,13 % | −2,32 % |
+| N6 + Condición | RWD | 4.633 | 10,59 % | +0,25 % | 1,0110 | 48,72 % | +1,25 % |
+| N6 + Condición | ETS | 4.633 | 11,89 % | −6,40 % | 1,1355 | 44,36 % | −2,00 % |
+| N6 + Condición | ARIMA | 4.633 | 12,95 % | −38,57 % | 1,2369 | 42,28 % | −1,25 % |
+| N6 + Condición | Theta | 4.633 | 11,33 % | −3,41 % | 1,0819 | 45,00 % | −0,92 % |
+| N6 + Condición | Comb | 4.633 | 11,50 % | −7,06 % | 1,0980 | 45,93 % | −1,39 % |
+| N6 + Condición | Global | 4.633 | 9,23 % | +24,21 % | 0,8818 | 51,65 % | +0,79 % |
+| N6 + Condición | CatBoost | 4.633 | 9,42 % | +25,59 % | 0,8999 | 50,94 % | −0,01 % |
+| N7 + Género | Persistencia | 8.094 | 11,97 % | +0,00 % | 1,0000 | 42,33 % | −2,32 % |
+| N7 + Género | RWD | 8.094 | 12,30 % | −1,59 % | 1,0277 | 40,25 % | +1,25 % |
+| N7 + Género | ETS | 8.094 | 13,30 % | −7,72 % | 1,1108 | 39,18 % | −2,00 % |
+| N7 + Género | ARIMA | 8.094 | 14,64 % | −45,86 % | 1,2234 | 37,29 % | −1,25 % |
+| N7 + Género | Theta | 8.094 | 12,79 % | −5,80 % | 1,0684 | 39,56 % | −0,92 % |
+| N7 + Género | Comb | 8.094 | 12,93 % | −9,40 % | 1,0805 | 40,10 % | −1,39 % |
+| N7 + Género | Global | 8.094 | 10,65 % | +24,05 % | 0,8895 | 45,16 % | +0,79 % |
+| N7 + Género | CatBoost | 8.094 | 10,93 % | +22,82 % | 0,9135 | 44,58 % | −0,01 % |
+| N8 + Jornada | Persistencia | 8.729 | 12,69 % | +0,00 % | 1,0000 | 40,89 % | −2,32 % |
+| N8 + Jornada | RWD | 8.729 | 12,89 % | +4,76 % | 1,0160 | 39,07 % | +1,25 % |
+| N8 + Jornada | ETS | 8.729 | 14,13 % | −9,42 % | 1,1131 | 37,92 % | −2,00 % |
+| N8 + Jornada | ARIMA | 8.729 | 15,43 % | −40,70 % | 1,2161 | 36,27 % | −1,25 % |
+| N8 + Jornada | Theta | 8.729 | 13,49 % | −3,37 % | 1,0632 | 38,24 % | −0,92 % |
+| N8 + Jornada | Comb | 8.729 | 13,73 % | −8,15 % | 1,0817 | 38,84 % | −1,39 % |
+| N8 + Jornada | Global | 8.729 | 11,16 % | +26,57 % | 0,8793 | 43,87 % | +0,79 % |
+| N8 + Jornada | CatBoost | 8.729 | 11,49 % | +26,71 % | 0,9055 | 43,27 % | −0,01 % |
+
+#### A1 · Sensibilidad: OOF 2019-2025 sin las 113 filas duplicadas (N2 y N8)
+
+| Nivel | Método | Grupos | WAPE | Skill | RelMAE | ± 10 % | Error agregado |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| N2 + Institución | Persistencia | 401 | 4,54 % | +0,00 % | 1,0000 | 80,30 % | −0,16 % |
+| N2 + Institución | RWD | 401 | 4,16 % | +33,29 % | 0,9153 | 80,30 % | +1,75 % |
+| N2 + Institución | ETS | 401 | 4,78 % | −5,09 % | 1,0512 | 79,80 % | +0,00 % |
+| N2 + Institución | ARIMA | 401 | 5,58 % | −54,30 % | 1,2288 | 77,06 % | −0,05 % |
+| N2 + Institución | Theta | 401 | 4,42 % | +14,86 % | 0,9730 | 80,05 % | +0,39 % |
+| N2 + Institución | Comb | 401 | 4,85 % | −8,89 % | 1,0670 | 79,80 % | +0,12 % |
+| N2 + Institución | Global | 401 | 4,90 % | +10,21 % | 1,0788 | 76,56 % | +1,89 % |
+| N2 + Institución | CatBoost | 401 | 4,71 % | +17,03 % | 1,0366 | 78,55 % | +2,65 % |
+| N8 + Jornada | Persistencia | 64.280 | 14,89 % | +0,00 % | 1,0000 | 36,49 % | −0,16 % |
+| N8 + Jornada | RWD | 64.280 | 15,41 % | −14,50 % | 1,0350 | 34,61 % | +1,75 % |
+| N8 + Jornada | ETS | 64.280 | 15,49 % | −8,16 % | 1,0400 | 35,42 % | +0,00 % |
+| N8 + Jornada | ARIMA | 64.280 | 18,36 % | −77,16 % | 1,2326 | 31,51 % | −0,05 % |
+| N8 + Jornada | Theta | 64.280 | 15,43 % | −6,02 % | 1,0364 | 34,98 % | +0,39 % |
+| N8 + Jornada | Comb | 64.280 | 15,77 % | −13,68 % | 1,0588 | 34,64 % | +0,12 % |
+| N8 + Jornada | Global | 64.280 | 14,00 % | +5,30 % | 0,9404 | 37,50 % | +1,89 % |
+| N8 + Jornada | CatBoost | 64.280 | 14,45 % | −2,96 % | 0,9700 | 36,27 % | +2,65 % |
+
+Figura: `resultados_q1/figuras/A1_WAPE_por_nivel.png`.
+
+### A2 · Significancia de las diferencias de error
+
+**(a) Prueba tipo Diebold–Mariano entre grupos.** Para cada nivel N2-N8, d_g = L(método_g) − L(persistencia_g) sobre el error del grupo agregado, con L cuadrática y absoluta. H0: E[d] = 0. Error estándar robusto por clúster de institución (CR1: SE = √(G/(G−1)·Σ_c(Σ_{g∈c}(d_g − d̄))²)/n); estadístico t con G−1 grados de libertad. En N2 el clúster coincide con el grupo. DM < 0 favorece al método.
+
+**CatBoost frente a persistencia · Holdout 2026**
+
+| Nivel | Grupos | Skill | DM (cuadrática) | p | DM (absoluta) | p  | Clústeres |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| N2 + Institución | 53 | +43,03 % | −0,86 | 0,3946 | −1,16 | 0,2523 | 53 |
+| N3 + Área | 413 | +34,20 % | −1,25 | 0,2180 | −1,25 | 0,2180 | 53 |
+| N4 + Región | 647 | +16,90 % | −0,72 | 0,4768 | −1,19 | 0,2410 | 53 |
+| N5 + Carrera | 2.739 | +8,60 % | −0,88 | 0,3846 | −1,30 | 0,2009 | 53 |
+| N6 + Condición | 4.798 | +11,25 % | −1,17 | 0,2493 | −2,18 | 0,0339 | 53 |
+| N7 + Género | 8.390 | +5,09 % | −0,51 | 0,6093 | −2,39 | 0,0206 | 53 |
+| N8 + Jornada | 9.069 | +14,20 % | −1,67 | 0,1010 | −2,94 | 0,0049 | 53 |
+
+**CatBoost frente a persistencia · Validación v4 2026**
+
+| Nivel | Grupos | Skill | DM (cuadrática) | p | DM (absoluta) | p  | Clústeres |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| N2 + Institución | 53 | +48,46 % | −1,01 | 0,3151 | −1,39 | 0,1697 | 53 |
+| N3 + Área | 408 | +48,93 % | −1,98 | 0,0530 | −2,55 | 0,0137 | 53 |
+| N4 + Región | 649 | +37,52 % | −2,01 | 0,0496 | −2,55 | 0,0137 | 53 |
+| N5 + Carrera | 2.668 | +24,54 % | −2,13 | 0,0378 | −2,66 | 0,0103 | 53 |
+| N6 + Condición | 4.633 | +25,59 % | −2,39 | 0,0205 | −3,76 | 0,0004 | 53 |
+| N7 + Género | 8.094 | +22,82 % | −2,03 | 0,0470 | −3,98 | 0,0002 | 53 |
+| N8 + Jornada | 8.729 | +26,71 % | −2,15 | 0,0363 | −4,33 | < 0,0001 | 53 |
+
+**Modelo global frente a persistencia · Holdout 2026**
+
+| Nivel | Skill | DM (cuadrática) | p | DM (absoluta) | p  |
+|---|---:|---:|---:|---:|---:|
+| N2 + Institución | +37,67 % | −0,67 | 0,5058 | −1,36 | 0,1791 |
+| N3 + Área | +34,05 % | −1,35 | 0,1839 | −2,15 | 0,0363 |
+| N4 + Región | +27,27 % | −1,25 | 0,2176 | −1,95 | 0,0566 |
+| N5 + Carrera | +16,38 % | −1,31 | 0,1964 | −2,82 | 0,0067 |
+| N6 + Condición | +21,38 % | −1,97 | 0,0543 | −4,60 | < 0,0001 |
+| N7 + Género | +20,94 % | −2,06 | 0,0441 | −5,49 | < 0,0001 |
+| N8 + Jornada | +24,52 % | −2,28 | 0,0269 | −5,96 | < 0,0001 |
+
+Los demás métodos (RWD, ETS, ARIMA, Theta, Comb) están en `A2a_DM_cluster_por_nivel.csv`.
+
+**(a′) Agregado al brief: CatBoost frente al modelo global** (d = L(CatBoost) − L(Global); DM > 0 favorece al global):
+
+*Holdout 2026*
+
+| Nivel | DM (cuadrática) | p | DM (absoluta) | p  |
+|---|---:|---:|---:|---:|
+| N2 + Institución | −0,32 | 0,7485 | +0,28 | 0,7787 |
+| N3 + Área | −0,01 | 0,9903 | +0,92 | 0,3634 |
+| N4 + Región | +0,77 | 0,4462 | +0,93 | 0,3544 |
+| N5 + Carrera | +1,00 | 0,3225 | +2,48 | 0,0165 |
+| N6 + Condición | +1,33 | 0,1882 | +3,46 | 0,0011 |
+| N7 + Género | +1,67 | 0,1003 | +4,18 | 0,0001 |
+| N8 + Jornada | +1,91 | 0,0621 | +4,77 | < 0,0001 |
+
+*Validación v4 2026*
+
+| Nivel | DM (cuadrática) | p | DM (absoluta) | p  |
+|---|---:|---:|---:|---:|
+| N2 + Institución | −1,05 | 0,2995 | −0,17 | 0,8672 |
+| N3 + Área | −1,21 | 0,2314 | −1,15 | 0,2534 |
+| N4 + Región | −0,55 | 0,5832 | −1,05 | 0,2985 |
+| N5 + Carrera | −0,61 | 0,5417 | −0,32 | 0,7517 |
+| N6 + Condición | −0,17 | 0,8641 | +1,21 | 0,2316 |
+| N7 + Género | +0,19 | 0,8476 | +1,94 | 0,0577 |
+| N8 + Jornada | −0,02 | 0,9832 | +2,30 | 0,0255 |
+
+**(b) Comparación múltiple (MCB / Nemenyi).** Rangos medios por grupo según el error absoluto (1 = mejor; empates promediados) entre 8 métodos; CD = q·√(k(k+1)/(6N)), q = 3,0309 (rango estudentizado al 95 %, k = 8, dividido por √2). «Distinto del mejor» = la diferencia de rango supera CD. Supone grupos independientes, lo que no se cumple dentro de una institución: con N grande la CD es muy estrecha y la prueba es liberal.
+
+*Holdout 2026 · N8 + Jornada (N = 9.069 grupos; CD = 0,1103)*
+
+| Método | Rango medio | Diferencia con el mejor | Distinto del mejor |
+|---|---:|---:|---:|
+| Global | 3,9732 | 0,0000 | no |
+| CatBoost | 4,1820 | 0,2088 | sí |
+| Persistencia | 4,3320 | 0,3588 | sí |
+| Comb | 4,5441 | 0,5708 | sí |
+| Theta | 4,6554 | 0,6822 | sí |
+| RWD | 4,6798 | 0,7066 | sí |
+| ETS | 4,7416 | 0,7684 | sí |
+| ARIMA | 4,8919 | 0,9187 | sí |
+
+*Holdout 2026 · N2 + Institución (N = 53 grupos; CD = 1,4422)*
+
+| Método | Rango medio | Diferencia con el mejor | Distinto del mejor |
+|---|---:|---:|---:|
+| CatBoost | 3,4717 | 0,0000 | no |
+| Global | 3,5472 | 0,0755 | no |
+| RWD | 4,2547 | 0,7830 | no |
+| Theta | 4,4717 | 1,0000 | no |
+| Persistencia | 4,7358 | 1,2642 | no |
+| Comb | 4,7358 | 1,2642 | no |
+| ETS | 5,2264 | 1,7547 | sí |
+| ARIMA | 5,5566 | 2,0849 | sí |
+
+*Validación v4 2026 · N8 + Jornada (N = 8.729 grupos; CD = 0,1124)*
+
+| Método | Rango medio | Diferencia con el mejor | Distinto del mejor |
+|---|---:|---:|---:|
+| Global | 3,9817 | 0,0000 | no |
+| CatBoost | 4,1002 | 0,1186 | sí |
+| Persistencia | 4,3246 | 0,3429 | sí |
+| Comb | 4,5516 | 0,5699 | sí |
+| Theta | 4,6583 | 0,6766 | sí |
+| RWD | 4,6867 | 0,7051 | sí |
+| ETS | 4,7589 | 0,7772 | sí |
+| ARIMA | 4,9380 | 0,9563 | sí |
+
+Figuras: `A2_MCB_N8_holdout2026.png` y `A2_MCB_N2_holdout2026.png`. Los demás niveles y la validación v4 están en `A2b_MCB_Nemenyi.csv`.
+
+**(c) N1 nacional: DM con la corrección de Harvey, Leybourne y Newbold (1997).** Serie OOF 2019-2026 (n = 8 años; 2026 = holdout), h = 1: DM* = DM·√((n−1)/n), comparado con t de 7 g.l. La potencia es muy baja.
+
+| Método | Pérdida | d medio | DM | DM (HLN) | p (HLN) |
+|---|---:|---:|---:|---:|---:|
+| RWD | cuadratica | +97.487.888 | +0,7833 | +0,7328 | 0,4875 |
+| RWD | absoluta | +2.087 | +0,5602 | +0,5241 | 0,6164 |
+| ETS | cuadratica | −26.765.693 | −1,9124 | −1,7889 | 0,1168 |
+| ETS | absoluta | −1.143 | −2,0312 | −1,9000 | 0,0992 |
+| ARIMA | cuadratica | −129.643.254 | −2,8214 | −2,6392 | 0,0335 |
+| ARIMA | absoluta | −3.793 | −2,5448 | −2,3804 | 0,0489 |
+| Theta | cuadratica | −79.731.398 | −1,8239 | −1,7061 | 0,1318 |
+| Theta | absoluta | −2.491 | −1,1633 | −1,0881 | 0,3126 |
+| Comb | cuadratica | −90.732.024 | −3,4224 | −3,2013 | 0,0150 |
+| Comb | absoluta | −2.623 | −2,4549 | −2,2964 | 0,0553 |
+| Global | cuadratica | +435.639.145 | +1,4678 | +1,3730 | 0,2121 |
+| Global | absoluta | +6.258 | +1,0106 | +0,9453 | 0,3760 |
+| CatBoost | cuadratica | +316.952.590 | +1,4124 | +1,3212 | 0,2280 |
+| CatBoost | absoluta | +6.270 | +1,0206 | +0,9547 | 0,3715 |
+
+### A3 · Ablación P-04 (matrícula contemporánea)
+
+**Método.** CatBoost con los `best_params` de la metadata (iterations 2000, learning_rate 0,0376, depth 7, l2_leaf_reg 1,7464, bagging_temperature 0,5465, border_count 183), semilla 42, sin Optuna, mismo TE dentro del fold y mismos orígenes (7 folds 2019-2025 + holdout 2026). (P) publicado, recalculado y verificado contra la tabla publicada (diferencia máxima 5,9 × 10⁻⁸ en arcsinh); (i) sin `densidad_estudiantes_m2`, `ratio_docente_estudiante` y `matriculas_sobre_pib` (46 variables); (ii) con las 49 variables y todas las exógenas tomadas en t−1 (24 columnas: `pib_mm_pesos`, `tasa_desempleo`, `N°Docentes`, `retencion_1er_anio`, `duracion_semestres`, `puntaje_maximo`, `puntaje_promedio`, `puntaje_minimo`, `puntaje_corte_primero`, `puntaje_corte_promedio`, `puntaje_corte_ultimo`, `valor_matricula`, `valor_arancel`, `pct_doctores`, `pct_magister`, `pct_especialistas`, `pct_sin_posgrado`, `pct_horas_jornada_completa`, `densidad_estudiantes_m2`, `matriculas_sobre_pib`, `ratio_docente_estudiante`, `densidad_competitiva`, `arancel_relativo_regional`, `selectividad_relativa`). Rezago de cada exógena: el valor de la misma celda en t−1; si no estaba, la media en t−1 de (institución, carrera, región), luego (institución, región), (institución) y (región). Origen del rezago en las filas 2019-2026: celda 91,18 %; inst_carrera_region 5,62 %; inst_region 3,09 %; region 0,08 %; inst 0,02 %. Las filas de 2018 quedan sin dato (sólo entrenan).
+
+**RMSE de CV en arcsinh (media de los 7 folds):** (i) sin contemporáneas: 0,2964; (ii) exógenas en t-1: 0,2963; Publicado (recalculado): 0,2949.
+
+#### A3 · Holdout 2026
+
+| Nivel | Variante | WAPE | Skill | RelMAE | ± 10 % | Error agregado |
+|---|---:|---:|---:|---:|---:|---:|
+| N1 Nacional | Persistencia | 2,60 % | +0,00 % | 1,0000 | 100,00 % | −2,60 % |
+| N2 + Institución | Persistencia | 3,49 % | +0,00 % | 1,0000 | 92,45 % | −2,60 % |
+| N3 + Área | Persistencia | 4,89 % | +0,00 % | 1,0000 | 77,48 % | −2,60 % |
+| N4 + Región | Persistencia | 5,15 % | +0,00 % | 1,0000 | 74,34 % | −2,60 % |
+| N5 + Carrera | Persistencia | 8,63 % | +0,00 % | 1,0000 | 56,33 % | −2,60 % |
+| N6 + Condición | Persistencia | 10,65 % | +0,00 % | 1,0000 | 48,06 % | −2,60 % |
+| N7 + Género | Persistencia | 12,13 % | +0,00 % | 1,0000 | 41,81 % | −2,60 % |
+| N8 + Jornada | Persistencia | 12,91 % | +0,00 % | 1,0000 | 40,56 % | −2,60 % |
+| N1 Nacional | Publicado | 0,92 % | +87,55 % | 0,3529 | 100,00 % | +0,92 % |
+| N2 + Institución | Publicado | 2,60 % | +43,03 % | 0,7460 | 90,57 % | +0,92 % |
+| N3 + Área | Publicado | 4,30 % | +34,20 % | 0,8795 | 80,87 % | +0,92 % |
+| N4 + Región | Publicado | 4,68 % | +16,90 % | 0,9090 | 76,20 % | +0,92 % |
+| N5 + Carrera | Publicado | 8,24 % | +8,60 % | 0,9545 | 57,36 % | +0,92 % |
+| N6 + Condición | Publicado | 10,05 % | +11,25 % | 0,9436 | 49,33 % | +0,92 % |
+| N7 + Género | Publicado | 11,53 % | +5,09 % | 0,9508 | 42,62 % | +0,92 % |
+| N8 + Jornada | Publicado | 12,09 % | +14,20 % | 0,9363 | 41,59 % | +0,92 % |
+| N1 Nacional | (i) | 0,80 % | +90,58 % | 0,3069 | 100,00 % | +0,80 % |
+| N2 + Institución | (i) | 2,58 % | +45,29 % | 0,7382 | 86,79 % | +0,80 % |
+| N3 + Área | (i) | 4,34 % | +33,68 % | 0,8871 | 80,39 % | +0,80 % |
+| N4 + Región | (i) | 4,75 % | +15,57 % | 0,9216 | 75,58 % | +0,80 % |
+| N5 + Carrera | (i) | 8,28 % | +10,42 % | 0,9592 | 57,50 % | +0,80 % |
+| N6 + Condición | (i) | 10,04 % | +13,36 % | 0,9435 | 49,21 % | +0,80 % |
+| N7 + Género | (i) | 11,51 % | +6,73 % | 0,9487 | 42,99 % | +0,80 % |
+| N8 + Jornada | (i) | 12,09 % | +15,74 % | 0,9364 | 41,69 % | +0,80 % |
+| N1 Nacional | (ii) | 0,86 % | +89,02 % | 0,3314 | 100,00 % | +0,86 % |
+| N2 + Institución | (ii) | 2,69 % | +49,85 % | 0,7701 | 88,68 % | +0,86 % |
+| N3 + Área | (ii) | 4,20 % | +36,38 % | 0,8591 | 78,45 % | +0,86 % |
+| N4 + Región | (ii) | 4,65 % | +18,71 % | 0,9027 | 73,72 % | +0,86 % |
+| N5 + Carrera | (ii) | 8,26 % | +15,74 % | 0,9567 | 57,47 % | +0,86 % |
+| N6 + Condición | (ii) | 10,14 % | +14,48 % | 0,9526 | 49,06 % | +0,86 % |
+| N7 + Género | (ii) | 11,60 % | +10,41 % | 0,9563 | 42,77 % | +0,86 % |
+| N8 + Jornada | (ii) | 12,15 % | +18,87 % | 0,9413 | 41,45 % | +0,86 % |
+
+#### A3 · OOF 2019-2025
+
+| Nivel | Variante | WAPE | Skill | RelMAE | ± 10 % | Error agregado |
+|---|---:|---:|---:|---:|---:|---:|
+| N1 Nacional | Persistencia | 1,83 % | +0,00 % | 1,0000 | 100,00 % | −0,15 % |
+| N2 + Institución | Persistencia | 4,54 % | +0,00 % | 1,0000 | 80,30 % | −0,15 % |
+| N3 + Área | Persistencia | 6,31 % | +0,00 % | 1,0000 | 68,79 % | −0,15 % |
+| N4 + Región | Persistencia | 6,85 % | +0,00 % | 1,0000 | 59,04 % | −0,15 % |
+| N5 + Carrera | Persistencia | 10,34 % | +0,00 % | 1,0000 | 48,27 % | −0,15 % |
+| N6 + Condición | Persistencia | 12,75 % | +0,00 % | 1,0000 | 42,07 % | −0,15 % |
+| N7 + Género | Persistencia | 14,18 % | +0,00 % | 1,0000 | 37,81 % | −0,15 % |
+| N8 + Jornada | Persistencia | 14,90 % | +0,00 % | 1,0000 | 36,49 % | −0,15 % |
+| N1 Nacional | Publicado | 3,17 % | −186,69 % | 1,7276 | 100,00 % | +2,64 % |
+| N2 + Institución | Publicado | 4,71 % | +17,15 % | 1,0370 | 78,55 % | +2,64 % |
+| N3 + Área | Publicado | 6,17 % | +11,91 % | 0,9779 | 68,82 % | +2,64 % |
+| N4 + Región | Publicado | 6,72 % | −12,38 % | 0,9812 | 60,63 % | +2,64 % |
+| N5 + Carrera | Publicado | 9,93 % | −2,08 % | 0,9610 | 48,80 % | +2,64 % |
+| N6 + Condición | Publicado | 12,42 % | −3,76 % | 0,9738 | 41,93 % | +2,64 % |
+| N7 + Género | Publicado | 13,80 % | −2,90 % | 0,9732 | 37,51 % | +2,64 % |
+| N8 + Jornada | Publicado | 14,45 % | −2,73 % | 0,9696 | 36,27 % | +2,64 % |
+| N1 Nacional | (i) | 3,32 % | −218,13 % | 1,8108 | 100,00 % | +2,66 % |
+| N2 + Institución | (i) | 4,79 % | +14,06 % | 1,0548 | 77,81 % | +2,66 % |
+| N3 + Área | (i) | 6,27 % | +8,49 % | 0,9932 | 69,53 % | +2,66 % |
+| N4 + Región | (i) | 6,81 % | −15,12 % | 0,9945 | 60,33 % | +2,66 % |
+| N5 + Carrera | (i) | 10,01 % | −4,56 % | 0,9684 | 48,56 % | +2,66 % |
+| N6 + Condición | (i) | 12,51 % | −6,09 % | 0,9811 | 41,81 % | +2,66 % |
+| N7 + Género | (i) | 13,89 % | −5,65 % | 0,9795 | 37,49 % | +2,66 % |
+| N8 + Jornada | (i) | 14,54 % | −5,28 % | 0,9756 | 36,24 % | +2,66 % |
+| N1 Nacional | (ii) | 2,61 % | −92,34 % | 1,4214 | 100,00 % | +2,29 % |
+| N2 + Institución | (ii) | 4,35 % | +29,52 % | 0,9573 | 83,04 % | +2,29 % |
+| N3 + Área | (ii) | 5,98 % | +15,39 % | 0,9482 | 70,97 % | +2,29 % |
+| N4 + Región | (ii) | 6,49 % | −8,76 % | 0,9477 | 61,67 % | +2,29 % |
+| N5 + Carrera | (ii) | 9,85 % | −4,98 % | 0,9533 | 48,90 % | +2,29 % |
+| N6 + Condición | (ii) | 12,29 % | −5,33 % | 0,9639 | 41,99 % | +2,29 % |
+| N7 + Género | (ii) | 13,70 % | −6,20 % | 0,9661 | 37,78 % | +2,29 % |
+| N8 + Jornada | (ii) | 14,36 % | −6,90 % | 0,9632 | 36,47 % | +2,29 % |
+
+#### A3 · OOF 2019-2025 sin duplicados
+
+| Nivel | Variante | WAPE | Skill | RelMAE | ± 10 % | Error agregado |
+|---|---:|---:|---:|---:|---:|---:|
+| N1 Nacional | Persistencia | 1,82 % | +0,00 % | 1,0000 | 100,00 % | −0,16 % |
+| N2 + Institución | Persistencia | 4,54 % | +0,00 % | 1,0000 | 80,30 % | −0,16 % |
+| N8 + Jornada | Persistencia | 14,89 % | +0,00 % | 1,0000 | 36,49 % | −0,16 % |
+| N1 Nacional | Publicado | 3,17 % | −188,68 % | 1,7386 | 100,00 % | +2,65 % |
+| N2 + Institución | Publicado | 4,71 % | +17,03 % | 1,0366 | 78,55 % | +2,65 % |
+| N8 + Jornada | Publicado | 14,45 % | −2,96 % | 0,9700 | 36,27 % | +2,65 % |
+| N1 Nacional | (i) | 3,32 % | −219,90 % | 1,8223 | 100,00 % | +2,67 % |
+| N2 + Institución | (i) | 4,79 % | +14,03 % | 1,0531 | 77,81 % | +2,67 % |
+| N8 + Jornada | (i) | 14,54 % | −5,49 % | 0,9760 | 36,24 % | +2,67 % |
+| N1 Nacional | (ii) | 2,60 % | −93,01 % | 1,4278 | 100,00 % | +2,29 % |
+| N2 + Institución | (ii) | 4,34 % | +29,53 % | 0,9557 | 83,04 % | +2,29 % |
+| N8 + Jornada | (ii) | 14,35 % | −7,19 % | 0,9636 | 36,47 % | +2,29 % |
+
+**¿Empeora el holdout de forma material?** No. En la celda, el WAPE pasa de 12,0881 % a 12,0902 % en (i) (+0,0021 puntos) y a 12,1525 % en (ii) (+0,0644 puntos), ambos por debajo del umbral de 0,3 puntos.
+
+**Pronóstico 2027 informativo, NO congelado** (refit con 2018-2026 y las filas 2026 clonadas, como en el notebook; en (ii) las exógenas de 2027 son las observadas en 2026). La réplica del publicado da 761.053 frente a 761.058 congelado: la reconstrucción usa el rezago redondeado y difiere en el redondeo.
+
+| Variante | Total 2027 | Rótulo |
+|---|---:|---:|
+| Publicado (recalculado) | 761.053 | NO CONGELADA · sólo informativa |
+| (i) sin contemporáneas | 760.880 | NO CONGELADA · sólo informativa |
+| (ii) exógenas en t-1 | 755.071 | NO CONGELADA · sólo informativa |
+
+### A4 · Interval score de las bandas al 90 % (holdout 2026)
+
+**Método.** IS_α(l, u; y) = (u − l) + (2/α)(l − y)·1{y < l} + (2/α)(y − u)·1{y > u}, α = 0,10 (Gneiting y Raftery, 2007); MSIS = IS medio / MAE de la persistencia en los mismos grupos. Bandas: (P) publicadas, conformal estratificado por tamaño, calibrado con el OOF 2019-2025 con el código de v4 sin cambios; (r1) conformal sin estratos (un solo par de cuantiles: en la celda, sobre todos los residuos OOF; en cada nivel, sobre todos sus grupos); (r2) AutoETS al 90 % (en la celda, los de A1; en N2-N7, un AutoETS por nodo sobre la historia agregada del nodo). Se comparan sólo los grupos con las tres bandas; los excluidos son nodos con menos de 3 años de historia contigua para ETS.
+
+| Nivel | Banda | Grupos comunes / total | Cobertura | Ancho mediano | IS medio | MSIS |
+|---|---:|---:|---:|---:|---:|---:|
+| N2 + Institución | Publicadas (conformal estratificado) | 53 / 53 | 94,34 % | 2.143,8 | 3.009,7 | 6,1713 |
+| N2 + Institución | r1 · conformal sin estratos | 53 / 53 | 96,23 % | 3.885,8 | 5.296,9 | 10,8609 |
+| N2 + Institución | r2 · AutoETS 90 % | 53 / 53 | 94,34 % | 2.244,1 | 3.587,8 | 7,3565 |
+| N3 + Área | Publicadas (conformal estratificado) | 404 / 413 | 94,31 % | 301,2 | 516,8 | 5,8264 |
+| N3 + Área | r1 · conformal sin estratos | 404 / 413 | 95,79 % | 463,7 | 809,2 | 9,1232 |
+| N3 + Área | r2 · AutoETS 90 % | 404 / 413 | 91,09 % | 320,7 | 693,7 | 7,8210 |
+| N4 + Región | Publicadas (conformal estratificado) | 630 / 647 | 93,97 % | 203,0 | 363,8 | 6,0889 |
+| N4 + Región | r1 · conformal sin estratos | 630 / 647 | 96,35 % | 400,3 | 729,9 | 12,2181 |
+| N4 + Región | r2 · AutoETS 90 % | 630 / 647 | 90,32 % | 230,9 | 494,7 | 8,2801 |
+| N5 + Carrera | Publicadas (conformal estratificado) | 2.388 / 2.739 | 93,80 % | 100,4 | 159,9 | 6,9452 |
+| N5 + Carrera | r1 · conformal sin estratos | 2.388 / 2.739 | 95,14 % | 166,1 | 257,3 | 11,1747 |
+| N5 + Carrera | r2 · AutoETS 90 % | 2.388 / 2.739 | 89,74 % | 92,4 | 174,9 | 7,5936 |
+| N6 + Condición | Publicadas (conformal estratificado) | 4.036 / 4.798 | 94,77 % | 77,9 | 119,2 | 7,2726 |
+| N6 + Condición | r1 · conformal sin estratos | 4.036 / 4.798 | 95,91 % | 92,9 | 178,3 | 10,8773 |
+| N6 + Condición | r2 · AutoETS 90 % | 4.036 / 4.798 | 88,88 % | 58,9 | 123,0 | 7,5039 |
+| N7 + Género | Publicadas (conformal estratificado) | 6.839 / 8.390 | 94,82 % | 52,9 | 76,9 | 7,0523 |
+| N7 + Género | r1 · conformal sin estratos | 6.839 / 8.390 | 95,42 % | 53,4 | 105,5 | 9,6820 |
+| N7 + Género | r2 · AutoETS 90 % | 6.839 / 8.390 | 86,85 % | 36,2 | 77,9 | 7,1441 |
+| N8 + Jornada | Publicadas (conformal estratificado) | 7.943 / 9.069 | 93,71 % | 37,7 | 64,2 | 6,0844 |
+| N8 + Jornada | r1 · conformal sin estratos | 7.943 / 9.069 | 95,00 % | 48,1 | 94,6 | 8,9585 |
+| N8 + Jornada | r2 · AutoETS 90 % | 7.943 / 9.069 | 87,02 % | 34,4 | 70,8 | 6,7093 |
+
+En la celda, sobre las 9.069 celdas, la cobertura de las bandas publicadas es 92,35 % (B-02); en el subconjunto común con ETS (7.943 celdas) es la de la tabla.
+
+### A5 · Experimento limpio de target encoding
+
+**Método.** Cuatro brazos con el mismo CatBoost (best_params, semilla 42) y los mismos 7 folds (validación 2019-2025): {estimador m, ponderación sigmoide} × {con fuga, dentro del fold}. Estimador m: enc = (n·media + m·prior)/(n + m), m = 30, prior = media del target de ajuste (la fórmula de las `te_*`). Sigmoide: category_encoders 2.8.1 `TargetEncoder(smoothing=30, min_samples_leaf=20)` (el del modelo publicado). «Con fuga» = el codificador se ajusta una vez sobre todo el panel 2018-2026; «dentro del fold» = sólo con las filas de entrenamiento de cada fold. Sólo origen 2026 (corrida 2027): la Tabla 9 trae también el origen 2025 (v4), que no se repitió.
+
+| Codificador | RMSE CV con fuga | RMSE CV dentro del fold | Diferencia | Diferencia relativa |
+|---|---:|---:|---:|---:|
+| m | 0,2852 | 0,2938 | −0,0086 | −2,92 % |
+| sigmoide | 0,2838 | 0,2949 | −0,0110 | −3,74 % |
+| publicado: m con fuga vs sigmoide dentro del fold | 0,2852 | 0,2949 | −0,0096 | −3,26 % |
+
+Controles: el brazo sigmoide dentro del fold reproduce el RMSE de CV publicado (0,2949); el brazo m con fuga, el precalculado (0,2853 publicado). Las `te_*` del dataset no coinciden con el estimador m recalculado (diferencia máxima 0,0828; ver el punto 5 del inicio). El RMSE por fold está en `A5_te_rmse_por_fold.csv`.
+
+### A6 · Reconciliación jerárquica (holdout 2026, N1-N5)
+
+**Desvío del brief:** la jerarquía se trunca en N5. Los nodos inferiores son los agregados del CatBoost en N5 (la suma de sus celdas N8, es decir, el pronóstico publicado). Con las ~25.000 series de N1-N8, la matriz de covarianza densa de MinT no cabe en memoria; con N1-N5 son 3.853 nodos y 2.739 inferiores. Como se evalúa N1-N5, no cambia qué se evalúa. hierarchicalforecast 1.5.3.
+
+**Pronósticos base:** N5 = CatBoost agregado; N1-N4 = un AutoETS por nodo sobre la historia agregada del nodo (último valor = suma de los rezagos 2026). **Covarianza de MinT-shrink:** residuos de un paso de los años OOF 2019-2025 (CatBoost OOF agregado en N5; AutoETS de origen móvil en N1-N4), con NaN donde el nodo no existía.
+
+| Método | Nivel | WAPE | Skill | RelMAE | ± 10 % |
+|---|---:|---:|---:|---:|---:|
+| Base (ETS en N1-N4, CatBoost en N5) | N1 Nacional | 2,69 % | −7,56 % | 1,0371 | 100,00 % |
+| Base (ETS en N1-N4, CatBoost en N5) | N2 + Institución | 4,01 % | −17,38 % | 1,1495 | 86,79 % |
+| Base (ETS en N1-N4, CatBoost en N5) | N3 + Área | 5,75 % | −21,45 % | 1,1755 | 71,91 % |
+| Base (ETS en N1-N4, CatBoost en N5) | N4 + Región | 6,41 % | −51,06 % | 1,2439 | 66,15 % |
+| Base (ETS en N1-N4, CatBoost en N5) | N5 + Carrera | 8,24 % | +8,60 % | 0,9545 | 57,36 % |
+| BottomUp (publicado) | N1 Nacional | 0,92 % | +87,55 % | 0,3529 | 100,00 % |
+| BottomUp (publicado) | N2 + Institución | 2,60 % | +43,03 % | 0,7460 | 90,57 % |
+| BottomUp (publicado) | N3 + Área | 4,30 % | +34,20 % | 0,8795 | 80,87 % |
+| BottomUp (publicado) | N4 + Región | 4,68 % | +16,90 % | 0,9090 | 76,20 % |
+| BottomUp (publicado) | N5 + Carrera | 8,24 % | +8,60 % | 0,9545 | 57,36 % |
+| OLS | N1 Nacional | 2,69 % | −7,63 % | 1,0374 | 100,00 % |
+| OLS | N2 + Institución | 3,89 % | −11,29 % | 1,1135 | 90,57 % |
+| OLS | N3 + Área | 5,64 % | −19,47 % | 1,1537 | 69,98 % |
+| OLS | N4 + Región | 6,07 % | −29,01 % | 1,1784 | 65,38 % |
+| OLS | N5 + Carrera | 9,74 % | +1,69 % | 1,1285 | 49,95 % |
+| WLS estructural | N1 Nacional | 2,00 % | +40,54 % | 0,7711 | 100,00 % |
+| WLS estructural | N2 + Institución | 3,20 % | +26,76 % | 0,9171 | 94,34 % |
+| WLS estructural | N3 + Área | 4,79 % | +15,32 % | 0,9790 | 74,09 % |
+| WLS estructural | N4 + Región | 5,15 % | +14,11 % | 1,0004 | 71,41 % |
+| WLS estructural | N5 + Carrera | 9,00 % | +9,40 % | 1,0424 | 52,43 % |
+| MinT-shrink | N1 Nacional | 2,65 % | −3,91 % | 1,0194 | 100,00 % |
+| MinT-shrink | N2 + Institución | 3,41 % | +26,96 % | 0,9773 | 92,45 % |
+| MinT-shrink | N3 + Área | 5,16 % | +3,49 % | 1,0539 | 75,30 % |
+| MinT-shrink | N4 + Región | 5,66 % | −1,47 % | 1,0989 | 71,41 % |
+| MinT-shrink | N5 + Carrera | 10,84 % | −39,43 % | 1,2559 | 49,03 % |
+
+**¿Mejora MinT la frontera N4/N5?** No: el *bottom-up* publicado es el mejor en todos los niveles N1-N5, y MinT-shrink empeora N4 y N5. Salvedad: los ETS base de N1-N4 son débiles (peores que la persistencia), porque la composición de cada nodo cambia entre años; la reconciliación arrastra esa debilidad.
+
+### Versiones, tiempos y desvíos
+
+**Versiones:** python 3.13.9; sistema Windows-11-10.0.26300-SP0; numpy 2.3.5; pandas 2.3.3; scipy 1.16.3; sklearn 1.7.2; catboost 1.2.10; lightgbm 4.6.0; category_encoders 2.8.1; statsmodels 0.14.5; statsforecast 2.1.1; hierarchicalforecast 1.5.3; matplotlib 3.10.6. statsforecast y hierarchicalforecast se instalaron en un entorno aparte, sin modificar el entorno de la corrida 2027.
+
+**Tiempos totales:** A1 694 s; A3 265 s; A4 47 s; A5 248 s; A6 28 s; A2 < 1 min.
+
+**Desvíos del brief:**
+
+- A1: en 2019 ninguna serie llega a 3 observaciones; todos los métodos por serie son la persistencia ese año.
+- A1: el modelo global no incluye el nivel rezagado (log de la matrícula t−1), porque el brief pide sólo rezagos de la tasa; las predicciones se reconstruyen con el rezago publicado.
+- A2: se agregó la comparación directa CatBoost frente a modelo global (a′), no pedida.
+- A2 (b): la prueba de Nemenyi supone grupos independientes; con miles de grupos la CD es muy estrecha y la prueba es liberal.
+- A3: el pronóstico 2027 informativo de la variante publicada da 761.053 (no 761.058) por el redondeo del rezago en la réplica; no se regeneró nada congelado.
+- A4: la cobertura y la IS se calculan sobre los grupos con las tres bandas (ETS exige 3 años de historia del nodo).
+- A5: sólo el origen 2026 (corrida 2027); el origen 2025 de la Tabla 9 (v4) no se repitió.
+- A6: jerarquía truncada en N5 (ver la sección); base ETS en N1-N4.
+- General: el «real» del holdout es el winsorizado del panel (p1/p99 de la tasa), igual que en el paper.
+
+
+
+**Integridad:** las huellas SHA-256 de los 8 artefactos de `forecast_2027/SHA256SUMS.txt` se verificaron antes y después de los análisis: coinciden. No se modificó nada de lo que se congela.
