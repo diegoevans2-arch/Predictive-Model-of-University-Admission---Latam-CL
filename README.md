@@ -323,7 +323,6 @@ Predictive-Model-of-University-Admission---Latam-CL/
 │
 ├── 📂 Documents/
 │   ├── paper_modelo_matricula_chile_v4.pdf            # Paper v4 completo (PDF)
-│   ├── Predictive model of university admission.pdf   # PDF de v3, obsoleto (pendiente de eliminación)
 │   ├── DOCUMENTO_TECNICO_FUNCIONAL.md                 # Descripción funcional completa del pipeline
 │   ├── OFICIAL_GLOSARIO_MATRICULA_WEB_E.pdf           # Glosario oficial SIES
 │   ├── BaseINDICES-2005-2025_*.pdf                    # Documentación CNED
@@ -342,7 +341,6 @@ Predictive-Model-of-University-Admission---Latam-CL/
 │       │   ├── fig07_calibracion.png
 │       │   ├── fig08_backtesting_temporal_MONEY_FIGURE.png
 │       │   ├── fig09_forecast_2027_vs_baselines.png
-│       │   ├── fig09_validacion_forecast_2026.png     # nombre antiguo (pendiente de eliminación)
 │       │   ├── fig10_shap_top5_distribucion.png
 │       │   ├── fig11_shap_por_subgrupo.png
 │       │   └── fig12_caso_estudio_shap.png
@@ -490,7 +488,7 @@ El procedimiento automatizado clasifica 2020 y 2022 como shock de nivel, tambié
 | v4 · `modelo_final_20260813_1535` | agosto de 2026 | Llave del lag corregida, reestimado con ventana ≤2025, validado contra el real 2026 |
 | v3 · `modelo_final_20260617_0101` | junio de 2026 | Reemplazada. Su pronóstico, congelado antes de la publicación del SIES, dio _skill_ −8,0 % contra el real 2026 por el defecto de la llave del lag |
 
-El paper v3 (`paper_modelo_matricula_chile_v3_FINAL.md`) sigue disponible en el historial de este repositorio. El PDF `Documents/Predictive model of university admission.pdf` corresponde a v3 y **no** refleja las cifras vigentes; el PDF vigente es [`Documents/paper_modelo_matricula_chile_v4.pdf`](Documents/paper_modelo_matricula_chile_v4.pdf). La sección 5.1 del paper documenta qué cambió entre v3 y v4 y por qué.
+El paper v3 (`paper_modelo_matricula_chile_v3_FINAL.md`) sigue disponible en el historial de este repositorio. También queda en el historial el PDF de v3 (`Documents/Predictive model of university admission.pdf`, eliminado del árbol el 19-11-2026); el PDF vigente es [`Documents/paper_modelo_matricula_chile_v4.pdf`](Documents/paper_modelo_matricula_chile_v4.pdf). La sección 5.1 del paper documenta qué cambió entre v3 y v4 y por qué.
 
 ---
 

@@ -22,7 +22,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 
 | ID | Hallazgo | Severidad | Sección | Estado |
 |---|---|---|---|---|
-| H-01 | PDF enlazado es v3 (707.960) | Alta | A + B-09 | PDF v4 generado; falta `git rm` del v3 |
+| H-01 | PDF enlazado es v3 (707.960) | Alta | A + B-09 | Resuelto: PDF v4 publicado; v3 eliminado del árbol (B-09) |
 | H-02 | Congelamiento SHA-256 declarado como hecho; no existe | Alta | A + B-01 | README corregido; congelamiento pendiente |
 | H-03 | TL;DR: «toda predicción lleva intervalo al 90 %» | Alta | A + B-02 | Resuelto (§D): banda 2027 calibrada; cobertura 92,35 % en el holdout 2026; TL;DR y §5.9 con el rango del total |
 | H-25 | Cambios documentales sin commit ni push | Alta | B-00 | Commit hecho (19-11-2026); push pendiente de aprobación del autor |
@@ -40,7 +40,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-21 | El Resumen afirma algo sobre la literatura latinoamericana sin citarla | Media | C-01 | Pendiente |
 | H-26 | El paper sigue llamando «pre-registrado» al pronóstico 2027 | Media | C-03 | Pendiente |
 | H-05 | Conteo de fuentes inconsistente (10 / 7 + 4 / 7) | Baja | A + C-04 | README corregido; doc técnico pendiente |
-| H-08 | `fig09_validacion_forecast_2026.png` muestra el forecast 2027 | Baja | A + B-09 | Copia renombrada; falta `git rm` |
+| H-08 | `fig09_validacion_forecast_2026.png` muestra el forecast 2027 | Baja | A + B-09 | Resuelto: copia renombrada; nombre antiguo eliminado (B-09) |
 | H-10 | `.obsidian/` versionado, sin `.gitignore` | Baja | A + B-00/B-09 | `.gitignore` en la raíz; ignora `.obsidian/` completo (nunca estuvo versionado, no requiere `git rm --cached`) |
 | H-15 | Columna `confianza_%` (= 100 − WAPE) en las tablas | Baja | B-12 | Pendiente |
 | H-18 | Tablas top-15 sin la columna género | Baja | B-07 | Resuelto: columna `genero` agregada |
@@ -286,6 +286,12 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 - **Tablas top-15:** ahora incluyen la columna `genero` y la celda queda identificada completa. Las cifras no cambian.
 - **`origen_lag` en la exportación:** se agregó al código de exportación en la rama `v5-mejoras`. No se regeneró la tabla de predicciones de la corrida 2027, porque es un artefacto a congelar.
 - **Publicado:** `Documents/OUTPUTS_PAPER/tablas/tabla_peores_por_origen_lag.md` y un párrafo en el documento técnico §6.4.
+
+### B-09 · Limpieza con git — hecho (aprobado por el autor el 19-11-2026)
+- `git rm` del PDF de v3 (`Documents/Predictive model of university admission.pdf`) y de `fig09_validacion_forecast_2026.png`; ambos quedan en el historial. El dashboard de Hugging Face no referencia la fig09 antigua.
+- `.obsidian/` nunca estuvo versionado: el `.gitignore` de B-00 lo ignora completo (no hubo `git rm --cached`).
+- README: se quitaron las dos líneas «pendiente de eliminación» y se reescribió la nota de «Estado y versiones» para decir que el PDF de v3 sigue en el historial.
+- `git grep` ya no encuentra referencias a los archivos eliminados fuera de este documento, que los cita como registro de la revisión.
 
 ---
 
