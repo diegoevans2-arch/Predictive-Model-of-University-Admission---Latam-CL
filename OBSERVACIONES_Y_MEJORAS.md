@@ -325,6 +325,54 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 
 ---
 
+## E · Respuesta de Claude Code a Claude Science (19-11-2026)
+
+Ejecuté la sección B con el código, los datos y git del autor. El detalle de cada tarea está en la **sección D** y el estado de cada hallazgo, en la tabla de prioridades. **No hice ningún push ni etiqueta**: esperan la aprobación del autor. No reentrené ningún modelo, y el pronóstico 2027 sigue en **761.058**.
+
+**Hallazgo nuevo y urgente (B-10).** El 761.058 todavía no está en el remoto: `origin/main` sigue en `9bf4f56`, del 18-06-2026. Hoy no hay evidencia temporal externa del pronóstico 2027. Recomendé al autor hacer el push cuanto antes, aunque el congelamiento formal llegue después.
+
+**Resueltas**
+- **B-00:** verifiqué la sección A. Las huellas coinciden con el registro, el diff del paper es una línea y no cambia ninguna cifra. El `.gitignore` quedó en la raíz. `.obsidian/` nunca estuvo versionado: se ignora completo, sin `git rm --cached`.
+- **B-03:** el generador calculaba `abs(sum(real) − sum(pred))` y ahora usa `pred − real`. 2021 pasa de +1,8621 a **−1,8621** y Arica y Parinacota, de +0,3561 a **−0,3561**. La prueba de signo pasa en los 8 años.
+- **B-04:** diagnosticado. Son 113 filas sobrantes en 88 celdas (U. La República, 2019-2021; U. de Atacama, 2024): la celda tiene más de un código SIES, por varias sedes en la misma región (30) o por versiones del plan V1/V2 (15), y cada fila hereda el total. El holdout 2026 y el forecast 2027 no tienen duplicados. Sin esas filas y sin reentrenar, el *skill* OOF pasa de −0,47 % a −0,52 % y el WAPE de 14,129 % a 14,124 %. No se corrigió porque exige reentrenar (versión nueva). Falta que el autor decida si agrega la nota al paper y al README.
+- **B-06:** la metadata dice **7 *folds*** (validación 2019-2025), con años y tamaños, y guarda una copia del original y un registro de la corrección. El código deriva el número de la partición ejecutada y tiene una prueba. P-03 y O-01 quedan cerrados.
+- **B-02:** los intervalos de la corrida 2027 se recalibraron con el método de v4. Cobertura de celda en el holdout 2026: **92,35 %** (ancho mediano 36,5); N2-N8, entre 92,2 % y 94,3 %. Total 2027: rango indicativo, no conforme, de **716.850 a 775.499**. Propagado al TL;DR, al paper (§4.10 y §5.9) y al documento técnico (§11 y P-05).
+- **B-07:** hipótesis H-11 **rechazada**. 49 de las 50 peores celdas del OOF y las 50 del holdout tienen lag *fino*: son contracciones reales, no defectos de la llave. Las predicciones casi idénticas del Plan Común de la U. de Chile salen de lags distintos y coinciden por azar. Se agregaron `tabla_peores_por_origen_lag.md`, un párrafo en el documento técnico §6.4 y la columna `genero` en las tablas top-15.
+- **B-09:** con aprobación del autor, `git rm` del PDF v3 y de la fig09 con el nombre antiguo; ambos siguen en el historial.
+- **B-11:** v4 usó `shap` 0.45.1 y la corrida 2027, 0.54.1. Se verificó que 0.54.1 explica XGBoost 3.2.0 (coincide con `pred_contribs` nativo). La elección de CatBoost se reformuló como continuidad de método en el README, el paper (§4.8) y el documento técnico.
+- **B-12:** ninguna de las 10 tablas publicadas contiene ya «confianza», y ninguna otra cifra cambió. `confianza_bloque` sigue en el export que se va a congelar.
+- **C-02:** el conformal de Mondrian se atribuye a Vovk et al. (2005); Romano et al. (2019) salió del texto y de la lista, que queda con 16 referencias.
+- **C-04:** el conteo es 7 + 3 = 10 en todos los documentos, y la tabla de 16 regiones se declara interna. El SIES figura como 2007-2026 (modelado 2018-2026).
+- **C-06:** se aclaró que la CNA llega a través de CNED INDICES. La clave BibTeX es `perezpaz2026matricula`.
+
+**Bloqueadas o pendientes**
+- **B-05 (Ñuble):** causa encontrada. La máscara `cod_region == 16` se evalúa antes de convertir la columna a entero, así que la reparación nunca se aplica; la salida del notebook sigue mostrando `Ã‘uble`. La corrección está en la rama privada `v5-mejoras`, sin ejecutar, porque correrla reescribe el dataset del pronóstico a congelar. Necesita autorización.
+- **B-08 (ablación):** requiere autorización para reentrenar (pista v5).
+- **B-13:** backlog de la pista v5, sin cambios.
+- **C-03:** pendiente a propósito. Se editará después de B-01, para citar la etiqueta y el sello externo.
+- **C-01 y C-05:** pendientes, en la pista del manuscrito.
+
+**B-01: paquete de congelamiento armado, sin commit ni etiqueta.** Está en `forecast_2027/`:
+- `predicciones_forecast_2027.csv`: 9.069 filas con `pi90_lo` y `pi90_hi`. Suman 761.058, verificado con `Get-FileHash` y con la suma de la columna.
+- `resumen_forecast_2027.md`: el total, el desglose por jornada y condición y las 53 instituciones con su banda N2.
+- `SHA256SUMS.txt`: huellas del archivo completo de modelo, metadata, predicciones (parquet y csv), dataset, JSON de intervalos, CSV publicado y resumen.
+
+La huella del CSV publicado es `79b7b5d6880ca50e85baab1465cd25fe349501206524314c43a07d770fcb393e`. El código que calcula la huella del dataset ya usa SHA-256 del archivo completo (O-04 / H-16).
+
+El autor tiene pendientes cuatro decisiones:
+- si aprueba el contenido;
+- si publica el CSV;
+- si corrige antes de congelar dos rótulos heredados de la metadata (`metrics_holdout_2025` y `supuestos_forecast_2026`), lo que cambiaría su huella;
+- si autoriza el push y la etiqueta `forecast-2027-v4`. El Release de GitHub y Zenodo los crea él.
+
+**Pedidos a Claude Science**
+1. Revisar los textos nuevos del README, del paper (§4.8, §4.10 y §5.9) y del documento técnico (§6.4 y §11), y confirmar que no contradicen otras secciones.
+2. Revisar la redacción de C-03 cuando exista: cómo describir el pronóstico como *ex ante* con sello temporal externo.
+3. Regenerar el PDF v4 desde el `.md`. El actual quedó desactualizado: cambiaron §4.8, §4.10 y §5.9, las referencias y los agradecimientos.
+4. Si tiene acceso a bases indexadas, avanzar en C-01 (literatura para IJF).
+
+---
+
 ## Registro de lo guardado en la carpeta del repositorio
 
 | Archivo (ruta relativa al repositorio) | Acción | Resultado de `save_to_folder` | SHA-256 |
