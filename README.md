@@ -422,7 +422,7 @@ El procedimiento automatizado clasifica 2020 y 2022 como shock de nivel, tambié
 - **El baseline de detección de shocks incluye el año de holdout** (2026 en la corrida 2027). La contaminación es mínima, pero real.
 - **Cobertura**: sólo universidades (62 instituciones, unas 759.000 matrículas de pregrado en 2026). Dentro del subsector, el modelo cubre el 95,09 % de la matrícula; quedan fuera los programas nuevos y los de menos de 10 matriculados.
 - **Ñuble sin datos institucionales (P-02).** La reparación del nombre de Ñuble no surte efecto antes de las uniones: sus 3.474 filas del SIES (2,73 % del universo) entran sin código de región, de modo que docentes e inmuebles caen a la mediana global y los aranceles se imputan por la cascada. El PIB sí se corrige después. Se mantiene sin corregir para no cambiar la metodología publicada; la corrección será una versión metodológica nueva.
-- **Metadata de validación (P-03).** La metadata de la corrida registra cinco _folds_, pero se ejecutaron siete (validación 2019-2025). Es un defecto de trazabilidad: no altera las cifras.
+- **Metadata de validación (P-03, corregida).** La metadata de la corrida registraba cinco _folds_, pero se ejecutaron siete (validación 2019-2025). Se corrigió el 19-11-2026, antes del congelamiento; era un defecto de trazabilidad y no alteraba las cifras.
 - **Pronóstico 2027 sin banda ni congelamiento formal (P-05, P-01).** Los intervalos conformes de la corrida 2027 no se han recalibrado y la huella SHA-256 con etiqueta publicada sigue pendiente (ver [Pronóstico 2027](#-pronóstico-2027-pre-registrado)).
 - **Regiones pequeñas**: el desempeño cae en Aysén (WAPE OOF 25,4 %) y Tarapacá (18,6 %).
 - **Imputación extensa**: el 70,9 % de las filas tiene al menos una variable imputada.

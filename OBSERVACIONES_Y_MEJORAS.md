@@ -31,7 +31,7 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-04 | *Skill score* no definido en el README | Media | A | Aplicado |
 | H-06 | Signo del error 2021 distinto entre tablas | Media | B-03 | Resuelto: el generador tomaba `abs()`; ahora es pred − real. 2021 = −1,8621 y Arica y Parinacota = −0,3561; prueba de signo OK en los 8 años |
 | H-07 | N8 OOF = 73.349 grupos vs 73.462 filas | Media | B-04 | Diagnosticado (§D): 113 filas duplicadas por sedes o versiones del plan; 2026 y 2027 sin duplicados. Corrección = versión nueva; nota al paper pendiente de decisión |
-| H-09 | P-02 (Ñuble) y P-03 (metadata) ausentes de las Limitaciones | Media | A + B-05/B-06 | README corregido; correcciones pendientes |
+| H-09 | P-02 (Ñuble) y P-03 (metadata) ausentes de las Limitaciones | Media | A + B-05/B-06 | README corregido; P-03 resuelto (B-06); P-02 (Ñuble) pendiente |
 | H-11 | Peores celdas compatibles con defectos residuales de la llave del lag | Media | B-07 | Pendiente |
 | H-13 | Historial git no auditado | Media | B-10 | Pendiente |
 | H-14 | Versión de SHAP inconsistente (0.45.1 vs 0.54.1) | Media | B-11 | Pendiente |
@@ -249,6 +249,12 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 - **Origen:** en el SIES crudo, la celda (institución × carrera × región × jornada) tiene más de un código de carrera: en 30 de las 45 celdas-jornada, por **varias sedes en la misma región**; en 15, por **versiones del plan** (sufijos V1, V2 del código). La consolidación conserva una fila por código y les fusiona el lag y la tasa calculados al grano de la celda, sin colapsarlas. Las mismas 113 filas están en el dataset de modelado (82.967 filas), es decir, también en el entrenamiento del modelo de la corrida 2027 (0,14 % de las filas con peso doble).
 - **Efecto medido en el OOF** (eliminando las filas sobrantes, sin reentrenar): n 73.462 → 73.349; WAPE 14,129 % → 14,124 %; WAPE naïve 14,632 % → 14,622 %; *skill* −0,47 % → −0,52 %; MASE 0,9656 → 0,9659. Matrícula real contada de más: 1.789 (2019), 546 (2020), 604 (2021) y 5.452 (2024).
 - **Por qué no se corrigió:** colapsar las filas cambia el grano del dataset y exige reentrenar, lo que movería el modelo de la corrida 2027 (§24.6). Queda como corrección de la versión metodológica siguiente. **Pendiente de decisión del autor:** agregar una nota al paper, al README y al documento técnico §8.1 que explique la diferencia con las cifras de arriba.
+
+### B-06 · Metadata de *folds* (P-03) — resuelto
+- **Causa:** el notebook de modelado escribía `"n_folds_cv": 5` como constante. Ahora el campo se deriva de la partición ejecutada (`len(folds_preview)`) y se agrega `folds_cv`, con los años de entrenamiento y de validación y los tamaños de cada *fold*.
+- **Metadata de `modelo_final_20261118_1345` reescrita** con un script que reconstruye la partición con la misma regla, verifica que el dataset sea el de la corrida (huella registrada) y guarda una copia del original. Resultado: `n_folds_cv` 5 → **7**, validación 2019-2025, con n de validación 9.424 / 9.321 / 9.230 / 9.161 / 9.038 / 9.176 / 9.043 (iguales a las filas OOF por año). Queda un registro de la corrección dentro de la propia metadata (`correcciones_metadata`).
+- **Prueba:** `n_folds_cv == len(folds_cv) == años de entrenamiento − 1` falla con la metadata original (5 ≠ 7) y pasa con la corregida.
+- **Para el congelamiento (B-01), pendiente de decisión del autor:** otros dos campos de la metadata arrastran rótulos de la corrida anterior: `metrics_holdout_2025` (el holdout es 2026; las métricas son las de 2026) y `supuestos_forecast_2026`, cuyo texto dice «matrículas reales 2025» y «universo 2025» (para el forecast 2027 corresponde 2026). No se tocaron.
 
 ---
 

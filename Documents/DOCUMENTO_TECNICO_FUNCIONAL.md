@@ -1398,7 +1398,7 @@ No medida.
 |---|---|---|---|
 | P-01 | **Congelar el pronóstico 2027** con huella SHA-256 y etiqueta publicada antes del 30-06-2027 | Protocolo | La primera prueba pre-registrada del pipeline corregido |
 | P-02 | Corregir la región de Ñuble antes de las uniones institucionales | Datos | Docentes, inmuebles y aranceles de Ñuble. Es una versión metodológica nueva |
-| P-03 | Corregir la metadata que registra cinco *folds* | Trazabilidad | Que la metadata diga lo ejecutado (siete) |
+| P-03 | ~~Corregir la metadata que registra cinco *folds*~~ **Resuelto el 19-11-2026**: la metadata registra siete *folds* con sus años, y el código los deriva de la partición ejecutada | Trazabilidad | Que la metadata diga lo ejecutado (siete) |
 | P-04 | Ablación de las tres variables con matrícula contemporánea | Método | Medir cuánto optimismo introducen |
 | P-05 | Recalibrar los intervalos conformes para la corrida 2027 | Método | Publicar el pronóstico 2027 con banda |
 | P-06 | Evaluar interacción jornada × año | Método | Inflexiones de las modalidades no diurnas |
@@ -1417,7 +1417,7 @@ No medida.
 
 | # | Hallazgo | Evidencia | Impacto | Sugerencia |
 |---|---|---|---|---|
-| O-01 | **La metadata registra cinco *folds*** | La partición impresa en la ejecución tiene siete (2019-2025) | Bajo: trazabilidad | P-03 |
+| O-01 | **La metadata registraba cinco *folds*** (cerrada el 19-11-2026) | La partición impresa en la ejecución tiene siete (2019-2025); la metadata ya lo dice | Bajo: trazabilidad | P-03 |
 | O-02 | **La desocupación 2025 promedia 10 de 12 trimestres y el control la acepta** | Conteo de períodos por región y año (§4.6) | Medio: el valor 2025 se arrastra a 2026 y 2027 | Exigir año completo o declararlo |
 | O-03 | ***fue_imputado* = 1 en el 100 % de 2026** | §5.8 | Desconocido: patrón ausente en años previos | Medir con una ablación |
 | O-04 | **La huella del dataset cubre sólo los primeros 8.192 bytes** | Metadata de la corrida | Bajo: no detecta cambios en filas posteriores | Huella del archivo completo |
