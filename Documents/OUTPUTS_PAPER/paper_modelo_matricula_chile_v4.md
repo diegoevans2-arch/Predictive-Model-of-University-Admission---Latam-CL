@@ -227,7 +227,7 @@ Para la cuantificación de incertidumbre este trabajo usa *conformal prediction*
 variante dividida o inductiva [@papadopoulos2002; @lei2018], que produce intervalos con garantía de
 cobertura marginal en muestra finita sin supuestos sobre la distribución del error. La estratificación
 por grupos —conocida como conformal de Mondrian— es la respuesta estándar a la heterocedasticidad
-[@romano2019; @angelopoulos2023].
+[@vovk2005; @angelopoulos2023].
 
 Para la evaluación se emplean el *skill score* respecto de un baseline de referencia, práctica
 estándar en meteorología operacional [@murphy1988], y el MASE [@hyndman2006], que normaliza el error
@@ -497,7 +497,7 @@ $$ k_{\text{hi}} = \left\lceil (n+1)(1 - \alpha/2) \right\rceil, \qquad k_{\text
 
 sobre los residuos ordenados. Tres decisiones de diseño:
 
-1. **Estratificación por tamaño** (conformal de Mondrian, [@romano2019]). El error es fuertemente
+1. **Estratificación por tamaño** (conformal de Mondrian, [@vovk2005]). El error es fuertemente
    heterocedástico: el cuantil superior cae de 0,796 en celdas de 10 a 13 estudiantes a 0,162 en las de
    168 o más. Un intervalo global sería simultáneamente inútil para las celdas grandes y falsamente
    estrecho para las pequeñas.
@@ -1123,7 +1123,8 @@ trazable a partir del documento técnico funcional y de las fuentes referenciada
 ## Agradecimientos
 
 A las instituciones que mantienen pública la información del sistema universitario chileno: MINEDUC
-(SIES), CNED, INE, Banco Central de Chile, CNA y mifuturo.cl. Sin esa apertura este trabajo no sería
+(SIES), CNED, INE, Banco Central de Chile y mifuturo.cl, y a la CNA, cuyos años de acreditación llegan a
+este trabajo a través de la base INDICES del CNED. Sin esa apertura este trabajo no sería
 posible.
 
 ## Conflicto de intereses
@@ -1160,7 +1161,6 @@ El autor declara no tener conflicto de intereses.
 
 [@prokhorenkova2018catboost] Prokhorenkova, L., Gusev, G., Vorobev, A., Dorogush, A. V., & Gulin, A. (2018). CatBoost: unbiased boosting with categorical features. *Advances in Neural Information Processing Systems*, 31.
 
-[@romano2019] Romano, Y., Patterson, E., & Candès, E. J. (2019). Conformalized Quantile Regression. *Advances in Neural Information Processing Systems*, 32.
 
 [@shwartz2022tabular] Shwartz-Ziv, R., & Armon, A. (2022). Tabular data: Deep learning is not all you need. *Information Fusion*, 81, 84–90.
 

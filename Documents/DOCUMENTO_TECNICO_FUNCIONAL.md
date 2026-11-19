@@ -26,7 +26,7 @@ author: Diego Evans Pérez Paz
 > **Artefacto**: pipeline v4 en cinco etapas: ingesta, consolidación, modelado, resultados y validación *out-of-time*
 > **Versión documentada**: re-estimación de noviembre de 2026 · corrida del 18-11-2026 · entrena con 2018-2025, evalúa a ciegas 2026 y pronostica 2027
 > **Función**: pronostica la matrícula de pregrado universitario del año siguiente en cada celda institución × carrera × región × jornada × género × condición
-> **Insumos**: SIES (matrícula) · CNED (aranceles y puntajes, cuerpo docente, inmuebles) · Banco Central (PIB regional) · INE (desocupación regional) · mifuturo.cl (retención) · 4 diccionarios de llaves
+> **Insumos**: SIES (matrícula) · CNED (aranceles y puntajes, cuerpo docente, inmuebles) · Banco Central (PIB regional) · INE (desocupación regional) · mifuturo.cl (retención) · 3 diccionarios de llaves (instituciones, carreras, sede-región) y una tabla interna de 16 regiones
 > **Salida**: dataset de modelado 82.967 × 52 · tabla de predicciones de 92.036 filas · modelo CatBoost con su metadata
 > **Resultado**: holdout 2026 con WAPE 12,09 % frente a 12,91 % de la persistencia (*skill* +14,20 %) · pronóstico 2027 de **761.058** matrículas (+2,80 %)
 > **Consumidor**: el [paper](OUTPUTS_PAPER/paper_modelo_matricula_chile_v4.md) y el [README](../README.md) del repositorio
@@ -138,10 +138,11 @@ La dificultad no está en el nivel: la matrícula es tan inercial que repetir el
 ## 3 · Arquitectura y linaje de datos 🔧
 
 ```
-┌─ FUENTES PÚBLICAS (7) + DICCIONARIOS (4) ─────────────────────────────┐
+┌─ FUENTES PÚBLICAS (7) + DICCIONARIOS (3) = 10 ────────────────────────┐
 │ SIES matrícula 2007-2026 · CNED aranceles, docentes, inmuebles        │
 │ Banco Central PIB regional · INE desocupación · mifuturo.cl retención │
-│ Diccionarios de instituciones, carreras, regiones y sedes             │
+│ Diccionarios de instituciones, carreras y sede-región (más una tabla  │
+│ interna de 16 regiones, que no es una fuente)                         │
 └───────────────────────────────────┬───────────────────────────────────┘
                                     ▼
 ┌─ A · INGESTA POR FUENTE (§4) ─────────────────────────────────────────┐
@@ -1196,8 +1197,10 @@ Cada corrida produce tres artefactos con la misma marca de fecha y hora. No se p
 | Carpeta | Contenido |
 |---|---|
 | [OUTPUTS_PAPER/figuras](OUTPUTS_PAPER/figuras/) | 12 figuras de la corrida vigente |
-| [OUTPUTS_PAPER/tablas](OUTPUTS_PAPER/tablas/) | 9 tablas en Markdown |
-| [OUTPUTS_PAPER](OUTPUTS_PAPER/paper_modelo_matricula_chile_v4.md) | El paper |
+| [OUTPUTS_PAPER/tablas](OUTPUTS_PAPER/tablas/) | 10 tablas en Markdown |
+| [OUTPUTS_PAPER](OUTPUTS_PAPER/paper_modelo_matricula_chile_v4.md) | El paper (Markdown) |
+| [paper_modelo_matricula_chile_v4.pdf](paper_modelo_matricula_chile_v4.pdf) | El paper (PDF) |
+| [OBSERVACIONES_Y_MEJORAS.md](../OBSERVACIONES_Y_MEJORAS.md) | Revisión de noviembre de 2026 y estado de sus tareas |
 
 ---
 

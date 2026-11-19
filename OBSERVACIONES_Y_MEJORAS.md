@@ -36,18 +36,18 @@ El repositorio está bien documentado. Las cifras de resultados del README son i
 | H-13 | Historial git no auditado | Media | B-10 | Hecho (§D): el 761.058 aún no está en el remoto (sólo en commits locales); sin etiquetas; v3 en `b355c67` |
 | H-14 | Versión de SHAP inconsistente (0.45.1 vs 0.54.1) | Media | B-11 | Resuelto: 0.45.1 = v4, 0.54.1 = corrida 2027; justificación reformulada como continuidad de método |
 | H-17 | Ablación de variables con matrícula contemporánea (P-04) | Media | B-08 | Bloqueado: requiere autorización para reentrenar (pista v5) |
-| H-20 | Conformal de Mondrian atribuido a Romano et al. (2019) | Media | C-02 | Pendiente |
+| H-20 | Conformal de Mondrian atribuido a Romano et al. (2019) | Media | C-02 | Resuelto: Vovk et al. (2005) |
 | H-21 | El Resumen afirma algo sobre la literatura latinoamericana sin citarla | Media | C-01 | Pendiente |
 | H-26 | El paper sigue llamando «pre-registrado» al pronóstico 2027 | Media | C-03 | Pendiente |
-| H-05 | Conteo de fuentes inconsistente (10 / 7 + 4 / 7) | Baja | A + C-04 | README corregido; doc técnico pendiente |
+| H-05 | Conteo de fuentes inconsistente (10 / 7 + 4 / 7) | Baja | A + C-04 | Resuelto: 7 + 3 = 10 en README, paper y doc técnico |
 | H-08 | `fig09_validacion_forecast_2026.png` muestra el forecast 2027 | Baja | A + B-09 | Resuelto: copia renombrada; nombre antiguo eliminado (B-09) |
 | H-10 | `.obsidian/` versionado, sin `.gitignore` | Baja | A + B-00/B-09 | `.gitignore` en la raíz; ignora `.obsidian/` completo (nunca estuvo versionado, no requiere `git rm --cached`) |
 | H-15 | Columna `confianza_%` (= 100 − WAPE) en las tablas | Baja | B-12 | Resuelto en las 10 tablas publicadas; `confianza_bloque` queda en el export congelable |
 | H-18 | Tablas top-15 sin la columna género | Baja | B-07 | Resuelto: columna `genero` agregada |
 | H-19 | Numeración de figuras: paper ≠ archivos; formato numérico de las figuras | Baja | C-05 | Pendiente |
-| H-22 | Agradecimientos mencionan a la CNA, que no figura entre las fuentes | Baja | C-06 | Pendiente |
-| H-23 | Clave BibTeX `evans2026…` con apellido Pérez Paz | Baja | C-06 | Pendiente |
-| H-24 | Doc técnico §16.3 desactualizado; periodo SIES 2018-2026 vs 2007-2026 | Baja | C-04 | Pendiente |
+| H-22 | Agradecimientos mencionan a la CNA, que no figura entre las fuentes | Baja | C-06 | Resuelto: aclarado que llega vía CNED INDICES |
+| H-23 | Clave BibTeX `evans2026…` con apellido Pérez Paz | Baja | C-06 | Resuelto: `perezpaz2026matricula` |
+| H-24 | Doc técnico §16.3 desactualizado; periodo SIES 2018-2026 vs 2007-2026 | Baja | C-04 | Resuelto (falta agregar `forecast_2027/` tras B-01) |
 | H-27 | Pendientes P-06 a P-09 y O-02 | Baja | B-13 | Backlog de la pista v5 (sin cambios) |
 
 ---
@@ -314,6 +314,14 @@ Cada tarea se ejecutó con el código y los datos del autor. Los commits del rep
 
 ### B-13 · Backlog P-06 a P-09 y O-02 — sin cambios (pista de mejoras)
 - P-06 (jornada × año), P-07 (emparejar por código: 31 celdas y 3.987 matrículas), P-08 (rango de iteraciones de CatBoost), P-09 (repetir con el INE completo) y O-02 (desocupación 2025 con 10 de 12 trimestres) cambian el dataset o el modelo. Quedan para la versión siguiente, junto con B-04 (colapsar los duplicados de la llave fina), B-05 (Ñuble) y B-08. La rama `v5-mejoras` del repositorio privado ya tiene las correcciones de código de B-05 y B-07, sin ejecutar.
+
+### C · Recomendaciones editoriales — aplicadas C-02, C-04 y C-06; pendientes C-01, C-03 y C-05
+- **C-02:** el conformal de Mondrian se atribuye ahora a Vovk et al. (2005) en §2.4 y §4.10. Romano et al. (2019) ya no se cita y se quitó de la lista de referencias, que queda con 16.
+- **C-04:** el documento técnico dice ahora «3 diccionarios de llaves (instituciones, carreras, sede-región) y una tabla interna de 16 regiones» en la ficha y en el diagrama, alineado con la Tabla 1 y el README (10 fuentes). §16.3 lista el PDF v4 y este documento; `forecast_2027/` se agregará al congelar. La tabla de fuentes del README dice «2007-2026 (modelado 2018-2026)» para el SIES.
+- **C-06:** los Agradecimientos explican que los años de acreditación de la CNA llegan a través de la base INDICES del CNED. La clave BibTeX pasa a `perezpaz2026matricula`.
+- **C-03 (pendiente, a propósito):** «pre-registrado» se cambiará después de B-01 para citar la etiqueta y el sello externo, así se edita una sola vez.
+- **C-01 (pendiente):** la revisión de literatura para IJF exige una búsqueda en bases indexadas; queda para la pista del manuscrito.
+- **C-05 (pendiente):** renumerar las figuras y regenerarlas con coma decimal (y fig09 sin la etiqueta encimada) toca el código de las figuras; queda para la pista del manuscrito.
 
 ---
 

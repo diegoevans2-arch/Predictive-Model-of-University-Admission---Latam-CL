@@ -238,7 +238,7 @@ Todas las fuentes son **públicas y oficiales**. Pueden descargarse directamente
 
 | Fuente | Organismo | Variables aportadas | Período | URL oficial |
 |---|---|---|---|---|
-| **Base de matrículas SIES** | MINEDUC | Matrícula por institución × carrera × jornada × género × condición × año | 2018-2026 | [mifuturo.cl/bases-de-datos](https://www.mifuturo.cl/bases-de-datos-de-matriculados/) |
+| **Base de matrículas SIES** | MINEDUC | Matrícula por institución × carrera × jornada × género × condición × año | 2007-2026 (modelado 2018-2026) | [mifuturo.cl/bases-de-datos](https://www.mifuturo.cl/bases-de-datos-de-matriculados/) |
 | **BaseINDICES CNED** | CNED | Aranceles, vacantes, puntajes de admisión, duración de carreras | 2005-2026 (2026 parcial) | [cned.cl/indices](https://www.cned.cl/bases-de-datos) |
 | **Cuerpo Docente CNED** | CNED | Número de docentes por grado académico y jornada | 2018-2025 | [cned.cl/indices](https://www.cned.cl/bases-de-datos) |
 | **Inmuebles e infraestructura CNED** | CNED | M² construidos, salas, oficinas por sede | 2018-2025 | [cned.cl/indices](https://www.cned.cl/bases-de-datos) |
@@ -499,7 +499,7 @@ Si utilizas la metodología, los hallazgos o las predicciones generadas, por fav
 ### BibTeX
 
 ```bibtex
-@misc{evans2026matricula,
+@misc{perezpaz2026matricula,
   title        = {Predicción de la dinámica de matrícula universitaria en Chile mediante
                   machine learning: validación out-of-time, intervalos conformes y una
                   advertencia sobre el baseline},
