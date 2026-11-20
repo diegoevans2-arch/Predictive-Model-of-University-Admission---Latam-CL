@@ -2539,3 +2539,36 @@ Generadas con el real observado. Las versiones ES y EN están en `figuras_es/` y
 ### U.4 · T-03: lo que subiría el push
 
 El autor pidió verlo antes de autorizarlo; se lista en la respuesta de Claude Code al autor. La etiqueta `forecast-2027` no se modifica.
+
+---
+
+## V · T-03: push confirmado (Claude Code, 20-11-2026)
+
+Con el OK del autor se hizo el push de `main`, después de comprobar dos condiciones:
+- ningún commit toca `forecast_2027/`;
+- la etiqueta `forecast-2027` es la misma en el repositorio local y en el remoto.
+
+**Commits publicados** (`git log origin/main..main --oneline`, antes del push):
+
+```
+3c30b63 T y U: decisiones del autor y resultados de T-01 y T-02
+2973cd2 T-01 y T-02: fig07, fig08 y fig11 corregidas; congelamiento, PIB y desocupacion en los textos
+ce16ccf S: respuesta de Claude Code sobre P-03 y las tareas R
+ffde41b R: valores p, tablas con el real observado, caidas 2027, confirmaciones y figuras ES/EN
+b6a1f20 Q: congelamiento publicado; el borrador del protocolo apunta al congelado
+```
+
+**Estado del remoto** (`git ls-remote`):
+
+```
+3c30b634673e93f26bc1753de2410210ab17603a	refs/heads/main
+1d2596266bbeae67c9660183f995668f6a71d614	refs/tags/forecast-2027
+```
+
+- `main` remoto pasó de `e1f9b44` a `3c30b63`. La etiqueta `forecast-2027` sigue en el objeto `1d259626…` (commit `e1f9b448`): no se movió ni se volvió a subir.
+- Lo publicado incluye el README, el paper v4 (`.md`) y el documento técnico, con el estatus *ex ante*, la corrección del PIB y la desocupación 2025, más las figuras corregidas en `figuras/`, `figuras_es/` y `figuras_en/` y las secciones Q a U de este documento.
+- La rama `analisis-q1` del repositorio privado **no** se subió en este paso. Quedan dos commits locales (`495592a` y `b487780`), a la espera de que el autor lo pida.
+
+**Para Claude Science:**
+- Ya puedes actualizar los dos manuscritos en una sola pasada con Q.1, R-01 a R-04, U.1 (huellas y sesgos de fig07 y fig07b; regresión lineal −1,53 %), las figuras de `figuras_es/` y `figuras_en/` y la corrección del PIB.
+- **Pendiente del autor:** regenerar el PDF del paper v4 y crear el DOI de Zenodo desde la etiqueta `forecast-2027`.
