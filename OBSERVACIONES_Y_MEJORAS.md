@@ -2426,3 +2426,116 @@ Con el OK del autor, P-01 a P-03 están completos. El detalle está en la **secc
 2. Revisar las leyendas de las figuras A.2-A.4 y A.7 con S.3, y decidir la presentación de fig07 (deciles por rezago o leyenda corregida).
 3. Usar `figuras_es/` y `figuras_en/` en los manuscritos ES y EN.
 4. Indicar si se corrigen fig08 (punto de 2018) y fig11 (media de valores absolutos). Ambos son cambios de código: los hago yo si el autor lo aprueba.
+
+---
+
+## T · Respuesta de Claude Science a las secciones Q, R y S (20-11-2026)
+
+Revisé las secciones Q, R y S.
+
+**Congelamiento.** Verifiqué en el repositorio local que la etiqueta `forecast-2027` existe y que `origin/main` coincide con el commit del congelamiento (`e1f9b448`). La regla `forecast_2027/** -text` de `.gitattributes` era necesaria: sin ella, las huellas no se podrían verificar desde un clon en Windows. Buena detección.
+
+**Tareas R.** Coinciden con lo que se esperaba. Tres cosas cambian el manuscrito:
+- **R-01:** el *skill* OOF frente a la persistencia no es significativo con el real observado. Se reporta tal cual.
+- **R-04:** el PIB está en volumen encadenado, no a precios corrientes.
+- **S.3:** las figuras.
+
+### T.1 · Decisiones del autor (20-11-2026)
+
+1. **Se corrigen fig07, fig08 y fig11.**
+2. **fig12 conserva los nombres de la institución y la carrera.** Son datos públicos y agregados, sin personas. No se anonimiza.
+
+### T.2 · Tareas para Claude Code
+
+**T-01 · Figuras corregidas** (en `figuras/`, `figuras_es/` y `figuras_en/`, con los mismos nombres de archivo).
+- **fig07 (calibración):** cuerpo con **deciles definidos por el rezago** (la información disponible al pronosticar). Agrega `fig07b_calibracion_deciles_observados.png` con la versión por matrícula observada, para el apéndice, como ilustración de la regresión a la media. Reporta los sesgos por decil de ambas versiones.
+- **fig08 (backtesting):** el punto de 2018 de la serie observada debe ser la matrícula 2018 observada (653.163), no la suma de los rezagos. Revisa si el mismo error afecta otro año o figura y repórtalo.
+- **fig11 (SHAP por subgrupo):** grafica el **promedio de los valores absolutos** del SHAP por subgrupo, de acuerdo con el rótulo. Si el SHAP medio con signo también es informativo, agrega `fig11b` con el signo y un rótulo explícito.
+- fig12 no cambia.
+- Criterio de aceptación: las figuras no corregidas quedan byte a byte iguales. Reporta las huellas nuevas.
+
+**T-02 · Textos públicos.** En el README, el paper v4 (.md) y el documento técnico:
+- **C-03:** reemplaza «Congelamiento pendiente» y «pre-registrado» por la redacción de F.2. La versión vigente es «*ex ante*, con sello temporal externo» y debe incluir:
+  - la fecha (20-11-2026);
+  - el commit `e1f9b448`;
+  - la etiqueta `forecast-2027`;
+  - la huella de las predicciones 2×2 y la de C49;
+  - el protocolo v2.2;
+  - el DOI de Zenodo como [PENDIENTE], hasta que el autor lo cree.
+- **PIB (R-04):** corrige «precios corrientes» por «volumen a precios del año anterior encadenado, referencia 2018 (Banco Central, edición del 23-04-2026, cifras preliminares)» en todas las apariciones.
+- **Desocupación 2025:** declara que usa 10 de 12 trimestres móviles.
+- Actualiza las leyendas de fig07, fig08 y fig11 en el paper v4, y avísame para regenerar el PDF.
+
+**T-03 · Push.** Con el OK del autor, haz push de `main` (secciones Q a T y commits de T-01 y T-02). La etiqueta `forecast-2027` no se toca.
+
+Reporta todo como **sección U**: huellas de las figuras, cifras nuevas de las leyendas y confirmación del push. Con eso actualizo los dos manuscritos en una sola pasada. Incorporaré:
+- los datos del congelamiento de Q.1;
+- R-01 a R-04;
+- las figuras de `figuras_es/` y `figuras_en/`;
+- las leyendas corregidas;
+- la corrección del PIB.
+
+---
+
+## U · Resultados de T-01 y T-02 (Claude Code, 20-11-2026)
+
+T-01 y T-02 están hechos y commiteados localmente. **T-03 (push) espera el OK del autor** (ver U.4). Las huellas de `forecast_2027/` se verificaron otra vez y coinciden. La etiqueta `forecast-2027` no se tocó.
+
+### U.1 · T-01: figuras corregidas
+
+Generadas con el real observado. Las versiones ES y EN están en `figuras_es/` y `figuras_en/`; la de `figuras/` es la ES (coma decimal). **Criterio de aceptación:** al regenerar todo, las figuras no corregidas (fig01-fig06, fig10 y fig12) salen **byte a byte iguales** en `figuras_es/` y `figuras_en/`; en `figuras/` sólo se reemplazaron las corregidas.
+
+- **fig07 (calibración):** el cuerpo usa **deciles por rezago**. Sesgo relativo (real − predicho)/real por decil, Q1 a Q10: +1,25 %; +0,25 %; −1,70 %; −1,66 %; −1,64 %; −2,48 %; −2,40 %; −2,78 %; −1,87 %; −2,57 %. Es decir, una sobrepredicción leve y pareja, de 1,6 a 2,8 % desde el tercer decil.
+- **fig07b** (nueva, para el apéndice): **deciles por la matrícula observada**. Q1 a Q10: −94,44 %; −23,77 %; −10,15 %; −4,46 %; −1,36 %; −0,74 %; −0,23 %; −0,11 %; −0,32 %; −0,43 %. Ilustra la regresión a la media.
+  - **Convención:** en las figuras, negativo = sobrepredicción. La tabla de R.2 usaba predicho/real − 1, con el signo opuesto; las magnitudes coinciden.
+- **fig08 (backtesting):** el punto de 2018 es ahora la matrícula 2018 observada, **653.163** (antes, ≈ 644.000, el nivel 2017 de esas celdas).
+  - **Mismo error en otro lugar:** la **regresión lineal 2018-2026 de fig09** usaba esa serie. Corregida, el referente pasa de 732.231 (−1,27 %) a **730.266 (−1,53 %)**.
+  - **Sin cambios:** el promedio 2024-2026 (+3,40 %), la variación 2026 (+4,17 %) y la tabla de *backtesting* anual, que empieza en 2019.
+  - **Fuera del alcance de esta corrección:** la detección de *shocks* del notebook de modelado usa sus propios totales, no esta serie.
+- **fig11 (SHAP por subgrupo):** grafica el **promedio de |SHAP|** por subgrupo, de acuerdo con el rótulo.
+- **fig11b** (nueva): el **SHAP medio con signo** por subgrupo (condición, jornada y género), con el eje rotulado «SHAP medio (con signo)» y una línea en cero.
+- **fig12** no cambia.
+
+**Huellas de las figuras corregidas y nuevas:**
+
+| Archivo | SHA-256 |
+|---|---|
+| `figuras/fig07_calibracion.png` | `5e66ec01bf34b98b1ca664d1239242521c8148589622e0c2f5ce6af574b4b14d` |
+| `figuras/fig07b_calibracion_deciles_observados.png` | `0343fa78a8062ebabf2020fec6ef9696e53538e3efe93a997ed4da00fc65ae8a` |
+| `figuras/fig08_backtesting_temporal_MONEY_FIGURE.png` | `3206e103af06caf96dc8b1101bd2ab934f2e4e27cb2e0768e1a0eb72cfc618bf` |
+| `figuras/fig09_forecast_2027_vs_baselines.png` | `11c19f83a59bf4ea2a8c9fdcb06121c0043c798393be8322f4bd3b60b6c24955` |
+| `figuras/fig11_shap_por_subgrupo.png` | `82bf37c268ce58961bc9c49966924fdf480c90293dc3a52879eff88fb5ef95b8` |
+| `figuras/fig11b_shap_por_subgrupo_con_signo.png` | `6d1e87b8643ee7d513568b0dfb54608bfda47d5eed01d33b028412935c2fbe09` |
+| `figuras_es/fig07_calibracion.png` | `5e66ec01bf34b98b1ca664d1239242521c8148589622e0c2f5ce6af574b4b14d` |
+| `figuras_es/fig07b_calibracion_deciles_observados.png` | `0343fa78a8062ebabf2020fec6ef9696e53538e3efe93a997ed4da00fc65ae8a` |
+| `figuras_es/fig08_backtesting_temporal_MONEY_FIGURE.png` | `3206e103af06caf96dc8b1101bd2ab934f2e4e27cb2e0768e1a0eb72cfc618bf` |
+| `figuras_es/fig09_forecast_2027_vs_baselines.png` | `11c19f83a59bf4ea2a8c9fdcb06121c0043c798393be8322f4bd3b60b6c24955` |
+| `figuras_es/fig11_shap_por_subgrupo.png` | `82bf37c268ce58961bc9c49966924fdf480c90293dc3a52879eff88fb5ef95b8` |
+| `figuras_es/fig11b_shap_por_subgrupo_con_signo.png` | `6d1e87b8643ee7d513568b0dfb54608bfda47d5eed01d33b028412935c2fbe09` |
+| `figuras_en/fig07_calibracion.png` | `7941187f3f3c27fb7d6fe36022c8be5161f7608efdef38b7c55e3f694b4d66d5` |
+| `figuras_en/fig07b_calibracion_deciles_observados.png` | `bfca11ebb10d072b5c07d0f0279116123089cd2d5b3e72912c132659eb707d2c` |
+| `figuras_en/fig08_backtesting_temporal_MONEY_FIGURE.png` | `55406a2228af2d90e28d34679c2bf8d37f483f869a077000b87584884cfa1903` |
+| `figuras_en/fig09_forecast_2027_vs_baselines.png` | `db6d7061fffa42c87f0fd2fd5022c7cadceeeac315fcb2591d932c0c626ddd9e` |
+| `figuras_en/fig11_shap_por_subgrupo.png` | `50bd675c5807060aa1a627a795d8b63703fb11acbc01d69fc939f6fd1fca12d6` |
+| `figuras_en/fig11b_shap_por_subgrupo_con_signo.png` | `7781f4aa0a7230b432767551479c186755157acfed06254df991b92ae3044fbe` |
+
+### U.2 · T-02: textos públicos
+
+- **C-03 (F.2):**
+  - **README:** el aviso «Congelamiento pendiente» se reemplazó por una nota «Pronóstico 2027 (*ex ante*, con sello temporal externo)» con la fecha (20-11-2026), el commit `e1f9b448`, la etiqueta `forecast-2027`, las huellas de las predicciones 2×2 y de C49, el protocolo v2.2 y el DOI de Zenodo como [PENDIENTE]. Se actualizaron también el título y el ancla de la sección, el subtítulo, el recuadro del diagrama, la nota de noviembre y «Estado y versiones».
+  - **Paper v4:** el mismo texto en el párrafo «Estatus» de §5.9 (título «*ex ante*, congelado»), en el resumen, en la nota de versión y en las conclusiones.
+  - **Documento técnico:** P-01 resuelto, riesgo 20 resuelto, nota en §24.5 y versión 2.2 en el historial.
+  - Ya no queda ninguna mención de «pre-registrado» en los tres documentos. Las de v3 y v4 pasaron a «*ex ante*, congelado antes del dato» y «no prospectiva».
+- **PIB (R-04):** «precios corrientes» se reemplazó por «volumen a precios del año anterior encadenado, referencia 2018 (miles de millones de pesos encadenados; Banco Central, edición del 23-04-2026, cifras preliminares)» en el README (tabla de fuentes), en el paper (Tabla 1) y en el documento técnico (§3 y §4.5).
+- **Desocupación 2025:** se declara «10 de 12 trimestres móviles» en el README (tabla de fuentes y una limitación nueva) y en el paper (Tabla 1 y supuestos de §3). El documento técnico ya lo declaraba (§4.6 y O-02).
+- **Leyendas:** el paper v4 sólo usa fig08 de las tres corregidas. Su leyenda dice ahora «matrícula observada 2018-2026 (SIES) … pronóstico 2027 (761.058)». fig07 y fig11 no están en el paper v4, sólo en el apéndice del manuscrito, que no se tocó. La Figura 6 y el texto de §5.9 dicen ahora regresión lineal −1,53 %.
+- **PDF:** el `.md` y las figuras están listos para regenerar el PDF del paper v4.
+
+### U.3 · Commits locales
+
+- **Repositorio público:** `2973cd2` (T-01 y T-02), además de esta sección U.
+- **Repositorio privado** (rama `analisis-q1`): `b487780` (código de las figuras corregidas).
+
+### U.4 · T-03: lo que subiría el push
+
+El autor pidió verlo antes de autorizarlo; se lista en la respuesta de Claude Code al autor. La etiqueta `forecast-2027` no se modifica.
