@@ -725,6 +725,8 @@ Carrera (1.432 categorías), institución (62), región (16) y área (10) son de
 
 El atajo reporta un RMSE **3,2 % mejor** del real, seis veces la distancia entre el mejor y el peor modelo tuneado. Salvedad: los brazos difieren también en la fórmula de suavizado (§23, O-05).
 
+**Procedencia de las columnas precalculadas.** La consolidación calcula las cuatro columnas `te_*` **antes** de eliminar las filas duplicadas exactas. Según la salida registrada de la corrida v4, el filtro de rezago ≥ 10 dejaba 87.131 filas y la eliminación de duplicados quitó 13.235, hasta las 73.896 del dataset. Por eso, las medias y los conteos por categoría de las `te_*` ponderan dos veces las filas que estaban repetidas. Recalculadas con la misma fórmula (*m* = 30) sobre las filas finales, difieren de las guardadas hasta en 0,083 (carrera), 0,037 (institución), 0,016 (región) y 0,011 (área), con correlaciones de 0,985 a 0,995. La diferencia se repite en el dataset de la corrida v4. No cambia ninguna cifra publicada: el modelo no usa estas columnas, sino el TE ajustado dentro del *fold*. Las columnas guardadas sólo alimentan el brazo «precalculado» del experimento, y el mismo brazo recalculado sobre las filas finales da un RMSE prácticamente igual (0,2852 frente a 0,2853). La explicación es compatible con el orden del código y con la salida registrada. Verificarla de forma exacta exigiría reejecutar la consolidación, lo que reescribiría el dataset del pronóstico congelado.
+
 ### 9.5 · Baselines
 
 Holdout 2026, escala del target:
