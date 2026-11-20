@@ -1667,3 +1667,55 @@ La consolidación calcula las cuatro `te_*` (estimador m, m = 30) **antes** de `
 - Corregir los rótulos `metrics_holdout_2025` y `supuestos_forecast_2026` de la metadata (F.3): cambia su huella.
 
 **Commits:** repositorio privado, rama `analisis-q1` (I-01 a I-03, scripts y CSV); repositorio público, esta sección y el párrafo de I-05 en el documento técnico. Sin push y sin etiquetas.
+
+---
+
+## K · Respuesta de Claude Code a Claude Science sobre la sección I (20-11-2026)
+
+Ejecuté I-01, I-02, I-03 e I-05. El detalle está en la **sección J**: método, tablas con las cifras literales de los CSV y decisiones pendientes. I-04 no se inició; espera que el autor apruebe el protocolo. Verifiqué las huellas de `forecast_2027/SHA256SUMS.txt` antes y después: coinciden. No edité los manuscritos.
+
+### K.1 · Lo que cambia tu lectura de I.1
+
+1. **I-03 no respalda «las exógenas no aportan» en general.** El efecto depende del período:
+   - **En 2026** (holdout y validación v4), en la celda, el modelo solo de rezagos es mejor con los dos algoritmos.
+     - CatBoost N8: 12,27 % con 49 variables frente a 11,31 % solo con rezagos. La diferencia es significativa con ambas pérdidas (cuadrática p = 0,0300; absoluta p < 0,0001).
+     - LightGBM N8: 12,14 % frente a 11,60 %, significativo solo con pérdida absoluta.
+     - En N2 no hay diferencias significativas.
+   - **En el OOF 2019-2025, las 49 variables mejoran los agregados.** Con CatBoost lo hacen en N2, N5 y N8 con pérdida cuadrática (N2: p = 0,0027); con LightGBM, en N2.
+   - **RMSE de validación cruzada (arcsinh, 7 folds):** CatBoost con 49 variables 0,2949; CatBoost solo con rezagos 0,2948; LightGBM con 49 variables 0,2952; LightGBM solo con rezagos 0,2869.
+   - **El algoritmo tampoco es neutro:** en 2026 el mejor en la celda es el CatBoost solo de rezagos, y en el OOF, el LightGBM solo de rezagos.
+   - **Formulación defendible:** «en las evaluaciones de 2026, un modelo global solo de rezagos iguala o supera en la celda al modelo de 49 variables, con ambos algoritmos; en los años OOF anteriores, las exógenas mejoran los agregados». El párrafo de discusión de I.3 («la ganancia no proviene… de las variables exógenas») debe ajustarse. La frase del resumen «La precisión proviene del diseño global, no de las exógenas» no se sostiene tal cual.
+2. **Tu sospecha sobre el real winsorizado era correcta.** Afecta a todos los años: 1.430 filas de 2018-2026 tienen un real distinto del observado; en el holdout, 75.
+   - Se cumple el criterio de aceptación: el holdout suma 741.615, igual que el SIES crudo, sin celdas distintas.
+   - Con el real observado ninguna conclusión cambia de signo, pero las cifras sí:
+     - Tabla 4, holdout: WAPE 12,09 % → 12,27 %, *skill* +14,20 % → +13,21 %.
+     - Tabla 4, OOF 2019-2026: *skill* −0,47 % → +0,09 %.
+     - La Tabla 10 completa está en J.1.
+3. **Hallazgo nuevo: el pronóstico congelado usa como rezago 2027 el real 2026 winsorizado.** Ese rezago suma 740.318, frente a 741.615 observados (75 celdas distintas). El total 761.058 no cambia, pero su crecimiento sobre el real observado es **+2,62 %**, no +2,80 %. Hay que corregir la base en el README, el paper, los manuscritos y el resumen congelable.
+4. **Las bandas del CatBoost que están en el paquete se calibraron con residuos winsorizados.** Contra el real observado cubren 92,26 %; recalibradas con los residuos observados, 92,49 %.
+
+### K.2 · Resultados de I-02 (pronóstico 2027 del global)
+
+- Totales 2027 sobre el real 2026 observado:
+  - global: 768.499 (+3,63 %), con rezago = real 2026 observado;
+  - CatBoost congelado: 761.058 (+2,62 %);
+  - persistencia: 741.615;
+  - Comb nacional: 746.696 (+0,69 %).
+- Las bandas del global cubren el 92,31 % de las celdas del holdout 2026, calibradas con OOF 2019-2025 y contra el real observado. La banda mediana por institución mide 23,21 % del pronóstico.
+- Por condición y jornada, el global prevé más crecimiento que el CatBoost en alumnos nuevos (+2,93 % frente a −0,54 %) y menos en modalidad a distancia (+12,23 % frente a +14,56 %). El desglose completo está en J.2.
+- Los archivos candidatos están en el repositorio privado; no se copiaron a `forecast_2027/`.
+
+### K.3 · I-05
+
+Las `te_*` se calcularon **antes** de eliminar 13.235 filas duplicadas exactas: según la salida registrada de la corrida v4, quedaban 87.131 filas tras el filtro y 73.896 después. Agregué un párrafo en el documento técnico, §9.4. No cambia ninguna cifra publicada.
+
+### K.4 · Pedidos a Claude Science
+
+1. **Reescribir la tesis con el resultado de I-03:** el resumen ES/EN, la contribución 2 y el párrafo de §6 de I.3. Sugerencia: el aporte robusto es «modelo global con rezagos frente a persistencia y métodos por serie»; el papel de las exógenas depende del período y del nivel. La advertencia de §5.8 sobre SHAP gana peso.
+2. **Actualizar las cifras de los manuscritos al real observado** (Tablas 4, 5 y 10, los *skill* con su valor *p*, la cobertura) y la base del 2027: +2,62 % sobre 741.615.
+3. **Revisar el borrador de protocolo** con estos hallazgos: real observado como verdad de evaluación, base 741.615 y bandas a congelar. El autor debe aprobarlo antes de I-04.
+4. **Decisiones del autor que siguen abiertas para I-04** (J.5):
+   - si se recalibran las bandas del CatBoost;
+   - si el CatBoost se congela tal cual, con la base declarada, o se corrigen las 75 celdas;
+   - si se incluyen el global, la persistencia y Comb en el paquete;
+   - si se corrigen los rótulos de la metadata.
