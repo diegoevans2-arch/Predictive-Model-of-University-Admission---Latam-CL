@@ -2108,3 +2108,281 @@ e1f9b448e70d70ccef5e51973ea216fa58dd61d4	refs/tags/forecast-2027^{}
 
 - **Commit de C-03 (F.2)** en el README y el paper v4: reemplazar «Congelamiento pendiente» por la fecha, el commit, la etiqueta y la huella. Después, el autor regenera el PDF. Se hará cuando el autor lo pida, sin push salvo indicación.
 - **Depósito en Zenodo** desde la etiqueta `forecast-2027`, a cargo del autor.
+
+---
+
+## R · Tareas R-01 a R-05 (Claude Code, 20-11-2026)
+
+*Hecho después del congelamiento y del push (sección Q). Rama `analisis-q1` del repositorio privado; cifras generadas desde los CSV de `resultados_q1/tablas/` (prefijos `R0`, `A*_real_observado`). Todo contra la matrícula observada del SIES. No se tocaron `forecast_2027/`, `Documents/SUBMISSION_IJF/` ni los manuscritos. Sin push.*
+
+### R.1 · R-01: valores *p*, CatBoost frente a persistencia (real observado)
+
+DM entre grupos con error estándar robusto por clúster de institución; DM < 0 favorece al CatBoost. En el OOF el año entra en la llave de cada grupo (como la cascada publicada) y los clústeres son las 60 instituciones de todo el período; en N8 las 113 filas repetidas se suman en su celda (73.349 grupos), por eso el *skill* de N8 (+0,20 %) difiere del calculado por fila (+0,09 %).
+
+| Conjunto | Nivel | Grupos | Skill | RelMAE | DM cuadr. | p | DM abs. | p  | Clústeres |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| OOF 2019-2026 (origen 2026) | N2 + Institución | 454 | +25,41 % | 0,9786 | −0,83 | 0,4092 | −0,24 | 0,8110 | 60 |
+| OOF 2019-2026 (origen 2026) | N3 + Área | 3.396 | +15,12 % | 0,9594 | −0,65 | 0,5197 | −0,68 | 0,4994 | 60 |
+| OOF 2019-2026 (origen 2026) | N4 + Región | 5.920 | −6,14 % | 0,9660 | +0,52 | 0,6083 | −0,70 | 0,4894 | 60 |
+| OOF 2019-2026 (origen 2026) | N5 + Carrera | 23.277 | +0,10 % | 0,9587 | −0,01 | 0,9908 | −1,34 | 0,1859 | 60 |
+| OOF 2019-2026 (origen 2026) | N6 + Condición | 39.327 | −0,64 % | 0,9700 | +0,08 | 0,9328 | −1,22 | 0,2255 | 60 |
+| OOF 2019-2026 (origen 2026) | N7 + Género | 67.413 | −1,04 % | 0,9704 | +0,15 | 0,8827 | −1,41 | 0,1649 | 60 |
+| OOF 2019-2026 (origen 2026) | N8 + Jornada | 73.349 | +0,20 % | 0,9662 | −0,03 | 0,9758 | −1,68 | 0,0992 | 60 |
+| Holdout 2025 (origen 2025) | N2 + Institución | 55 | +61,79 % | 0,6904 | −1,69 | 0,0973 | −1,74 | 0,0874 | 55 |
+| Holdout 2025 (origen 2025) | N3 + Área | 418 | +43,34 % | 0,8811 | −1,83 | 0,0730 | −1,30 | 0,1993 | 55 |
+| Holdout 2025 (origen 2025) | N4 + Región | 688 | +29,33 % | 0,9058 | −1,33 | 0,1887 | −1,18 | 0,2437 | 55 |
+| Holdout 2025 (origen 2025) | N5 + Carrera | 2.792 | +21,80 % | 0,9216 | −1,55 | 0,1269 | −2,22 | 0,0309 | 55 |
+| Holdout 2025 (origen 2025) | N6 + Condición | 4.826 | +20,64 % | 0,9350 | −1,67 | 0,1000 | −2,28 | 0,0268 | 55 |
+| Holdout 2025 (origen 2025) | N7 + Género | 8.361 | +21,42 % | 0,9389 | −1,87 | 0,0664 | −2,69 | 0,0095 | 55 |
+| Holdout 2025 (origen 2025) | N8 + Jornada | 9.041 | +22,87 % | 0,9333 | −1,95 | 0,0569 | −2,91 | 0,0052 | 55 |
+
+**Lectura.** En el OOF 2019-2026 ninguna diferencia frente a la persistencia es significativa, con ninguna pérdida (el menor valor *p* es 0,0992, absoluta en N8). En el holdout 2025 del origen 2025, con pérdida absoluta es significativa en N5-N8 (p ≤ 0,031); con cuadrática, no (p entre 0,057 y 0,189).
+
+### R.2 · R-02: tablas con el real observado
+
+**Tabla A.13 · por región (OOF 2019-2026, origen 2026)**
+
+| Región | n | WAPE | WAPE pers. | Skill | R² | R² pers. | Error agregado |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| Los Ríos | 2.157 | 11,99 % | 12,54 % | −3,32 % | 0,9657 | 0,9668 | +2,19 % |
+| Maule | 3.310 | 12,47 % | 13,12 % | +3,80 % | 0,9668 | 0,9654 | +2,85 % |
+| Biobío | 7.943 | 12,60 % | 13,18 % | +1,97 % | 0,9686 | 0,9680 | +0,95 % |
+| La Araucanía | 4.853 | 13,19 % | 13,23 % | +0,88 % | 0,9646 | 0,9643 | +1,87 % |
+| Valparaíso | 8.937 | 13,59 % | 14,18 % | +18,24 % | 0,9626 | 0,9542 | +1,88 % |
+| Arica y Parinacota | 1.533 | 14,65 % | 14,30 % | −9,17 % | 0,9588 | 0,9622 | −0,37 % |
+| Metropolitana | 28.312 | 14,78 % | 15,08 % | −4,26 % | 0,9606 | 0,9622 | +2,56 % |
+| Coquimbo | 3.009 | 15,07 % | 16,33 % | +11,30 % | 0,9501 | 0,9438 | +1,46 % |
+| Antofagasta | 3.046 | 15,57 % | 16,86 % | +15,42 % | 0,9575 | 0,9497 | +3,16 % |
+| Ñuble | 2.002 | 15,64 % | 16,14 % | +6,03 % | 0,9488 | 0,9455 | +0,51 % |
+| Los Lagos | 2.912 | 16,41 % | 17,44 % | +5,35 % | 0,9431 | 0,9399 | +3,63 % |
+| Atacama | 1.202 | 16,57 % | 17,03 % | −1,89 % | 0,9387 | 0,9398 | +1,28 % |
+| Magallanes | 848 | 17,69 % | 17,99 % | −2,00 % | 0,9331 | 0,9345 | +1,75 % |
+| Tarapacá | 1.992 | 18,69 % | 18,56 % | −3,87 % | 0,8943 | 0,8982 | +3,71 % |
+| Lib. Gral. B. O'Higgins | 1.093 | 18,92 % | 24,64 % | +44,16 % | 0,9513 | 0,9127 | +4,43 % |
+| Aysén | 313 | 25,50 % | 25,83 % | +9,21 % | 0,8463 | 0,8307 | +9,85 % |
+
+El WAPE del modelo es menor que el de la persistencia en 14 de las 16 regiones; el *skill* es negativo en 6.
+
+**Tabla A.14 · por modalidad (holdout 2026, origen 2026)**
+
+| Jornada | Base 2025 | Real 2026 | Predicho 2026 | Crecimiento real | Crecimiento predicho |
+|---|---:|---:|---:|---:|---:|
+| Diurna | 631.393 | 650.477 | 649.653 | +3,02 % | +2,89 % |
+| A Distancia | 38.565 | 43.050 | 46.621 | +11,63 % | +20,89 % |
+| Vespertina | 41.498 | 38.165 | 40.031 | −8,03 % | −3,54 % |
+| Semipresencial | 8.265 | 8.954 | 9.579 | +8,34 % | +15,90 % |
+| Otra | 1.371 | 969 | 1.218 | −29,32 % | −11,17 % |
+
+**Calibración por decil de tamaño (fig07; OOF 2019-2026)**, con los deciles definidos de las dos formas
+
+| Deciles por | Decil | n | Rango | Real medio | Predicho medio | Sesgo relativo (pred/real − 1) |
+|---|---:|---:|---:|---:|---:|---:|
+| matrícula observada | 1 | 7.347 | 1 – 11 | 7,56 | 14,71 | +94,44 % |
+| matrícula observada | 2 | 7.346 | 11 – 17 | 14,22 | 17,61 | +23,79 % |
+| matrícula observada | 3 | 7.346 | 17 – 23 | 19,70 | 21,70 | +10,15 % |
+| matrícula observada | 4 | 7.346 | 23 – 30 | 25,99 | 27,15 | +4,46 % |
+| matrícula observada | 5 | 7.346 | 30 – 39 | 33,93 | 34,39 | +1,35 % |
+| matrícula observada | 6 | 7.346 | 39 – 51 | 44,55 | 44,87 | +0,74 % |
+| matrícula observada | 7 | 7.346 | 51 – 70 | 59,94 | 60,08 | +0,23 % |
+| matrícula observada | 8 | 7.346 | 70 – 104 | 85,62 | 85,71 | +0,11 % |
+| matrícula observada | 9 | 7.346 | 104 – 173 | 133,56 | 133,99 | +0,32 % |
+| matrícula observada | 10 | 7.347 | 173 – 3.158 | 315,62 | 316,98 | +0,43 % |
+| rezago | 1 | 7.347 | 10 – 13 | 12,01 | 11,86 | −1,27 % |
+| rezago | 2 | 7.346 | 13 – 18 | 16,23 | 16,19 | −0,22 % |
+| rezago | 3 | 7.346 | 18 – 23 | 20,58 | 20,93 | +1,72 % |
+| rezago | 4 | 7.346 | 23 – 30 | 26,52 | 26,96 | +1,65 % |
+| rezago | 5 | 7.346 | 30 – 39 | 34,08 | 34,64 | +1,64 % |
+| rezago | 6 | 7.346 | 39 – 51 | 43,89 | 44,98 | +2,49 % |
+| rezago | 7 | 7.346 | 51 – 69 | 59,23 | 60,65 | +2,39 % |
+| rezago | 8 | 7.346 | 69 – 102 | 84,27 | 86,62 | +2,78 % |
+| rezago | 9 | 7.346 | 102 – 171 | 132,28 | 134,75 | +1,87 % |
+| rezago | 10 | 7.347 | 171 – 3.158 | 311,61 | 319,61 | +2,57 % |
+
+Con los deciles por la **matrícula observada** (lo que hace fig07), el primer decil muestra +94,44 %: es regresión a la media, porque se condiciona en el resultado. Con los deciles por el **rezago** (información disponible al pronosticar), el sesgo va de −1,27 % a +2,78 % y es positivo en ocho de diez deciles: es la sobrepredicción agregada del OOF, no un problema de calibración por tamaño.
+
+**A4 completo (N2-N8), holdout 2026, real observado en la calibración y en la evaluación**
+
+| Nivel | Banda | Grupos comunes | Cobertura | Ancho mediano | IS medio | MSIS |
+|---|---:|---:|---:|---:|---:|---:|
+| N2 + Institución | Publicadas (conformal estratificado) | 53 | 94,34 % | 2.282,9 | 3.178,1 | 6,2410 |
+| N2 + Institución | r1 · conformal sin estratos | 53 | 96,23 % | 4.095,7 | 5.567,6 | 10,9335 |
+| N2 + Institución | r2 · AutoETS 90 % | 53 | 94,34 % | 2.244,1 | 3.592,3 | 7,0544 |
+| N3 + Área | Publicadas (conformal estratificado) | 404 | 94,31 % | 305,2 | 538,1 | 5,8765 |
+| N3 + Área | r1 · conformal sin estratos | 404 | 95,79 % | 478,1 | 833,4 | 9,1020 |
+| N3 + Área | r2 · AutoETS 90 % | 404 | 91,09 % | 320,7 | 706,7 | 7,7180 |
+| N4 + Región | Publicadas (conformal estratificado) | 630 | 93,49 % | 205,9 | 383,8 | 6,2356 |
+| N4 + Región | r1 · conformal sin estratos | 630 | 95,71 % | 409,3 | 752,1 | 12,2206 |
+| N4 + Región | r2 · AutoETS 90 % | 630 | 89,84 % | 230,9 | 506,9 | 8,2369 |
+| N5 + Carrera | Publicadas (conformal estratificado) | 2.388 | 93,72 % | 102,9 | 166,7 | 7,1447 |
+| N5 + Carrera | r1 · conformal sin estratos | 2.388 | 95,27 % | 169,0 | 266,5 | 11,4252 |
+| N5 + Carrera | r2 · AutoETS 90 % | 2.388 | 89,45 % | 92,4 | 179,3 | 7,6881 |
+| N6 + Condición | Publicadas (conformal estratificado) | 4.036 | 94,82 % | 79,1 | 123,9 | 7,4753 |
+| N6 + Condición | r1 · conformal sin estratos | 4.036 | 95,94 % | 94,1 | 183,5 | 11,0731 |
+| N6 + Condición | r2 · AutoETS 90 % | 4.036 | 88,75 % | 58,9 | 126,0 | 7,6041 |
+| N7 + Género | Publicadas (conformal estratificado) | 6.839 | 94,87 % | 53,6 | 79,8 | 7,2482 |
+| N7 + Género | r1 · conformal sin estratos | 6.839 | 95,45 % | 53,7 | 108,0 | 9,8169 |
+| N7 + Género | r2 · AutoETS 90 % | 6.839 | 86,83 % | 36,2 | 79,7 | 7,2427 |
+| N8 + Jornada | Publicadas (conformal estratificado) | 7.943 | 93,86 % | 37,8 | 65,3 | 6,1554 |
+| N8 + Jornada | r1 · conformal sin estratos | 7.943 | 95,10 % | 48,4 | 96,0 | 9,0523 |
+| N8 + Jornada | r2 · AutoETS 90 % | 7.943 | 86,99 % | 34,4 | 71,5 | 6,7455 |
+
+**A6 · reconciliación (holdout 2026, N1-N5, real observado)**
+
+| Método | Nivel | WAPE | Skill | RelMAE | ± 10 % |
+|---|---:|---:|---:|---:|---:|
+| Base (ETS en N1-N4, CatBoost en N5) | N1 Nacional | 2,86 % | −7,07 % | 1,0348 | 100,00 % |
+| Base (ETS en N1-N4, CatBoost en N5) | N2 + Institución | 4,18 % | −15,43 % | 1,1494 | 86,79 % |
+| Base (ETS en N1-N4, CatBoost en N5) | N3 + Área | 5,92 % | −20,41 % | 1,1747 | 71,19 % |
+| Base (ETS en N1-N4, CatBoost en N5) | N4 + Región | 6,55 % | −46,44 % | 1,2357 | 65,38 % |
+| Base (ETS en N1-N4, CatBoost en N5) | N5 + Carrera | 8,42 % | +7,86 % | 0,9549 | 57,21 % |
+| BottomUp (publicado) | N1 Nacional | 0,74 % | +92,85 % | 0,2674 | 100,00 % |
+| BottomUp (publicado) | N2 + Institución | 2,76 % | +49,51 % | 0,7578 | 88,68 % |
+| BottomUp (publicado) | N3 + Área | 4,44 % | +37,42 % | 0,8799 | 80,15 % |
+| BottomUp (publicado) | N4 + Región | 4,78 % | +24,45 % | 0,9018 | 75,58 % |
+| BottomUp (publicado) | N5 + Carrera | 8,42 % | +7,86 % | 0,9549 | 57,21 % |
+| OLS | N1 Nacional | 2,86 % | −7,14 % | 1,0351 | 100,00 % |
+| OLS | N2 + Institución | 4,06 % | −10,10 % | 1,1149 | 88,68 % |
+| OLS | N3 + Área | 5,81 % | −19,13 % | 1,1529 | 69,25 % |
+| OLS | N4 + Región | 6,21 % | −26,40 % | 1,1724 | 64,61 % |
+| OLS | N5 + Carrera | 9,92 % | +0,35 % | 1,1253 | 49,87 % |
+| WLS estructural | N1 Nacional | 2,17 % | +38,29 % | 0,7856 | 100,00 % |
+| WLS estructural | N2 + Institución | 3,37 % | +24,99 % | 0,9267 | 94,34 % |
+| WLS estructural | N3 + Área | 4,97 % | +13,69 % | 0,9850 | 73,85 % |
+| WLS estructural | N4 + Región | 5,30 % | +14,50 % | 1,0011 | 70,94 % |
+| WLS estructural | N5 + Carrera | 9,17 % | +7,81 % | 1,0409 | 52,32 % |
+| MinT-shrink | N1 Nacional | 3,03 % | −19,77 % | 1,0944 | 100,00 % |
+| MinT-shrink | N2 + Institución | 3,75 % | +22,27 % | 1,0305 | 92,45 % |
+| MinT-shrink | N3 + Área | 5,52 % | +1,96 % | 1,0952 | 72,40 % |
+| MinT-shrink | N4 + Región | 6,14 % | −5,76 % | 1,1591 | 68,47 % |
+| MinT-shrink | N5 + Carrera | 12,32 % | −88,48 % | 1,3981 | 47,65 % |
+
+**MCB / Nemenyi por nivel (real observado)**: rango medio por método; «*» = distinto del mejor (diferencia > CD)
+
+*Holdout 2026*
+
+| Nivel | CD | Persistencia | RWD | ETS | ARIMA | Theta | Comb | Global | CatBoost |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| N2 + Institución | 1,4422 | 4,755 | 4,179 | 5,226* | 5,538* | 4,434 | 4,717 | 3,566 | 3,585 |
+| N3 + Área | 0,5166 | 4,051 | 4,264 | 4,908* | 5,397* | 4,754* | 4,788* | 3,782 | 4,056 |
+| N4 + Región | 0,4128 | 4,086 | 4,199 | 4,940* | 5,352* | 4,751* | 4,776* | 3,841 | 4,054 |
+| N5 + Carrera | 0,2006 | 4,122* | 4,323* | 5,007* | 5,250* | 4,671* | 4,745* | 3,827 | 4,054* |
+| N6 + Condición | 0,1516 | 4,237* | 4,547* | 4,829* | 4,957* | 4,668* | 4,592* | 4,016 | 4,154 |
+| N7 + Género | 0,1146 | 4,311* | 4,680* | 4,729* | 4,881* | 4,650* | 4,537* | 3,995 | 4,218* |
+| N8 + Jornada | 0,1103 | 4,332* | 4,679* | 4,742* | 4,892* | 4,655* | 4,545* | 3,973 | 4,182* |
+
+*Validación v4 2026*
+
+| Nivel | CD | Persistencia | RWD | ETS | ARIMA | Theta | Comb | Global | CatBoost |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| N2 + Institución | 1,4422 | 4,792 | 4,396 | 5,019* | 5,377* | 4,604 | 4,585 | 3,509 | 3,717 |
+| N3 + Área | 0,5198 | 4,034 | 4,304* | 4,968* | 5,402* | 4,869* | 4,859* | 3,836 | 3,728 |
+| N4 + Región | 0,4121 | 4,049 | 4,274* | 5,020* | 5,396* | 4,857* | 4,833* | 3,877 | 3,693 |
+| N5 + Carrera | 0,2033 | 4,089 | 4,268* | 5,038* | 5,314* | 4,680* | 4,771* | 3,895 | 3,944 |
+| N6 + Condición | 0,1543 | 4,196* | 4,558* | 4,836* | 5,019* | 4,671* | 4,586* | 4,041 | 4,093 |
+| N7 + Género | 0,1167 | 4,299* | 4,701* | 4,738* | 4,925* | 4,654* | 4,539* | 4,012 | 4,132* |
+| N8 + Jornada | 0,1124 | 4,325* | 4,687* | 4,759* | 4,938* | 4,658* | 4,552* | 3,982 | 4,100* |
+
+**A1 en N3, N4, N6 y N7 (real observado)**
+
+| Conjunto | Nivel | Método | WAPE | Skill | RelMAE | ± 10 % |
+|---|---:|---:|---:|---:|---:|---:|
+| OOF 2019-2025 | N3 + Área | Persistencia | 6,43 % | +0,00 % | 1,0000 | 68,72 % |
+| OOF 2019-2025 | N4 + Región | Persistencia | 6,99 % | +0,00 % | 1,0000 | 58,85 % |
+| OOF 2019-2025 | N6 + Condición | Persistencia | 12,99 % | +0,00 % | 1,0000 | 42,04 % |
+| OOF 2019-2025 | N7 + Género | Persistencia | 14,42 % | +0,00 % | 1,0000 | 37,78 % |
+| OOF 2019-2025 | N3 + Área | RWD | 6,09 % | +17,22 % | 0,9472 | 68,92 % |
+| OOF 2019-2025 | N4 + Región | RWD | 6,66 % | +1,59 % | 0,9521 | 59,66 % |
+| OOF 2019-2025 | N6 + Condición | RWD | 13,21 % | −9,28 % | 1,0163 | 40,81 % |
+| OOF 2019-2025 | N7 + Género | RWD | 14,88 % | −11,37 % | 1,0319 | 35,92 % |
+| OOF 2019-2025 | N3 + Área | ETS | 6,77 % | −6,45 % | 1,0537 | 67,15 % |
+| OOF 2019-2025 | N4 + Región | ETS | 7,36 % | −7,57 % | 1,0534 | 57,03 % |
+| OOF 2019-2025 | N6 + Condición | ETS | 13,58 % | −7,15 % | 1,0452 | 40,58 % |
+| OOF 2019-2025 | N7 + Género | ETS | 14,99 % | −6,97 % | 1,0396 | 36,68 % |
+| OOF 2019-2025 | N3 + Área | ARIMA | 8,18 % | −58,14 % | 1,2732 | 59,84 % |
+| OOF 2019-2025 | N4 + Región | ARIMA | 8,94 % | −67,39 % | 1,2785 | 51,05 % |
+| OOF 2019-2025 | N6 + Condición | ARIMA | 16,07 % | −63,56 % | 1,2368 | 36,28 % |
+| OOF 2019-2025 | N7 + Género | ARIMA | 17,70 % | −67,62 % | 1,2273 | 32,62 % |
+| OOF 2019-2025 | N3 + Área | Theta | 6,52 % | +4,59 % | 1,0147 | 68,29 % |
+| OOF 2019-2025 | N4 + Región | Theta | 7,10 % | −0,78 % | 1,0153 | 57,61 % |
+| OOF 2019-2025 | N6 + Condición | Theta | 13,46 % | −2,41 % | 1,0362 | 40,27 % |
+| OOF 2019-2025 | N7 + Género | Theta | 14,92 % | −3,37 % | 1,0343 | 36,22 % |
+| OOF 2019-2025 | N3 + Área | Comb | 6,96 % | −12,40 % | 1,0820 | 65,54 % |
+| OOF 2019-2025 | N4 + Región | Comb | 7,57 % | −14,26 % | 1,0832 | 55,85 % |
+| OOF 2019-2025 | N6 + Condición | Comb | 13,86 % | −10,31 % | 1,0667 | 40,05 % |
+| OOF 2019-2025 | N7 + Género | Comb | 15,25 % | −10,81 % | 1,0570 | 35,90 % |
+| OOF 2019-2025 | N3 + Área | Global | 6,40 % | +8,80 % | 0,9963 | 68,92 % |
+| OOF 2019-2025 | N4 + Región | Global | 6,89 % | −6,26 % | 0,9860 | 60,16 % |
+| OOF 2019-2025 | N6 + Condición | Global | 12,27 % | +3,91 % | 0,9440 | 43,12 % |
+| OOF 2019-2025 | N7 + Género | Global | 13,61 % | +4,92 % | 0,9438 | 38,80 % |
+| OOF 2019-2025 | N3 + Área | CatBoost | 6,23 % | +13,13 % | 0,9692 | 68,69 % |
+| OOF 2019-2025 | N4 + Región | CatBoost | 6,81 % | −9,52 % | 0,9737 | 60,31 % |
+| OOF 2019-2025 | N6 + Condición | CatBoost | 12,65 % | −2,43 % | 0,9733 | 41,88 % |
+| OOF 2019-2025 | N7 + Género | CatBoost | 14,03 % | −1,90 % | 0,9729 | 37,49 % |
+| Holdout 2026 | N3 + Área | Persistencia | 5,04 % | +0,00 % | 1,0000 | 76,76 % |
+| Holdout 2026 | N4 + Región | Persistencia | 5,30 % | +0,00 % | 1,0000 | 73,42 % |
+| Holdout 2026 | N6 + Condición | Persistencia | 10,83 % | +0,00 % | 1,0000 | 48,02 % |
+| Holdout 2026 | N7 + Género | Persistencia | 12,31 % | +0,00 % | 1,0000 | 41,81 % |
+| Holdout 2026 | N3 + Área | RWD | 4,47 % | +36,65 % | 0,8874 | 77,24 % |
+| Holdout 2026 | N4 + Región | RWD | 4,88 % | +33,20 % | 0,9211 | 73,11 % |
+| Holdout 2026 | N6 + Condición | RWD | 10,89 % | +1,11 % | 1,0057 | 47,96 % |
+| Holdout 2026 | N7 + Género | RWD | 12,58 % | −1,20 % | 1,0220 | 39,93 % |
+| Holdout 2026 | N3 + Área | ETS | 5,65 % | −19,22 % | 1,1212 | 73,61 % |
+| Holdout 2026 | N4 + Región | ETS | 6,02 % | −18,31 % | 1,1370 | 67,70 % |
+| Holdout 2026 | N6 + Condición | ETS | 12,15 % | −5,70 % | 1,1227 | 43,39 % |
+| Holdout 2026 | N7 + Género | ETS | 13,57 % | −7,11 % | 1,1024 | 38,70 % |
+| Holdout 2026 | N3 + Área | ARIMA | 6,17 % | −39,50 % | 1,2229 | 68,77 % |
+| Holdout 2026 | N4 + Región | ARIMA | 6,61 % | −47,46 % | 1,2469 | 62,60 % |
+| Holdout 2026 | N6 + Condición | ARIMA | 13,16 % | −38,23 % | 1,2157 | 41,58 % |
+| Holdout 2026 | N7 + Género | ARIMA | 14,85 % | −46,15 % | 1,2065 | 36,84 % |
+| Holdout 2026 | N3 + Área | Theta | 5,26 % | +1,57 % | 1,0437 | 73,61 % |
+| Holdout 2026 | N4 + Región | Theta | 5,67 % | +3,34 % | 1,0709 | 68,16 % |
+| Holdout 2026 | N6 + Condición | Theta | 11,63 % | −1,76 % | 1,0739 | 44,21 % |
+| Holdout 2026 | N7 + Género | Theta | 13,08 % | −4,07 % | 1,0630 | 39,21 % |
+| Holdout 2026 | N3 + Área | Comb | 5,49 % | −11,92 % | 1,0890 | 72,15 % |
+| Holdout 2026 | N4 + Región | Comb | 5,90 % | −11,97 % | 1,1131 | 66,77 % |
+| Holdout 2026 | N6 + Condición | Comb | 11,79 % | −6,24 % | 1,0888 | 44,96 % |
+| Holdout 2026 | N7 + Género | Comb | 13,22 % | −8,66 % | 1,0742 | 39,63 % |
+| Holdout 2026 | N3 + Área | Global | 4,21 % | +36,67 % | 0,8343 | 81,36 % |
+| Holdout 2026 | N4 + Región | Global | 4,60 % | +31,14 % | 0,8691 | 76,35 % |
+| Holdout 2026 | N6 + Condición | Global | 9,63 % | +20,48 % | 0,8896 | 50,94 % |
+| Holdout 2026 | N7 + Género | Global | 11,04 % | +19,86 % | 0,8970 | 44,61 % |
+| Holdout 2026 | N3 + Área | CatBoost | 4,44 % | +37,42 % | 0,8799 | 80,15 % |
+| Holdout 2026 | N4 + Región | CatBoost | 4,78 % | +24,45 % | 0,9018 | 75,58 % |
+| Holdout 2026 | N6 + Condición | CatBoost | 10,22 % | +10,40 % | 0,9443 | 49,33 % |
+| Holdout 2026 | N7 + Género | CatBoost | 11,71 % | +4,47 % | 0,9517 | 42,59 % |
+
+### R.3 · R-03: caídas institucionales 2027 de C49 (base observada 2026)
+
+**15 de las 53 instituciones** caen (igual que con la base recortada):
+
+| Institución | Base 2026 observada | C49 2027 | Variación |
+|---|---:|---:|---:|
+| UNIVERSIDAD TECNOLOGICA DE CHILE INACAP | 13 | 4 | −67,34 % |
+| UNIVERSIDAD BOLIVARIANA | 77 | 35 | −53,96 % |
+| UNIVERSIDAD DE ACONCAGUA | 2.341 | 1.774 | −24,24 % |
+| UNIVERSIDAD DE PLAYA ANCHA DE CIENCIAS DE LA EDUCACION | 5.791 | 5.531 | −4,49 % |
+| UNIVERSIDAD DE ARTES, CIENCIAS Y COMUNICACION - UNIACC | 6.019 | 5.782 | −3,94 % |
+| UNIVERSIDAD ACADEMIA DE HUMANISMO CRISTIANO | 3.768 | 3.648 | −3,18 % |
+| UNIVERSIDAD ADOLFO IBAÑEZ | 10.684 | 10.386 | −2,79 % |
+| UNIVERSIDAD MIGUEL DE CERVANTES | 1.035 | 1.018 | −1,64 % |
+| UNIVERSIDAD DE LA SERENA | 7.610 | 7.486 | −1,63 % |
+| UNIVERSIDAD SEK | 2.319 | 2.286 | −1,42 % |
+| UNIVERSIDAD DE ATACAMA | 7.794 | 7.713 | −1,04 % |
+| UNIVERSIDAD DE CONCEPCION | 25.556 | 25.308 | −0,97 % |
+| UNIVERSIDAD DE VALPARAISO | 14.875 | 14.774 | −0,68 % |
+| UNIVERSIDAD TECNICA FEDERICO SANTA MARIA | 20.646 | 20.518 | −0,62 % |
+| UNIVERSIDAD DE ANTOFAGASTA | 6.756 | 6.734 | −0,32 % |
+
+### R.4 · R-04: confirmaciones desde el código y los datos
+
+- **PIB regional: volumen encadenado, no precios corrientes.** El archivo es `CCNN2018_PIB_REGIONAL_T (2).xlsx`, hoja «Cuadro»: «Producto interno bruto trimestral por región, volumen a precios del año anterior encadenado, series empalmadas, referencia 2018 (miles de millones de pesos encadenados)». Banco Central de Chile, «Última actualización: 23-04-2026», «Cifras preliminares», última observación 01-10-2025. La serie descargada viene en filas anuales 2013-2025 (una por año), que el pipeline (`Pipeline_PIB.ipynb`) lleva a formato largo como `pib_mm_pesos`; el nombre de la columna no indica que sea encadenado. El valor de 2026 se arrastra desde 2025.
+- **Desocupación 2025: sí, 10 de 12.** El INE publica trimestres móviles mensuales (`FREQ = M`, períodos `AAAA-MM-01/P3M`). Para 2025 el archivo trae 10 períodos (enero a octubre de 2025); 2021-2024 traen 12. El pipeline (`PIPELINE_transformacion_tasa_desocupacion.ipynb`) promedia de forma simple los períodos de cada año para ambos sexos; su control sólo marca los años con menos de 4 períodos, por eso aceptó 2025. Son trimestres móviles, no calendario: los 10 de 2025 son los que comienzan entre enero y octubre (enero-marzo a octubre-diciembre); faltan los que comienzan en noviembre y diciembre (noviembre 2025-enero 2026 y diciembre 2025-febrero 2026), que en los años completos sí entran al promedio.
+- **fig07 (calibración):** OOF retrospectivo 2019-2026 del origen 2026 (73.462 filas, incluye el holdout 2026). Los deciles se definen por la **matrícula observada** (`pd.qcut(matriculas_real, 10)`), no por el rezago; desde L-03, por la matrícula observada del SIES. El sesgo se grafica como (real − predicho)/real (positivo = subpredice). Ver la tabla de R.2 con las dos definiciones: la versión por rezago es la que corresponde a una calibración utilizable.
+- **fig10, fig11 y fig12 (SHAP):** los valores SHAP por fila son los del **modelo final** del origen 2026 (`pipe_final`, entrenado con 2018-2026), calculados sobre todas las filas exportadas; las figuras usan las filas OOF 2019-2026. No son atribuciones de los modelos OOF, sino del modelo final sobre años que vio al entrenar. **fig11:** para cada subgrupo (condición, jornada, género) grafica el valor absoluto del SHAP **medio** del subgrupo (`mean().abs()`), no el promedio de los valores absolutos, de modo que contribuciones de signo opuesto se cancelan. **fig12:** dos celdas OOF: la «bien predicha» es la primera fila, en el orden del archivo, con matrícula ≥ 100 y error absoluto ≤ 2; la «mal predicha», la de mayor error absoluto. El título muestra institución, carrera, región, jornada, género y condición: identifica una celda con nombre de institución (datos públicos agregados, sin personas).
+
+### R.5 · R-05: figuras ES y EN
+
+Se agregó a `analisis_paper.py` una opción de idioma (`FIG_IDIOMA`, `FIG_DIR`): rótulos traducidos con un diccionario ES→EN, números del texto y de los ejes con el separador del idioma (ES: 1.234,5 y «12,27 %»; EN: 1,234.5 y «12.27%»; los años sin separador de miles), ejes del gráfico cuantil-cuantil rotulados en el idioma, categorías de los subgrupos SHAP traducidas en EN (Returning/New, Day/Evening/Distance/Blended/Other, Female/Male). Las 12 figuras se regeneraron con el real observado en `Documents/OUTPUTS_PAPER/figuras_es/` y `figuras_en/`; fig09 se guardó como `fig09_forecast_2027_vs_baselines.png`. Las figuras de `figuras/` no se tocaron.
+
+- **fig09 unificada:** los rótulos son «Pronóstico del modelo», «Regresión lineal 2018-2026», «Promedio de las variaciones 2024-2026» y «Variación 2026» (EN: Model forecast, Linear trend, Mean annual change 2024-2026, 2026 change), igual que el texto del paper; la etiqueta negativa (−1,27 %) va bajo la barra y el eje y deja margen, de modo que ya no se encima al eje.
+- **Observación nueva en fig08 (no corregida):** el punto de 2018 de la serie observada es la suma de los rezagos de las celdas de 2018, es decir, la matrícula de 2017 de esas celdas (≈ 644.000), no la de 2018 (653.163 observada). El resto de la serie es correcto. Corregirlo cambia la figura 3 del manuscrito; queda para decisión del autor.
