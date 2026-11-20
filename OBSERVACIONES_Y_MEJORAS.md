@@ -2063,3 +2063,48 @@ Con la prueba en seco, los cuatro modelos quedan **«calibradas»** (92,25 %-93,
    - el autor crea el depósito en Zenodo desde la etiqueta.
 
 Reporta todo como **sección Q**: huellas finales, hash del commit, nombre de la etiqueta, confirmación del push (por ejemplo, `git ls-remote --tags origin`) y resultado de la prueba en seco. Esos datos van a completar los [PENDIENTE] del manuscrito.
+
+---
+
+## Q · P-01 a P-03: congelamiento publicado (Claude Code, 20-11-2026)
+
+Con el OK del autor, el pronóstico 2027 quedó **congelado y publicado en el remoto**.
+
+### Q.1 · Datos para los [PENDIENTE] del manuscrito
+
+| Concepto | Valor |
+|---|---|
+| Fecha del congelamiento | 20-11-2026, 10:23:11 (−03:00) |
+| Commit | `e1f9b448e70d70ccef5e51973ea216fa58dd61d4` |
+| Etiqueta | `forecast-2027` (anotada; objeto `1d2596266bbeae67c9660183f995668f6a71d614`) |
+| Huella de las predicciones (2×2) | `259d272cd55d6342a21c024b5563467b1116a23265d6b850df9bdf98b1b6111f` |
+| Huella de C49 original | `79b7b5d6880ca50e85baab1465cd25fe349501206524314c43a07d770fcb393e` |
+| Huella del protocolo v2.2 | `77856cbf1808d6f463e279a5a037963d2982f00cddbb9d8d1ae936d6478c3c70` |
+| Huella de `evaluar_2027.py` | `452ecb37fbab0c0b62f22d80fa3aac82899e0a4a1c896ac05d2ae29ae20708f8` |
+| DOI de Zenodo | [PENDIENTE: lo crea el autor desde la etiqueta] |
+
+**Confirmación del push** (`git ls-remote --tags origin`):
+
+```
+1d2596266bbeae67c9660183f995668f6a71d614	refs/tags/forecast-2027
+e1f9b448e70d70ccef5e51973ea216fa58dd61d4	refs/tags/forecast-2027^{}
+```
+
+`main` remoto = `e1f9b44` (`b406573..e1f9b44`, que incluye las secciones G a P). El repositorio privado subió la rama `analisis-q1` (`c8e9613`) a su remoto privado.
+
+### Q.2 · Lo que se hizo
+
+- **P-01.** `forecast_2027/protocolo_evaluacion_2027.md` es la v2.2, marcada como aprobada el 20-11-2026. El borrador de la raíz quedó reducido a un aviso de una línea que apunta al protocolo congelado.
+- **P-02.** `evaluar_2027.py` clasifica las bandas con el criterio asimétrico de §6 v2.2: subcobertura < 88 %, calibradas 88-95 %, conservadoras > 95 %. Lo hace por modelo y nivel, con el IC de Wilson. La prueba unitaria con 87, 92 y 96 % (y los bordes 88, 95, 87,99 y 95,01 %) pasa.
+  - **Prueba en seco `--anio 2026`:** las cifras de O.3 no cambian (métricas, H1-H4 y emparejamiento por código dan archivos idénticos).
+  - **Cobertura en N8:** los cuatro modelos quedan **calibradas** (C49 92,49 %, Crez 93,25 %, L49 92,25 %, Lrez 92,31 %).
+  - **N2-N7 (descriptivo):** Crez queda «conservadoras» en N2-N4, L49 en N2 y Lrez en N3.
+- **P-03.**
+  - Antes del commit se verificaron las 16 huellas de `SHA256SUMS.txt`: coinciden.
+  - **Fines de línea:** con `core.autocrlf=true` y `* text=auto`, quien clone en Windows recibiría los archivos con CRLF y las huellas no coincidirían. Por eso se agregó `forecast_2027/** -text` al `.gitattributes` (commit `f322a9c`).
+  - Se comprobó que los 9 archivos de `forecast_2027/` guardados en el commit son byte a byte iguales a los que tienen huella.
+
+### Q.3 · Siguiente
+
+- **Commit de C-03 (F.2)** en el README y el paper v4: reemplazar «Congelamiento pendiente» por la fecha, el commit, la etiqueta y la huella. Después, el autor regenera el PDF. Se hará cuando el autor lo pida, sin push salvo indicación.
+- **Depósito en Zenodo** desde la etiqueta `forecast-2027`, a cargo del autor.

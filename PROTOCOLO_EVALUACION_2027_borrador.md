@@ -1,0 +1,1 @@
+El protocolo de evaluación del pronóstico 2027 (versión 2.2, aprobada el 20-11-2026) está congelado en [forecast_2027/protocolo_evaluacion_2027.md](forecast_2027/protocolo_evaluacion_2027.md), con la etiqueta `forecast-2027`.
