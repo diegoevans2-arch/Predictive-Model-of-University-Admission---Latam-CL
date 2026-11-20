@@ -2,12 +2,12 @@
 
 # 🎓 Predicción de la dinámica de matrícula universitaria en Chile
 
-### _Machine learning_ a granularidad de programa, validado contra la matrícula real 2026, con pronóstico 2027 pre-registrado, intervalos conformes y una advertencia sobre el baseline
+### _Machine learning_ a granularidad de programa, validado contra la matrícula real 2026, con pronóstico 2027 *ex ante* congelado, intervalos conformes y una advertencia sobre el baseline
 
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![Version](https://img.shields.io/badge/Pipeline-v4%20%C2%B7%20corrida%202027-success?style=flat-square)](#-estado-y-versiones)
-[![Forecast](https://img.shields.io/badge/Forecast%202027-761.058-1565C0?style=flat-square)](#-pronóstico-2027-pre-registrado)
+[![Forecast](https://img.shields.io/badge/Forecast%202027-761.058-1565C0?style=flat-square)](#-pronóstico-2027-ex-ante-congelado)
 [![Validación](https://img.shields.io/badge/Validado%20contra-SIES%202026-2E7D32?style=flat-square)](#-validación-contra-el-dato-real-2026)
 [![CatBoost](https://img.shields.io/badge/Model-CatBoost-FFCC00?style=flat-square)](https://catboost.ai)
 [![Optuna](https://img.shields.io/badge/Tuning-Optuna-2DBCE0?style=flat-square)](https://optuna.org)
@@ -21,10 +21,10 @@
 > **TL;DR** — Pronóstico de matrícula universitaria chilena a granularidad fina (institución × carrera × región × jornada × género × condición × año), integrando 10 fuentes oficiales (7 bases públicas y 3 diccionarios de llaves). Entrenado sólo con datos hasta 2025 y contrastado contra la matrícula real 2026 publicada por el SIES, el modelo obtuvo **WAPE 11,49 % frente a 12,69 % de la persistencia**, un **_skill score_ de +26,71 % positivo en los 8 niveles de agregación** y un **error agregado de −0,01 %** sobre 721.747 matrículas. Re-estimado con datos hasta 2026 y el mismo método, pronostica para 2027 **761.058 matrículas (+2,62 % sobre las 741.615 observadas en 2026)**, publicadas antes del dato oficial. Las predicciones de v4 contrastadas contra el real 2026 llevan **intervalo al 90 %** por _conformal prediction_, con cobertura verificada de 92,5 %; los de la corrida 2027 se calibraron con el mismo método, y en su holdout 2026 cubren el 92,49 % de las celdas. El total 2027 lleva un rango indicativo de **719.308 a 777.914** matrículas, no conforme: ocho observaciones anuales no alcanzan para un cuantil con garantía. El hallazgo más transferible es metodológico: **el baseline naïve es la misma columna que el lag del modelo**, y un defecto en esa llave sesga el _skill score_ sin que ningún diagnóstico habitual lo detecte.
 
 > [!NOTE]
-> **Actualización de noviembre de 2026.** Con la matrícula 2026 del SIES y la base INDICES del CNED de agosto de 2026, el pipeline v4 se volvió a ejecutar sin cambios de método: entrena con 2018-2025, se evalúa a ciegas sobre 2026 y pronostica 2027. El pronóstico 2027 queda **publicado** en este repositorio antes del dato oficial y será la primera prueba limpia del pipeline corregido; su **congelamiento formal** —huella SHA-256 de modelo, metadata y predicciones, y etiqueta git anotada publicada en el remoto— está **pendiente** y debe completarse antes del 30-06-2027 (§24.5 del documento técnico). Los notebooks dejaron de publicarse: el método completo está en el [documento técnico funcional](Documents/DOCUMENTO_TECNICO_FUNCIONAL.md). Paper v4: [Markdown](Documents/OUTPUTS_PAPER/paper_modelo_matricula_chile_v4.md) · [PDF](Documents/paper_modelo_matricula_chile_v4.pdf). Las observaciones abiertas de la revisión de noviembre de 2026 están en [OBSERVACIONES_Y_MEJORAS.md](OBSERVACIONES_Y_MEJORAS.md).
+> **Actualización de noviembre de 2026.** Con la matrícula 2026 del SIES y la base INDICES del CNED de agosto de 2026, el pipeline v4 se volvió a ejecutar sin cambios de método: entrena con 2018-2025, se evalúa a ciegas sobre 2026 y pronostica 2027. El pronóstico 2027 queda **publicado** en este repositorio antes del dato oficial y será la primera prueba limpia del pipeline corregido; su **congelamiento formal** quedó hecho el 20-11-2026: etiqueta anotada `forecast-2027` en el remoto, con las huellas SHA-256 de predicciones, modelo, metadata y protocolo de evaluación (ver [Pronóstico 2027](#-pronóstico-2027-ex-ante-congelado)). Los notebooks dejaron de publicarse: el método completo está en el [documento técnico funcional](Documents/DOCUMENTO_TECNICO_FUNCIONAL.md). Paper v4: [Markdown](Documents/OUTPUTS_PAPER/paper_modelo_matricula_chile_v4.md) · [PDF](Documents/paper_modelo_matricula_chile_v4.pdf). Las observaciones abiertas de la revisión de noviembre de 2026 están en [OBSERVACIONES_Y_MEJORAS.md](OBSERVACIONES_Y_MEJORAS.md).
 
 > [!IMPORTANT]
-> **Si viste este repositorio en junio de 2026, esas cifras ya no son válidas.** La versión anterior (v3) reportaba R² = 0,936, un _skill_ de +77,4 % sobre el naïve, un forecast 2026 de 707.960 y «99,98 % de confianza» nacional. Al contrastar ese pronóstico —congelado el 17 de junio— contra el dato real 2026, el _skill_ resultó **−8,0 %**. La auditoría encontró dos defectos en la llave del lag que corrompían el target **y el propio baseline**. Corregidos, el modelo se reestimó en agosto con la misma ventana (≤2025) y sin ver ningún dato de 2026. Las cifras de validación contra el real 2026 de este README son de esa versión (v4). Son _out-of-sample_, pero no pre-registradas: la prueba limpia es el pronóstico 2027.
+> **Si viste este repositorio en junio de 2026, esas cifras ya no son válidas.** La versión anterior (v3) reportaba R² = 0,936, un _skill_ de +77,4 % sobre el naïve, un forecast 2026 de 707.960 y «99,98 % de confianza» nacional. Al contrastar ese pronóstico —congelado el 17 de junio— contra el dato real 2026, el _skill_ resultó **−8,0 %**. La auditoría encontró dos defectos en la llave del lag que corrompían el target **y el propio baseline**. Corregidos, el modelo se reestimó en agosto con la misma ventana (≤2025) y sin ver ningún dato de 2026. Las cifras de validación contra el real 2026 de este README son de esa versión (v4). Son _out-of-sample_, pero no prospectivas: la prueba limpia es el pronóstico 2027.
 
 ---
 
@@ -32,7 +32,7 @@
 
 - [Resumen ejecutivo](#-resumen-ejecutivo)
 - [Resultados destacados](#-resultados-destacados)
-- [Pronóstico 2027 (pre-registrado)](#-pronóstico-2027-pre-registrado)
+- [Pronóstico 2027 (*ex ante*, congelado)](#-pronóstico-2027-ex-ante-congelado)
 - [Validación contra el dato real 2026](#-validación-contra-el-dato-real-2026)
 - [Arquitectura del pipeline](#-arquitectura-del-pipeline)
 - [Fuentes de datos](#-fuentes-de-datos)
@@ -115,19 +115,19 @@ La exploración interactiva de la validación 2026 —cascada, desagregados, ben
 
 ---
 
-## 🔮 Pronóstico 2027 (pre-registrado)
+## 🔮 Pronóstico 2027 (ex ante, congelado)
 
 El pipeline v4, re-estimado con datos hasta 2026, pronostica **761.058 matrículas** para 2027 en 9.069 celdas de 53 universidades con programas vigentes en 2026: **+2,62 %** sobre las 741.615 matrículas observadas en 2026 en esas celdas. El rezago congelado de 75 de esas celdas es la matrícula 2026 recortada que usaba el panel (suman 740.318); el pronóstico no se modificó. Se publica antes de que el SIES publique la matrícula 2027 (julio de 2027) y no se modificará después.
 
-> [!WARNING]
-> **Congelamiento pendiente.** El protocolo de congelamiento (§24.5 del [documento técnico](Documents/DOCUMENTO_TECNICO_FUNCIONAL.md)) exige registrar en este repositorio la huella SHA-256 de modelo, metadata y predicciones, crear una etiqueta git anotada con la huella de las predicciones y publicarla en el remoto antes del 30-06-2027: «un registro sólo local no prueba nada». A la fecha de esta revisión (noviembre de 2026) no hay huella publicada ni etiqueta; la cifra está publicada, pero aún no formalmente congelada. Los intervalos al 90 % de esta corrida ya están calibrados (P-05, resuelto el 19-11-2026; ver «Banda al 90 %» abajo).
+> [!NOTE]
+> **Pronóstico 2027 (*ex ante*, con sello temporal externo).** El pronóstico se fijó el **20-11-2026** y se publicó en el repositorio remoto con la etiqueta anotada [`forecast-2027`](forecast_2027/) (commit `e1f9b448`). La etiqueta registra la huella SHA-256 de las predicciones (diseño 2×2: `259d272cd55d6342a21c024b5563467b1116a23265d6b850df9bdf98b1b6111f`; C49, el pronóstico publicado: `79b7b5d6880ca50e85baab1465cd25fe349501206524314c43a07d770fcb393e`), del modelo, de la metadata y del protocolo de evaluación v2.2; la lista completa está en `forecast_2027/SHA256SUMS.txt`. El paquete se depositará además en Zenodo (DOI [PENDIENTE]). La fecha de la etiqueta en el remoto es anterior a la publicación de la matrícula 2027 del SIES, prevista para julio de 2027, y queda fuera del control del autor. El contraste contra el dato oficial seguirá el protocolo congelado ([`protocolo_evaluacion_2027.md`](forecast_2027/protocolo_evaluacion_2027.md)), con el script `evaluar_2027.py`, y será la primera evaluación prospectiva del pipeline corregido. Junto al pronóstico publicado se congelaron tres variantes (CatBoost y LightGBM, con y sin exógenas), la persistencia y una referencia nacional. Las mejoras posteriores se evaluarán por separado y no reemplazan este pronóstico.
 
 | Referencia | Crecimiento 2027 |
 |---|---:|
 | **Forecast del modelo** | **+2,62 %** |
 | Promedio de las variaciones 2024-2026 | +3,40 % |
 | Variación 2026 | +4,17 % |
-| Regresión lineal 2018-2026 | −1,27 % |
+| Regresión lineal 2018-2026 | −1,53 % |
 
 - **Composición**: crecen los alumnos antiguos (+3,44 %) y caen levemente los nuevos (−0,54 %). La modalidad diurna crece 2,3 %, la vespertina cae 5,9 % y la modalidad a distancia crece 14,6 %; esa última cifra merece cautela, porque en 2026 el modelo ya sobreestimó la modalidad a distancia (+16,3 % pronosticado, +7,3 % real).
 - **Precisión esperable**: en el holdout 2026 el modelo le gana a la persistencia en los ocho niveles de agregación, con WAPE de 2,76 % por institución y 12,27 % en la celda fina.
@@ -219,9 +219,9 @@ Los intervalos son conservadores, y se sabe por qué: la calibración incluye lo
 │ Backtesting temporal · SHAP · intervalos conformes al 90 %              │
 └────────────────────────────────────┬────────────────────────────────────┘
                                      ▼
-┌─ CONGELAMIENTO (PENDIENTE) ─────────────────────────────────────────────┐
-│ Pronóstico 2027: huella SHA-256 + etiqueta git anotada en el remoto,    │
-│ aún no realizado · plazo: antes del 30-06-2027 (doc. técnico §24.5)     │
+┌─ CONGELAMIENTO (20-11-2026) ────────────────────────────────────────────┐
+│ Pronóstico 2027 fijado: etiqueta anotada forecast-2027 en el remoto,    │
+│ huellas SHA-256 en forecast_2027/SHA256SUMS.txt · protocolo v2.2        │
 └────────────────────────────────────┬────────────────────────────────────┘
                                      ▼
 ┌─ 6 · VALIDACIÓN OUT-OF-TIME ────────────────────────────────────────────┐
@@ -242,8 +242,8 @@ Todas las fuentes son **públicas y oficiales**. Pueden descargarse directamente
 | **BaseINDICES CNED** | CNED | Aranceles, vacantes, puntajes de admisión, duración de carreras | 2005-2026 (2026 parcial) | [cned.cl/indices](https://www.cned.cl/bases-de-datos) |
 | **Cuerpo Docente CNED** | CNED | Número de docentes por grado académico y jornada | 2018-2025 | [cned.cl/indices](https://www.cned.cl/bases-de-datos) |
 | **Inmuebles e infraestructura CNED** | CNED | M² construidos, salas, oficinas por sede | 2018-2025 | [cned.cl/indices](https://www.cned.cl/bases-de-datos) |
-| **PIB regional** | Banco Central de Chile | PIB regional anual a precios corrientes (MM$) | 2018-2025 (2026 arrastrado) | [bcentral.cl](https://www.bcentral.cl/web/banco-central/areas/estadisticas) |
-| **Tasa de desocupación regional** | INE (SIMEL) | Tasa de desempleo anual por región y sexo | 2018-2025 (2026 arrastrado) | [ine.gob.cl](https://www.ine.gob.cl/) |
+| **PIB regional** | Banco Central de Chile | PIB regional anual en volumen a precios del año anterior encadenado, referencia 2018 (miles de millones de pesos encadenados; Banco Central, edición del 23-04-2026, cifras preliminares) | 2018-2025 (2026 arrastrado) | [bcentral.cl](https://www.bcentral.cl/web/banco-central/areas/estadisticas) |
+| **Tasa de desocupación regional** | INE (SIMEL) | Tasa de desocupación anual por región (ambos sexos): promedio de los trimestres móviles del año; 2025 con 10 de 12 | 2018-2025 (2026 arrastrado) | [ine.gob.cl](https://www.ine.gob.cl/) |
 | **Buscador de Empleabilidad e Ingresos** | mifuturo.cl | Retención de primer año, empleabilidad por carrera-institución | 2018-2025 | [mifuturo.cl](https://www.mifuturo.cl/) |
 | **Diccionario sede-región CNED** | CNED | Mapeo de códigos de sede a códigos INE de región (380 sedes) | Estático | CNED |
 | **Diccionario de instituciones** | SIES | Catálogo canónico de 220 instituciones | Estático | MINEDUC |
@@ -415,7 +415,7 @@ El procedimiento automatizado clasifica 2020 y 2022 como shock de nivel, tambié
 ## ⚠️ Limitaciones
 
 - **El componente extrapolativo es nulo.** Los árboles no extrapolan el año, y las exógenas (PIB, desempleo, aranceles, docentes) se congelan en su último valor observado: en la práctica el forecast es una transformación aprendida del lag.
-- **La validación 2026 de v4 es _out-of-sample_ pero no pre-registrada.** El dato real 2026 motivó la auditoría que produjo esa versión. No hubo fuga —la ventana sigue cerrada en 2025 y el defecto era verificable con datos ≤2025—, pero la prueba limpia es el pronóstico 2027.
+- **La validación 2026 de v4 es _out-of-sample_ pero no prospectiva.** El dato real 2026 motivó la auditoría que produjo esa versión. No hubo fuga —la ventana sigue cerrada en 2025 y el defecto era verificable con datos ≤2025—, pero la prueba limpia es el pronóstico 2027.
 - **Exógenas arrastradas.** El PIB regional y la desocupación de 2026 no estaban publicados y se arrastraron desde 2025; el modelo ve un 2026 macroeconómico idéntico a 2025.
 - **Variables con información del año evaluado.** `densidad_estudiantes_m2`, `ratio_docente_estudiante` y `matriculas_sobre_pib` usan la matrícula agregada del mismo año que se predice, y las exógenas entran con su valor de ese año. Las métricas retrospectivas (OOF y holdout) pueden ser optimistas. El forecast no tiene el problema —esas variables quedan congeladas en el último año observado—, pero falta una ablación que mida el efecto.
 - **Fuga de hiperparámetros al OOF retrospectivo.** Se optimizan una vez sobre el CV y se reutilizan en los años tempranos, cuyas cifras deben leerse como indicativas. El holdout y el forecast no tienen este problema.
@@ -423,7 +423,7 @@ El procedimiento automatizado clasifica 2020 y 2022 como shock de nivel, tambié
 - **Cobertura**: sólo universidades (62 instituciones, unas 759.000 matrículas de pregrado en 2026). Dentro del subsector, el modelo cubre el 95,09 % de la matrícula; quedan fuera los programas nuevos y los de menos de 10 matriculados.
 - **Ñuble sin datos institucionales (P-02).** La reparación del nombre de Ñuble no surte efecto antes de las uniones: sus 3.474 filas del SIES (2,73 % del universo) entran sin código de región, de modo que docentes e inmuebles caen a la mediana global y los aranceles se imputan por la cascada. El PIB sí se corrige después. Se mantiene sin corregir para no cambiar la metodología publicada; la corrección será una versión metodológica nueva.
 - **Metadata de validación (P-03, corregida).** La metadata de la corrida registraba cinco _folds_, pero se ejecutaron siete (validación 2019-2025). Se corrigió el 19-11-2026, antes del congelamiento; era un defecto de trazabilidad y no alteraba las cifras.
-- **Pronóstico 2027 sin congelamiento formal (P-01).** La huella SHA-256 con etiqueta publicada sigue pendiente (ver [Pronóstico 2027](#-pronóstico-2027-pre-registrado)). Los intervalos conformes de la corrida 2027 ya están calibrados (P-05).
+- **Desocupación 2025 parcial.** La desocupación de 2025 promedia 10 de los 12 trimestres móviles del año (los publicados al ejecutar la corrida), y ese valor se arrastra a 2026 y 2027.
 - **Regiones pequeñas**: el desempeño cae en Aysén (WAPE OOF 25,4 %) y Tarapacá (18,6 %).
 - **Imputación extensa**: el 70,9 % de las filas tiene al menos una variable imputada.
 - **Compresión hacia la media**: el modelo acierta niveles y agregados, pero subestima la magnitud de los cambios; no sirve para rankear programas ni como alerta de contracción.
@@ -470,7 +470,7 @@ El procedimiento automatizado clasifica 2020 y 2022 como shock de nivel, tambié
 
 ### Otras direcciones futuras
 
-1. **La prueba pre-registrada de 2027.** El pronóstico 2027 ya está publicado, generado con el pipeline de v4 sin cambios de método; las mejoras irán en una pista aparte, contrastada por separado.
+1. **La prueba prospectiva de 2027.** El pronóstico 2027 está congelado (etiqueta `forecast-2027`), generado con el pipeline de v4 sin cambios de método; las mejoras irán en una pista aparte, contrastada por separado.
 2. **Explotar la estructura de cohorte**: la identidad ANTIGUO<sub>t</sub> ≈ retención × (ANTIGUO<sub>t−1</sub> + NUEVO<sub>t−1</sub>) está en los datos y no se usa.
 3. **Emparejar el contraste por código de carrera**, no por nombre: recupera 31 celdas y mueve el WAPE de 11,49 % a 11,24 %.
 4. **Dar un componente extrapolativo real** con proyecciones oficiales de las exógenas en vez de congelarlas.
@@ -484,11 +484,15 @@ El procedimiento automatizado clasifica 2020 y 2022 como shock de nivel, tambié
 
 | Versión | Fecha | Estado |
 |---|---|---|
-| **Corrida 2027** · `modelo_final_20261118_1345` | noviembre de 2026 | **Vigente.** Pipeline v4 sin cambios de método, entrenado con datos hasta 2026; pronóstico 2027 pre-registrado |
+| **Corrida 2027** · `modelo_final_20261118_1345` | noviembre de 2026 | **Vigente.** Pipeline v4 sin cambios de método, entrenado con datos hasta 2026; pronóstico 2027 *ex ante*, congelado el 20-11-2026 (`forecast-2027`) |
 | v4 · `modelo_final_20260813_1535` | agosto de 2026 | Llave del lag corregida, reestimado con ventana ≤2025, validado contra el real 2026 |
 | v3 · `modelo_final_20260617_0101` | junio de 2026 | Reemplazada. Su pronóstico, congelado antes de la publicación del SIES, dio _skill_ −8,0 % contra el real 2026 por el defecto de la llave del lag |
 
 El paper v3 (`paper_modelo_matricula_chile_v3_FINAL.md`) sigue disponible en el historial de este repositorio. También queda en el historial el PDF de v3 (`Documents/Predictive model of university admission.pdf`, eliminado del árbol el 19-11-2026); el PDF vigente es [`Documents/paper_modelo_matricula_chile_v4.pdf`](Documents/paper_modelo_matricula_chile_v4.pdf). La sección 5.1 del paper documenta qué cambió entre v3 y v4 y por qué.
+
+**Congelamiento del 20-11-2026.** El pronóstico 2027 y sus variantes quedaron congelados en [`forecast_2027/`](forecast_2027/) con la etiqueta anotada `forecast-2027` (commit `e1f9b448`), con protocolo de evaluación v2.2.
+
+**Correcciones de figuras del 20-11-2026.** fig07 agrupa los deciles por el rezago (antes, por la matrícula observada, lo que mostraba regresión a la media; esa versión queda como fig07b); fig08 grafica la matrícula observada de 2018 (antes, la suma de los rezagos de 2018, es decir, el nivel 2017), lo que cambia la regresión lineal de fig09 de −1,27 % a −1,53 %; fig11 grafica el promedio de |SHAP| por subgrupo (antes, el valor absoluto del promedio; la versión con signo queda como fig11b).
 
 **Corrección del 20-11-2026: evaluación contra la matrícula observada.** El panel guarda la tasa de crecimiento recortada a sus percentiles 1 y 99 (para entrenar) y reconstruía el «real» desde esa tasa, de modo que las métricas del holdout 2026 y del OOF se calculaban contra una matrícula levemente modificada en 1.430 filas de 2018-2026 (75 del holdout). Todas las cifras del holdout, del OOF y del holdout 2025 de v4 se recalcularon contra la matrícula observada del SIES; el holdout suma ahora 741.615, igual que el SIES crudo. No se reentrenó nada: cambian las métricas, no las predicciones. Las cifras de la validación de v4 contra el real 2026 no cambian, porque ya usaban el dato del SIES. El pronóstico 2027 (761.058) tampoco cambia, pero su crecimiento se expresa ahora sobre la base observada (+2,62 % sobre 741.615, antes +2,80 % sobre 740.318), y sus bandas al 90 % se recalibraron con residuos observados (cobertura 92,49 % en el holdout 2026).
 

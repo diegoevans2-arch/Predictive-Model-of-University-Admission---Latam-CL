@@ -15,10 +15,16 @@ en 2026, pronóstico 2027) · modelo validado contra el dato real 2026: `modelo_
 > Las cifras de las secciones 3, 4 y 5.2-5.3 y 5.6-5.8 corresponden ahora a esa corrida. La validación
 > *out-of-time* de la sección 5.4 se conserva tal cual: mide el modelo anterior, entrenado hasta 2025,
 > contra el dato real 2026, y sigue siendo la evidencia principal del trabajo. El pronóstico 2027
-> (sección 5.9) se publica antes de que el SIES publique la matrícula 2027 y queda **pre-registrado**:
-> será la primera prueba limpia del pipeline corregido. El código fuente dejó de publicarse en este
+> (sección 5.9) se congeló el 20-11-2026, antes de que el SIES publique la matrícula 2027, con la
+> etiqueta anotada `forecast-2027` (*ex ante*, con sello temporal externo): será la primera prueba
+> limpia del pipeline corregido. El código fuente dejó de publicarse en este
 > repositorio; el método completo está descrito en el documento técnico funcional
 > (`Documents/DOCUMENTO_TECNICO_FUNCIONAL.md`).
+>
+> **Congelamiento y correcciones del 20 de noviembre de 2026.** El pronóstico 2027 se congeló con la
+> etiqueta `forecast-2027` (sección 5.9). La Figura 3 grafica ahora la matrícula observada de 2018 (antes
+> mostraba el nivel 2017), lo que cambia la regresión lineal de la Figura 6 a −1,53 %. El PIB regional es
+> volumen encadenado, no precios corrientes (Tabla 1).
 >
 > **Corrección del 20 de noviembre de 2026: evaluación contra la matrícula observada.** El panel
 > guarda la tasa de crecimiento recortada a sus percentiles 1 y 99 para entrenar, y la matrícula
@@ -66,7 +72,7 @@ siete *folds*, holdout ciego 2026— y *target encoding* calculado dentro de cad
 seleccionado (CatBoost, optimizado con Optuna) alcanza en el holdout 2026 un WAPE de 12,27 % frente
 al 13,09 % del baseline de persistencia, un R² de 0,9710 frente a 0,9666, y un *skill score* de
 +13,21 %. Pronostica para 2027 **761.058 matrículas** sobre el universo modelado, un crecimiento de
-**+2,62 %** sobre la matrícula observada de 2026; el pronóstico se publica antes del dato oficial y queda pre-registrado.
+**+2,62 %** sobre la matrícula observada de 2026; el pronóstico quedó congelado *ex ante* el 20-11-2026, con sello temporal externo (etiqueta `forecast-2027`).
 
 La contribución central no es ese número sino la verificación del pipeline contra un dato que ninguna
 etapa de entrenamiento ni de *tuning* vio: la matrícula real 2026 publicada por el SIES. Un pronóstico
@@ -264,8 +270,8 @@ Se integraron diez fuentes oficiales del ecosistema chileno de educación superi
 | BaseINDICES CNED | CNED | Aranceles, vacantes, puntajes de admisión, duración de carreras | 2005-2026 (2026 parcial) |
 | Cuerpo Docente CNED | CNED | Docentes por grado académico y jornada | 2018-2025 |
 | Inmuebles e infraestructura CNED | CNED | M² construidos, salas, oficinas por sede | 2018-2025 |
-| PIB regional | Banco Central | PIB regional anual a precios corrientes | 2018-2025 (2026 arrastrado) |
-| Tasa de desocupación regional | INE (SIMEL) | Desempleo anual por región y sexo | 2018-2025 (2026 arrastrado) |
+| PIB regional | Banco Central | PIB regional anual en volumen a precios del año anterior encadenado, referencia 2018 (miles de millones de pesos encadenados; Banco Central, edición del 23-04-2026, cifras preliminares) | 2018-2025 (2026 arrastrado) |
+| Tasa de desocupación regional | INE (SIMEL) | Promedio anual de los trimestres móviles por región, ambos sexos (2025: 10 de 12) | 2018-2025 (2026 arrastrado) |
 | Empleabilidad e ingresos | mifuturo.cl | Retención de primer año, empleabilidad por carrera-institución | 2018-2025 |
 | Diccionario sede-región | CNED | Mapeo de códigos de sede a códigos INE (380 sedes) | Estático |
 | Diccionario de instituciones | SIES | Catálogo canónico de 220 instituciones | Estático |
@@ -289,7 +295,7 @@ forecast 2026 cubría 55 instituciones, 53 de ellas presentes en el dato real 20
 
 **Supuestos de la corrida 2027.** Cuando una fuente todavía no publica el año más reciente, el
 pipeline arrastra su último valor y lo registra: el PIB regional y la desocupación de 2026 repiten
-los de 2025; la planta docente y la infraestructura toman el último año disponible; la retención y la
+los de 2025 (y la desocupación de 2025 promedia sólo 10 de sus 12 trimestres móviles); la planta docente y la infraestructura toman el último año disponible; la retención y la
 empleabilidad, la mediana histórica del programa. La base INDICES del CNED cubre 2026 sólo en parte.
 La edición 2026 del SIES revisa además la matrícula 2025 en +53 estudiantes respecto de la edición
 anterior.
@@ -576,8 +582,8 @@ la ventana de entrenamiento sigue cerrada en 2025 y ningún dato de 2026 entra a
 etapa. Lo que ocurrió es que el dato real 2026 actuó como **señal diagnóstica** que motivó auditar el
 pipeline, y la auditoría encontró un defecto que existía desde antes y era independiente de 2026 —de
 hecho, verificable enteramente sobre datos de 2018-2025—. Dicho esto, la distinción que corresponde
-mantener es que **v3 era un pronóstico pre-registrado y v4 es una reestimación posterior a conocer el
-resultado**. Las cifras de v4 sobre 2026 son *out-of-sample* pero no pre-registradas, y deben leerse
+mantener es que **v3 era un pronóstico *ex ante*, congelado antes del dato, y v4 es una reestimación posterior a conocer el
+resultado**. Las cifras de v4 sobre 2026 son *out-of-sample* pero no prospectivas, y deben leerse
 con ese matiz. La prueba limpia del pipeline corregido será el dato 2027 (sección 5.9).
 
 ### 5.2 Desempeño global
@@ -661,7 +667,7 @@ Las cifras de 2019 a 2025 no coinciden exactamente con las de v4 por tres motivo
 SIES revisa levemente los años anteriores, los hiperparámetros se eligieron sobre un *fold* más y el
 *target encoding* se ajusta con un año más de datos.
 
-![Figura 3. Backtesting agregado nacional: matrícula real, predicción OOF retrospectiva con su error anual y forecast 2027 (761.058). Las bandas marcan los años de shock de nivel](figuras/fig08_backtesting_temporal_MONEY_FIGURE.png)
+![Figura 3. Backtesting agregado nacional: matrícula observada 2018-2026 (SIES), predicción OOF retrospectiva con su error anual y pronóstico 2027 (761.058). Las bandas marcan los años de shock de nivel](figuras/fig08_backtesting_temporal_MONEY_FIGURE.png)
 
 ### 5.4 Validación out-of-time contra el dato real 2026
 
@@ -834,7 +840,7 @@ equivoca.
 Las dummies de shock pandémico **no aparecen entre las variables relevantes**, lo que era esperable
 dado que dos de las tres son constantes en cero (sección 4.5).
 
-### 5.9 Pronóstico 2027 (pre-registrado)
+### 5.9 Pronóstico 2027 (*ex ante*, congelado)
 
 La corrida 2027 pronostica **761.058 matrículas** en las 9.069 celdas de 53 instituciones con
 programas vigentes en 2026, un crecimiento de **+2,62 %** sobre las 741.615 matrículas observadas en 2026 en esas
@@ -842,15 +848,11 @@ mismas celdas (en 75 celdas, el rezago congelado es la matrícula 2026 recortada
 programas universitarios de pregrado que existían en 2026 con al menos diez matriculados, y deja fuera
 lo que se abra en 2027.
 
-**Estatus.** El pronóstico se publica en este repositorio antes de que el SIES publique la matrícula
-2027, prevista para julio de 2027, y no se modificará después. A diferencia de la reestimación v4
-sobre 2026, éste es un pronóstico pre-registrado del pipeline corregido: su contraste contra el dato
-real será la primera prueba limpia del método. Las mejoras de la sección 6.6 irán en una pista
-separada y no lo reemplazan.
+**Estatus: *ex ante*, con sello temporal externo.** El pronóstico se fijó el **20-11-2026** y se publicó en el repositorio remoto con la etiqueta anotada [`forecast-2027`](../../forecast_2027/) (commit `e1f9b448`). La etiqueta registra la huella SHA-256 de las predicciones (diseño 2×2: `259d272cd55d6342a21c024b5563467b1116a23265d6b850df9bdf98b1b6111f`; C49, el pronóstico publicado: `79b7b5d6880ca50e85baab1465cd25fe349501206524314c43a07d770fcb393e`), del modelo, de la metadata y del protocolo de evaluación v2.2; la lista completa está en `forecast_2027/SHA256SUMS.txt`. El paquete se depositará además en Zenodo (DOI [PENDIENTE]). La fecha de la etiqueta en el remoto es anterior a la publicación de la matrícula 2027 del SIES, prevista para julio de 2027, y queda fuera del control del autor. El contraste contra el dato oficial seguirá el protocolo congelado ([`protocolo_evaluacion_2027.md`](../../forecast_2027/protocolo_evaluacion_2027.md)), con el script `evaluar_2027.py`, y será la primera evaluación prospectiva del pipeline corregido. Junto al pronóstico publicado se congelaron tres variantes (CatBoost y LightGBM, con y sin exógenas), la persistencia y una referencia nacional. Las mejoras posteriores se evaluarán por separado y no reemplazan este pronóstico. A diferencia de la reestimación v4 sobre 2026, éste es un pronóstico *ex ante* del pipeline corregido.
 
 **Contra baselines simples.** La Figura 6 compara el crecimiento pronosticado con tres referencias
 calculadas sobre la serie nacional: la variación promedio de 2024-2026 (+3,40 %), la variación de 2026
-(+4,17 %) y una regresión lineal sobre 2018-2026 (−1,27 %). El pronóstico queda 0,8 y 1,6 puntos por
+(+4,17 %) y una regresión lineal sobre 2018-2026 (−1,53 %). El pronóstico queda 0,8 y 1,6 puntos por
 debajo de las dos primeras. La regresión lineal es una referencia débil en este caso: 2026 quedó por
 encima de la tendencia de largo plazo, y la recta proyecta una caída que ninguna otra señal sugiere.
 
@@ -1079,7 +1081,7 @@ persistencia, *skill score* de +26,71 % **positivo en los ocho niveles de agrega
 agregado de −0,01 % con el crecimiento predicho (+2,26 %) prácticamente idéntico al observado
 (+2,27 %). Re-estimado con datos hasta 2026, el mismo pipeline obtiene en el holdout 2026 WAPE
 12,27 % contra 13,09 % y *skill* de +13,21 %, y pronostica para 2027 **761.058 matrículas (+2,62 %)**,
-pre-registradas antes del dato oficial. **Tercero**, intervalos de predicción conformes estratificados
+congeladas *ex ante* el 20-11-2026, antes del dato oficial. **Tercero**, intervalos de predicción conformes estratificados
 con cobertura empírica verificada de 92,5 % contra un objetivo de 90 %. **Cuarto**, la cuantificación
 del sesgo de *target encoding* mal aplicado en 3,2 % a 3,5 % del RMSE según la corrida, con la
 salvedad de que esa comparación también cambia la fórmula de suavizado. **Quinto**, y probablemente el

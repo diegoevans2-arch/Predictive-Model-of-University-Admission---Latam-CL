@@ -185,7 +185,7 @@ La dificultad no está en el nivel: la matrícula es tan inercial que repetir el
 | 2 | Base INDICES: aranceles, puntajes, duración | CNED | Precio y selectividad | Institución × programa × región × año | 2005-2026 (2026 parcial) |
 | 3 | Cuerpo docente | CNED · INDICES | Composición del claustro | Institución × sede × año | 2005-2025 |
 | 4 | Inmuebles | CNED · INDICES | Infraestructura | Institución × sede × año | 2005-2025 |
-| 5 | PIB regional | Banco Central de Chile | Contexto macroeconómico | Región × año | 2013-2025, referencia 2018 |
+| 5 | PIB regional | Banco Central de Chile | Contexto macroeconómico | Región × año | 2013-2025; volumen a precios del año anterior encadenado, referencia 2018 |
 | 6 | Tasa de desocupación regional por sexo | INE | Contexto macroeconómico | Región × sexo × trimestre móvil | 2015-2025 |
 | 7 | Empleabilidad e ingresos | SIES · mifuturo.cl | Retención de primer año | Institución × carrera genérica × año | 2018-2025, un archivo por año |
 | 8 | Diccionario sede-región | Construido sobre el CNED | Llave regional de docentes e inmuebles | 380 sedes | — |
@@ -277,6 +277,8 @@ Cada fuente se procesa por separado y conserva su granularidad original. La inge
 | 2 | Se excluyen el subtotal regionalizado, el extrarregional y el PIB total |
 | 3 | Paso a formato largo año × región |
 | 4 | Cada nombre de región se traduce a la nomenclatura canónica con 16 equivalencias explícitas |
+
+**Serie.** PIB regional anual en volumen a precios del año anterior encadenado, referencia 2018 (miles de millones de pesos encadenados; Banco Central, edición del 23-04-2026, cifras preliminares). No son precios corrientes: la columna `pib_mm_pesos` es volumen encadenado.
 
 **Controles.** Toda región traducida existe en el diccionario y toda columna tiene traducción. **Salida:** 208 filas (16 regiones × 13 años, 2013-2025).
 
@@ -1300,7 +1302,7 @@ Dado el holdout (§10.6), A Distancia y Semipresencial deben leerse como prolong
 | Regla | Pronóstico 2027 | Crecimiento |
 |---|---:|---:|
 | Modelo | 761.058 | +2,62 % |
-| Tendencia lineal 2018-2026 | 732.231 | −1,27 % |
+| Tendencia lineal 2018-2026 | 730.266 | −1,53 % |
 | Promedio de años normales | 766.811 | +3,40 % |
 | Arrastre del crecimiento 2025-2026 | 772.526 | +4,17 % |
 
@@ -1308,7 +1310,7 @@ El modelo queda dentro del rango de las reglas basadas en crecimiento reciente y
 
 ### 19.4 · Evidencia *out-of-time*: validación 2026 de la v4 original
 
-La v4 original (agosto de 2026, entrenada con 2018-2025) pronosticó 2026 y se contrastó con el SIES del 10-07-2026. Ningún dato de 2026 entró al modelo, pero la corrección de la llave la motivó el mal resultado de v3 contra ese dato: es *out-of-sample* pero **no pre-registrada**. La prueba pre-registrada es el pronóstico 2027.
+La v4 original (agosto de 2026, entrenada con 2018-2025) pronosticó 2026 y se contrastó con el SIES del 10-07-2026. Ningún dato de 2026 entró al modelo, pero la corrección de la llave la motivó el mal resultado de v3 contra ese dato: es *out-of-sample* pero **no prospectiva**. La prueba prospectiva es el pronóstico 2027.
 
 | | Celdas | Matrículas 2026 |
 |---|---:|---:|
@@ -1389,7 +1391,7 @@ No medida.
 | 17 | **Shocks sensibles al preprocesamiento** | Dos de tres indicadoras constantes | Aceptado |
 | 18 | **Óptimo de iteraciones en el borde** | Posible mejora fuera del rango | Pendiente P-08 |
 | 19 | **Intervalos conservadores; total nacional sin garantía** | Bandas anchas | Aceptado |
-| 20 | **Validación 2026 de la v4 original no pre-registrada** | Evidencia más débil que la de 2027 | Se resuelve con P-01 |
+| 20 | **Validación 2026 de la v4 original no prospectiva** | Evidencia más débil que la de 2027 | Resuelto con P-01: pronóstico 2027 congelado el 20-11-2026 |
 | 21 | **Validación 2026 emparejada por nombre** | Por código se recuperan 31 celdas y 3.987 matrículas | Pendiente P-07 |
 
 > [!WARNING]
@@ -1403,7 +1405,7 @@ No medida.
 
 | # | Pendiente | Tipo | Qué destraba |
 |---|---|---|---|
-| P-01 | **Congelar el pronóstico 2027** con huella SHA-256 y etiqueta publicada antes del 30-06-2027 | Protocolo | La primera prueba pre-registrada del pipeline corregido |
+| P-01 | ~~Congelar el pronóstico 2027~~ **Resuelto el 20-11-2026**: etiqueta anotada `forecast-2027` (commit `e1f9b448`), huellas en `forecast_2027/SHA256SUMS.txt`, protocolo v2.2 | Protocolo | La primera prueba prospectiva del pipeline corregido |
 | P-02 | Corregir la región de Ñuble antes de las uniones institucionales | Datos | Docentes, inmuebles y aranceles de Ñuble. Es una versión metodológica nueva |
 | P-03 | ~~Corregir la metadata que registra cinco *folds*~~ **Resuelto el 19-11-2026**: la metadata registra siete *folds* con sus años, y el código los deriva de la partición ejecutada | Trazabilidad | Que la metadata diga lo ejecutado (siete) |
 | P-04 | Ablación de las tres variables con matrícula contemporánea | Método | Medir cuánto optimismo introducen |
@@ -1487,7 +1489,10 @@ En julio, al publicarse el SIES, primero se valida (C) y después se reentrena (
 | 5 | **Fuente atrasada**: se congela igual con el último año disponible. Una exógena atrasada degrada poco; un pronóstico sin congelar invalida la prueba |
 | 6 | **Al publicarse T+1**: se verifica la huella, se reconstruye el real, se verifica contra el informe oficial y se contrasta con la persistencia al lado (§15.6) |
 
-Es la lección de 2026: el pronóstico de v3 estaba congelado y su contraste reveló los defectos de la llave; la v4 corrigió después de conocer el resultado. **La prueba pre-registrada de la v4 es el pronóstico 2027.**
+Es la lección de 2026: el pronóstico de v3 estaba congelado y su contraste reveló los defectos de la llave; la v4 corrigió después de conocer el resultado. **La prueba prospectiva de la v4 es el pronóstico 2027 (*ex ante*, con sello temporal externo).**
+
+> [!NOTE]
+> **Congelamiento realizado (20-11-2026).** El pronóstico se fijó el **20-11-2026** y se publicó en el repositorio remoto con la etiqueta anotada [`forecast-2027`](../forecast_2027/) (commit `e1f9b448`). La etiqueta registra la huella SHA-256 de las predicciones (diseño 2×2: `259d272cd55d6342a21c024b5563467b1116a23265d6b850df9bdf98b1b6111f`; C49, el pronóstico publicado: `79b7b5d6880ca50e85baab1465cd25fe349501206524314c43a07d770fcb393e`), del modelo, de la metadata y del protocolo de evaluación v2.2; la lista completa está en `forecast_2027/SHA256SUMS.txt`. El paquete se depositará además en Zenodo (DOI [PENDIENTE]). La fecha de la etiqueta en el remoto es anterior a la publicación de la matrícula 2027 del SIES, prevista para julio de 2027, y queda fuera del control del autor. El contraste contra el dato oficial seguirá el protocolo congelado ([`protocolo_evaluacion_2027.md`](../forecast_2027/protocolo_evaluacion_2027.md)), con el script `evaluar_2027.py`, y será la primera evaluación prospectiva del pipeline corregido. Junto al pronóstico publicado se congelaron tres variantes (CatBoost y LightGBM, con y sin exógenas), la persistencia y una referencia nacional. Las mejoras posteriores se evaluarán por separado y no reemplazan este pronóstico.
 
 ### 24.6 · Reglas de versión y re-ejecución
 
@@ -1534,6 +1539,7 @@ Los parámetros metodológicos —llave del lag, lista de variables, semilla, en
 | 1.0 | 2026-11-18 | Re-estimación con datos hasta 2026 (18-11-2026) | Versión inicial; reemplaza la publicación de los notebooks |
 | 2.0 | 2026-11-19 | La misma | Formato técnico-funcional por audiencias: ficha, reglas de negocio, demostración con una celda real, parámetros, controles con resultado, supuestos y riesgos, pendientes y observaciones |
 | 2.1 | 2026-11-20 | La misma | **Evaluación contra la matrícula observada.** El panel guarda la tasa recortada a sus percentiles 1 y 99 (para entrenar) y la matrícula «real» de la evaluación se reconstruía desde ella (1.430 filas de 2018-2026, 75 del holdout). Se recalcularon contra el SIES las cifras del holdout, del OOF y del holdout 2025 de v4 (§10, §15.5, §19), las bandas (§11) y la auditoría de §6.4, sin reentrenar. El pronóstico 2027 no cambia; su base observada es 741.615 (+2,62 %). La validación de v4 contra el real 2026 no cambia |
+| 2.2 | 2026-11-20 | La misma | Pronóstico 2027 congelado (etiqueta `forecast-2027`, protocolo v2.2; P-01 resuelto). PIB descrito como volumen encadenado, referencia 2018. Tendencia lineal 2018-2026 de §19.3 recalculada con la matrícula observada de 2018 (−1,53 %) |
 
 ---
 
