@@ -28,7 +28,7 @@ author: Diego Evans Pérez Paz
 > **Función**: pronostica la matrícula de pregrado universitario del año siguiente en cada celda institución × carrera × región × jornada × género × condición
 > **Insumos**: SIES (matrícula) · CNED (aranceles y puntajes, cuerpo docente, inmuebles) · Banco Central (PIB regional) · INE (desocupación regional) · mifuturo.cl (retención) · 3 diccionarios de llaves (instituciones, carreras, sede-región) y una tabla interna de 16 regiones
 > **Salida**: dataset de modelado 82.967 × 52 · tabla de predicciones de 92.036 filas · modelo CatBoost con su metadata
-> **Resultado**: holdout 2026 con WAPE 12,09 % frente a 12,91 % de la persistencia (*skill* +14,20 %) · pronóstico 2027 de **761.058** matrículas (+2,80 %)
+> **Resultado**: holdout 2026 con WAPE 12,27 % frente a 13,09 % de la persistencia (*skill* +13,21 %), contra la matrícula observada · pronóstico 2027 de **761.058** matrículas (+2,62 % sobre 741.615)
 > **Consumidor**: el [paper](OUTPUTS_PAPER/paper_modelo_matricula_chile_v4.md) y el [README](../README.md) del repositorio
 > **Tiempo de corrida**: optimización de hiperparámetros 137,4 min; el total no se publica (§20)
 
@@ -56,7 +56,7 @@ La dificultad no está en el nivel: la matrícula es tan inercial que repetir el
 | 2 | **Consolidar** sobre la matrícula del SIES | Celdas con su año anterior, contexto e imputación | 82.967 celdas-año, 2018-2026, cero nulos |
 | 3 | **Modelar** con validación temporal | Modelo CatBoost elegido sin ver el año de prueba | RMSE de CV 0,2949 en 7 *folds* |
 | 4 | **Medir** contra la persistencia | Error del holdout 2026 en ocho niveles de agregación | *Skill* positivo en los 8 niveles |
-| 5 | **Pronosticar y congelar** | Pronóstico 2027 fijado antes del dato real | 761.058 matrículas (+2,80 %) |
+| 5 | **Pronosticar y congelar** | Pronóstico 2027 fijado antes del dato real | 761.058 matrículas (+2,62 %) |
 
 > [!TIP]
 > **👔 En una frase**
@@ -87,7 +87,7 @@ La dificultad no está en el nivel: la matrícula es tan inercial que repetir el
 | Holdout | 2026 | Fuera de la selección de modelo y del tuning |
 | Horizonte | 2027 | Un año adelante |
 | Dataset final | 82.967 filas | 62 nombres de institución, 1.432 de carrera, 16 regiones, 10 áreas |
-| Universo del pronóstico 2027 | 9.069 celdas de 53 instituciones | Suman 740.318 matrículas en 2026: el 97,5 % de las 759.045 universitarias de pregrado |
+| Universo del pronóstico 2027 | 9.069 celdas de 53 instituciones | Suman 741.615 matrículas observadas en 2026: el 97,7 % de las 759.045 universitarias de pregrado |
 | **Grano** | `institución × carrera × región × jornada × género × condición × año` | Una fila es una **celda**-año |
 
 ### 2.2 · Qué queda fuera
@@ -496,7 +496,7 @@ Cada fila registra su *origen_lag*. Cada corrida imprime la composición sobre e
 
 En código y medio la razón debe rondar 1 y la tasa mediana no debe ser negativa. **Si el nivel medio vuelve a mostrar una tasa mediana cercana a −0,87 con razón cercana a 8, el escalado no se aplicó.** La llave por código recupera 42.641 matrículas en 1.041 celdas. En el dataset final: 97,94 % fino, 0,84 % código, 1,22 % medio.
 
-**¿Los errores extremos vienen de los respaldos?** No (auditoría del 19-11-2026, corrida 2027, [`tabla_peores_por_origen_lag.md`](OUTPUTS_PAPER/tablas/tabla_peores_por_origen_lag.md)). De las 50 peores celdas por error absoluto, 49 del OOF 2019-2025 y las 50 del holdout 2026 tienen lag **fino**, es decir, la misma celda con el mismo nombre de carrera en t−1. Los respaldos pesan el 1,1 % de la matrícula y tienen más error relativo (WAPE de 17-18 % con código y de 27-31 % con medio, contra 12-14 % con fino), pero no llegan al extremo de la distribución. Las celdas peor predichas son contracciones reales de programas que siguen con el mismo nombre (por ejemplo, Pedagogía en Educación Diferencial de la U. Los Leones, 2019-2020, o Ingeniería de Ejecución Industrial a distancia de la UDLA, 2026), no defectos de la llave.
+**¿Los errores extremos vienen de los respaldos?** No (auditoría del 19-11-2026, corrida 2027, [`tabla_peores_por_origen_lag.md`](OUTPUTS_PAPER/tablas/tabla_peores_por_origen_lag.md)). De las 50 peores celdas por error absoluto, 49 del OOF 2019-2025 y 49 del holdout 2026 tienen lag **fino**, es decir, la misma celda con el mismo nombre de carrera en t−1 (cifras contra la matrícula observada, corrección del 20-11-2026). Los respaldos pesan el 1,1 % de la matrícula y tienen más error relativo (WAPE de 17-18 % con código y de 34 % con medio, contra 12-15 % con fino), pero no llegan al extremo de la distribución. Las celdas peor predichas son contracciones reales de programas que siguen con el mismo nombre (por ejemplo, Pedagogía en Educación Diferencial de la U. Los Leones, 2019-2020, o Ingeniería de Ejecución Industrial a distancia de la UDLA, 2026), no defectos de la llave.
 
 ### 6.5 · Los dos defectos que motivaron la v4
 
@@ -807,15 +807,15 @@ Perfil de las 62 instituciones con nueve variables medias (docentes, cuatro rati
 
 | Conjunto | n | R² | R² pers. | WAPE | WAPE pers. | *Skill* | MASE | Sesgo | Sesgo pers. |
 |---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| **Holdout 2026** | 9.069 | 0,9733 | 0,9689 | **12,09 %** | 12,91 % | **+14,20 %** | 0,936 | +0,92 % | −2,60 % |
-| OOF 2019-2026 | 73.462 | 0,9652 | 0,9653 | 14,13 % | 14,63 % | −0,47 % | 0,966 | +2,40 % | −0,48 % |
-| OOF 2019-2025 | 64.393 | 0,9636 | 0,9646 | 14,45 % | 14,90 % | −2,90 % | 0,970 | +2,64 % | −0,15 % |
+| **Holdout 2026** | 9.069 | 0,9710 | 0,9666 | **12,27 %** | 13,09 % | **+13,21 %** | 0,937 | +0,74 % | −2,77 % |
+| OOF 2019-2026 | 73.462 | 0,9617 | 0,9616 | 14,38 % | 14,88 % | +0,09 % | 0,966 | +2,23 % | −0,65 % |
+| OOF 2019-2025 | 64.393 | 0,9599 | 0,9607 | 14,71 % | 15,16 % | −2,00 % | 0,970 | +2,46 % | −0,32 % |
 
-En el holdout: RMSE 20,26 matrículas por celda (persistencia 21,87), MAE 9,87, MedAE 5,90.
+En el holdout: RMSE 21,11 matrículas por celda (persistencia 22,66), MAE 10,03, MedAE 5,90. Todas las cifras de §10 se miden contra la matrícula observada del SIES (corrección del 20-11-2026, §27).
 
 ### 10.2 · Métricas y por qué el R² sobre niveles engaña
 
-Sobre la tasa, el R² del holdout es **0,148 frente a −0,005 de la persistencia**. Sobre la matrícula, **0,9733 frente a 0,9689**: el aporte propio del modelo cabe en menos de un punto. Un programa de cinco años arrastra cuatro cohortes ya matriculadas; el nivel del año siguiente está casi determinado antes de la admisión. **Ningún R² sobre niveles se cita sin el de la persistencia.**
+Sobre la tasa, el R² del holdout es **0,141 frente a −0,006 de la persistencia**. Sobre la matrícula, **0,9710 frente a 0,9666**: el aporte propio del modelo cabe en menos de un punto. Un programa de cinco años arrastra cuatro cohortes ya matriculadas; el nivel del año siguiente está casi determinado antes de la admisión. **Ningún R² sobre niveles se cita sin el de la persistencia.**
 
 | Métrica | Definición | Qué captura | Limitación sola |
 |---|---|---|---|
@@ -835,14 +835,14 @@ Sobre la tasa, el R² del holdout es **0,148 frente a −0,005 de la persistenci
 
 | Nivel | Grupos | WAPE | WAPE pers. | *Skill* | MASE | ±10 % | ±10 % pers. |
 |---|---:|---:|---:|---:|---:|---:|---:|
-| N1 Nacional | 1 | 0,92 % | 2,60 % | +87,55 % | 0,353 | 100 % | 100 % |
-| N2 + Institución | 53 | 2,60 % | 3,49 % | +43,03 % | 0,746 | 90,6 % | 92,5 % |
-| N3 + Área | 413 | 4,30 % | 4,89 % | +34,20 % | 0,879 | 80,9 % | 77,5 % |
-| N4 + Región | 647 | 4,68 % | 5,15 % | +16,90 % | 0,909 | 76,2 % | 74,3 % |
-| N5 + Carrera | 2.739 | 8,24 % | 8,63 % | +8,60 % | 0,955 | 57,4 % | 56,3 % |
-| N6 + Condición | 4.798 | 10,05 % | 10,65 % | +11,25 % | 0,944 | 49,3 % | 48,1 % |
-| N7 + Género | 8.390 | 11,53 % | 12,13 % | +5,09 % | 0,951 | 42,6 % | 41,8 % |
-| N8 + Jornada (celda) | 9.069 | 12,09 % | 12,91 % | +14,20 % | 0,936 | 41,6 % | 40,6 % |
+| N1 Nacional | 1 | 0,74 % | 2,77 % | +92,85 % | 0,267 | 100 % | 100 % |
+| N2 + Institución | 53 | 2,76 % | 3,64 % | +49,51 % | 0,758 | 88,7 % | 92,5 % |
+| N3 + Área | 413 | 4,44 % | 5,04 % | +37,42 % | 0,880 | 80,1 % | 76,8 % |
+| N4 + Región | 647 | 4,78 % | 5,30 % | +24,45 % | 0,902 | 75,6 % | 73,4 % |
+| N5 + Carrera | 2.739 | 8,42 % | 8,81 % | +7,86 % | 0,955 | 57,2 % | 56,3 % |
+| N6 + Condición | 4.798 | 10,22 % | 10,83 % | +10,40 % | 0,944 | 49,3 % | 48,0 % |
+| N7 + Género | 8.390 | 11,71 % | 12,31 % | +4,47 % | 0,952 | 42,6 % | 41,8 % |
+| N8 + Jornada (celda) | 9.069 | 12,27 % | 13,09 % | +13,21 % | 0,937 | 41,6 % | 40,6 % |
 
 Además de la cascada anidada se reportan cortes de una dimensión (región, área, jornada), más precisos que el nivel anidado de tamaño comparable porque juntan errores de signo opuesto.
 
@@ -850,17 +850,17 @@ Además de la cascada anidada se reportan cortes de una dimensión (región, ár
 
 | Año | n | R² | R² pers. | WAPE | WAPE pers. | *Skill* | Real | Predicho | Sesgo |
 |---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|
-| 2019 | 9.424 | 0,954 | 0,967 | 14,12 % | 14,06 % | −38,58 % | 654.320 | 677.096 | +3,48 % |
-| 2020 | 9.321 | 0,943 | 0,950 | 14,46 % | 15,51 % | −13,48 % | 637.304 | 666.925 | +4,65 % |
-| 2021 | 9.230 | 0,967 | 0,958 | 15,13 % | 16,71 % | +21,59 % | 667.325 | 654.899 | −1,86 % |
-| 2022 | 9.161 | 0,958 | 0,960 | 15,91 % | 15,96 % | −5,16 % | 660.215 | 700.931 | +6,17 % |
-| 2023 | 9.038 | 0,962 | 0,966 | 15,92 % | 15,35 % | −12,08 % | 669.407 | 702.750 | +4,98 % |
-| 2024 | 9.176 | 0,974 | 0,973 | 13,46 % | 13,78 % | +3,07 % | 691.894 | 700.168 | +1,20 % |
-| 2025 | 9.043 | 0,979 | 0,974 | 12,34 % | 13,12 % | +20,53 % | 711.271 | 712.759 | +0,21 % |
-| 2026 | 9.069 | 0,973 | 0,969 | 12,09 % | 12,91 % | +14,20 % | 740.318 | 747.102 | +0,92 % |
+| 2019 | 9.424 | 0,950 | 0,963 | 14,36 % | 14,30 % | −34,89 % | 654.495 | 677.096 | +3,45 % |
+| 2020 | 9.321 | 0,936 | 0,944 | 14,69 % | 15,74 % | −13,71 % | 637.998 | 666.925 | +4,53 % |
+| 2021 | 9.230 | 0,962 | 0,953 | 15,50 % | 17,08 % | +19,99 % | 669.403 | 654.899 | −2,17 % |
+| 2022 | 9.161 | 0,953 | 0,954 | 16,31 % | 16,35 % | −2,98 % | 662.479 | 700.931 | +5,80 % |
+| 2023 | 9.038 | 0,958 | 0,962 | 16,20 % | 15,64 % | −8,97 % | 670.918 | 702.750 | +4,74 % |
+| 2024 | 9.176 | 0,972 | 0,971 | 13,63 % | 13,96 % | +3,68 % | 692.653 | 700.168 | +1,09 % |
+| 2025 | 9.043 | 0,978 | 0,972 | 12,45 % | 13,23 % | +21,08 % | 711.941 | 712.759 | +0,11 % |
+| 2026 | 9.069 | 0,971 | 0,967 | 12,27 % | 13,09 % | +13,21 % | 741.615 | 747.102 | +0,74 % |
 
 1. **El *skill* es negativo en cuatro de ocho años** (2019, 2020, 2022, 2023): con poca historia el modelo es peor que la persistencia; por eso el *skill* global del OOF es casi nulo.
-2. **Sobrepredicción temprana** (+3,5 % a +6,2 %) que desaparece con ventanas largas (+1,20 %, +0,21 %, +0,92 % en 2024-2026).
+2. **Sobrepredicción temprana** (+3,5 % a +5,8 %) que desaparece con ventanas largas (+1,09 %, +0,11 %, +0,74 % en 2024-2026).
 3. **El desempeño en uso se parece al de los años recientes**, no al promedio OOF.
 4. Los R² de modelo y persistencia están pegados todos los años.
 
@@ -903,12 +903,12 @@ El error se ordena en buena parte por tamaño. WAPE menor que la persistencia en
 
 | Grano | Lectura |
 |---|---|
-| Nacional, institución, área | Útil: *skill* +34 % a +88 %; nueve de cada diez instituciones dentro de ±10 % |
+| Nacional, institución, área | Útil: *skill* +37 % a +93 %; casi nueve de cada diez instituciones dentro de ±10 % |
 | Institución × área × región (N4) | Frontera práctica: tres de cada cuatro grupos dentro de ±10 % |
 | Carrera y más abajo | Poco más de uno de cada dos grupos dentro de ±10 %; mejora marginal sobre la persistencia |
-| Celda | Correlación tasa real-predicha 0,39; dirección correcta en el 60,1 %. **Dimensiona, no ordena** |
+| Celda | Correlación tasa real-predicha 0,34; dirección correcta en el 60,1 %. **Dimensiona, no ordena** |
 
-Por institución, modelo y persistencia aciertan dentro de ±10 % en proporciones similares (90,6 % y 92,5 %): el modelo gana en WAPE —cuando falla, falla menos— pero no acierta más veces a ese nivel.
+Por institución, modelo y persistencia aciertan dentro de ±10 % en proporciones similares (88,7 % y 92,5 %): el modelo gana en WAPE —cuando falla, falla menos— pero no acierta más veces a ese nivel.
 
 ---
 
@@ -940,7 +940,7 @@ Por nivel, la cobertura 2026 fue 98,1 % (N2), 96,6 % (N3), 94,8 % (N4), 91,8 % (
 > [!NOTE]
 > **Corrida 2027: banda calibrada (19-11-2026)**
 >
-> Mismo procedimiento sobre los residuos de la corrida 2027. Calibrada con el OOF 2019-2025, la cobertura en el holdout 2026 es de 92,35 % por celda (ancho mediano 36,5) y de 92,2 % a 94,3 % en N2-N8. Para el pronóstico se recalibra con el OOF 2019-2026. El total 2027 lleva un rango indicativo, no conforme, de 716.850 a 775.499 (§22, P-05 resuelto).
+> Mismo procedimiento sobre los residuos de la corrida 2027. Con residuos medidos contra la matrícula observada y calibrada con el OOF 2019-2025, la cobertura en el holdout 2026 es de 92,49 % por celda (ancho mediano 36,6) y de 92,2 % a 94,3 % en N2-N8. Para el pronóstico se recalibra con el OOF 2019-2026. El total 2027 lleva un rango indicativo, no conforme, de 719.308 a 777.914 (§22, P-05 resuelto; recalibrada el 20-11-2026).
 
 ---
 
@@ -1095,10 +1095,10 @@ matrícula 2027    = 198 × (1 + 0,06426)          = 210,7
 
 | Nivel | Cálculo | Valor |
 |---|---|---:|
-| Holdout 2026, real | Suma de 9.069 celdas | 740.318 |
-| Holdout 2026, modelo | Suma de predicciones | 747.102 (+0,92 %) |
-| Holdout 2026, persistencia | Suma de lags 2025 | 721.092 (−2,60 %) |
-| Pronóstico 2027 | Suma de 9.069 predicciones sobre base 740.318 | **761.058 (+2,80 %)** |
+| Holdout 2026, real | Suma de 9.069 celdas (matrícula observada) | 741.615 |
+| Holdout 2026, modelo | Suma de predicciones | 747.102 (+0,74 %) |
+| Holdout 2026, persistencia | Suma de lags 2025 | 721.092 (−2,77 %) |
+| Pronóstico 2027 | Suma de 9.069 predicciones sobre base observada 741.615 | **761.058 (+2,62 %)** |
 
 ### 15.4 · Variante: celda con lag por respaldo
 
@@ -1153,7 +1153,7 @@ Porque los errores de signo opuesto se compensan, en particular entre modalidade
 **¿Puedo sumar los intervalos de las celdas para tener el de una institución?**
 No. Cada nivel se calibra sobre su propio error (§11.2, D13).
 
-**¿Por qué el *skill* del holdout 2026 (+14,2 %) es menor que el de la validación 2026 de la v4 original (+26,7 %)?**
+**¿Por qué el *skill* del holdout 2026 (+13,2 %) es menor que el de la validación 2026 de la v4 original (+26,7 %)?**
 Miden el mismo año con instrumentos distintos: universo modelado de cada corrida frente a celdas emparejadas con el dato publicado, y lags distintos. Signo y orden de magnitud son estables.
 
 **¿Por qué todas las celdas de 2026 y 2027 tienen *fue_imputado* = 1?**
@@ -1281,16 +1281,16 @@ Cifras contra las que se comparará la próxima corrida.
 
 | Concepto | Valor |
 |---|---:|
-| Base 2026 | 740.318 |
+| Base 2026 (matrícula observada) | 741.615 |
 | **Pronóstico 2027** | **761.058** |
-| **Crecimiento** | **+2,80 %** |
+| **Crecimiento** | **+2,62 %** |
 
 | Jornada | Crecimiento pronosticado |
 |---|---:|
-| Diurna | +2,32 % |
-| A Distancia | +16,49 % |
-| Semipresencial | +11,01 % |
-| Vespertina | −5,53 % |
+| Diurna | +2,27 % |
+| A Distancia | +14,56 % |
+| Semipresencial | +10,27 % |
+| Vespertina | −5,93 % |
 | Otra | −22,95 % |
 
 Dado el holdout (§10.6), A Distancia y Semipresencial deben leerse como prolongación de tendencia, con riesgo de sobrepredicción.
@@ -1299,10 +1299,10 @@ Dado el holdout (§10.6), A Distancia y Semipresencial deben leerse como prolong
 
 | Regla | Pronóstico 2027 | Crecimiento |
 |---|---:|---:|
-| Modelo | 761.058 | +2,80 % |
-| Tendencia lineal 2018-2026 | 730.661 | −1,30 % |
-| Promedio de años normales | 765.596 | +3,41 % |
-| Arrastre del crecimiento 2025-2026 | 770.551 | +4,08 % |
+| Modelo | 761.058 | +2,62 % |
+| Tendencia lineal 2018-2026 | 732.231 | −1,27 % |
+| Promedio de años normales | 766.811 | +3,40 % |
+| Arrastre del crecimiento 2025-2026 | 772.526 | +4,17 % |
 
 El modelo queda dentro del rango de las reglas basadas en crecimiento reciente y por debajo del arrastre del último año.
 
@@ -1533,6 +1533,7 @@ Los parámetros metodológicos —llave del lag, lista de variables, semilla, en
 |---|---|---|---|
 | 1.0 | 2026-11-18 | Re-estimación con datos hasta 2026 (18-11-2026) | Versión inicial; reemplaza la publicación de los notebooks |
 | 2.0 | 2026-11-19 | La misma | Formato técnico-funcional por audiencias: ficha, reglas de negocio, demostración con una celda real, parámetros, controles con resultado, supuestos y riesgos, pendientes y observaciones |
+| 2.1 | 2026-11-20 | La misma | **Evaluación contra la matrícula observada.** El panel guarda la tasa recortada a sus percentiles 1 y 99 (para entrenar) y la matrícula «real» de la evaluación se reconstruía desde ella (1.430 filas de 2018-2026, 75 del holdout). Se recalcularon contra el SIES las cifras del holdout, del OOF y del holdout 2025 de v4 (§10, §15.5, §19), las bandas (§11) y la auditoría de §6.4, sin reentrenar. El pronóstico 2027 no cambia; su base observada es 741.615 (+2,62 %). La validación de v4 contra el real 2026 no cambia |
 
 ---
 
