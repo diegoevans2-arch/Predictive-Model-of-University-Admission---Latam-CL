@@ -20,3 +20,8 @@ desktop.ini
 *.pkl
 *.parquet
 catboost_info/
+
+# Archivos de trabajo locales (revisión y paquete de envío; no se publican)
+OBSERVACIONES_Y_MEJORAS.md
+PROMPT_CLAUDE_CODE_ANALISIS_Q1.md
+Documents/SUBMISSION_IJF/

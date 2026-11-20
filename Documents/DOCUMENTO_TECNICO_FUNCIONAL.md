@@ -1204,7 +1204,6 @@ Cada corrida produce tres artefactos con la misma marca de fecha y hora. No se p
 | [OUTPUTS_PAPER/tablas](OUTPUTS_PAPER/tablas/) | 10 tablas en Markdown |
 | [OUTPUTS_PAPER](OUTPUTS_PAPER/paper_modelo_matricula_chile_v4.md) | El paper (Markdown) |
 | [paper_modelo_matricula_chile_v4.pdf](paper_modelo_matricula_chile_v4.pdf) | El paper (PDF) |
-| [OBSERVACIONES_Y_MEJORAS.md](../OBSERVACIONES_Y_MEJORAS.md) | Revisión de noviembre de 2026 y estado de sus tareas |
 
 ---
 
@@ -1405,7 +1404,7 @@ No medida.
 
 | # | Pendiente | Tipo | Qué destraba |
 |---|---|---|---|
-| P-01 | ~~Congelar el pronóstico 2027~~ **Resuelto el 20-11-2026**: etiqueta anotada `forecast-2027` (commit `e1f9b448`), huellas en `forecast_2027/SHA256SUMS.txt`, protocolo v2.2 | Protocolo | La primera prueba prospectiva del pipeline corregido |
+| P-01 | ~~Congelar el pronóstico 2027~~ **Resuelto el 20-11-2026**: etiqueta anotada `forecast-2027` (commit `e1f9b448`), huellas en `forecast_2027/SHA256SUMS.txt`, protocolo v2.2, depósito en Zenodo ([doi:10.5281/zenodo.24401227](https://doi.org/10.5281/zenodo.24401227)) | Protocolo | La primera prueba prospectiva del pipeline corregido |
 | P-02 | Corregir la región de Ñuble antes de las uniones institucionales | Datos | Docentes, inmuebles y aranceles de Ñuble. Es una versión metodológica nueva |
 | P-03 | ~~Corregir la metadata que registra cinco *folds*~~ **Resuelto el 19-11-2026**: la metadata registra siete *folds* con sus años, y el código los deriva de la partición ejecutada | Trazabilidad | Que la metadata diga lo ejecutado (siete) |
 | P-04 | Ablación de las tres variables con matrícula contemporánea | Método | Medir cuánto optimismo introducen |
@@ -1492,7 +1491,7 @@ En julio, al publicarse el SIES, primero se valida (C) y después se reentrena (
 Es la lección de 2026: el pronóstico de v3 estaba congelado y su contraste reveló los defectos de la llave; la v4 corrigió después de conocer el resultado. **La prueba prospectiva de la v4 es el pronóstico 2027 (*ex ante*, con sello temporal externo).**
 
 > [!NOTE]
-> **Congelamiento realizado (20-11-2026).** El pronóstico se fijó el **20-11-2026** y se publicó en el repositorio remoto con la etiqueta anotada [`forecast-2027`](../forecast_2027/) (commit `e1f9b448`). La etiqueta registra la huella SHA-256 de las predicciones (diseño 2×2: `259d272cd55d6342a21c024b5563467b1116a23265d6b850df9bdf98b1b6111f`; C49, el pronóstico publicado: `79b7b5d6880ca50e85baab1465cd25fe349501206524314c43a07d770fcb393e`), del modelo, de la metadata y del protocolo de evaluación v2.2; la lista completa está en `forecast_2027/SHA256SUMS.txt`. El paquete se depositará además en Zenodo (DOI [PENDIENTE]). La fecha de la etiqueta en el remoto es anterior a la publicación de la matrícula 2027 del SIES, prevista para julio de 2027, y queda fuera del control del autor. El contraste contra el dato oficial seguirá el protocolo congelado ([`protocolo_evaluacion_2027.md`](../forecast_2027/protocolo_evaluacion_2027.md)), con el script `evaluar_2027.py`, y será la primera evaluación prospectiva del pipeline corregido. Junto al pronóstico publicado se congelaron tres variantes (CatBoost y LightGBM, con y sin exógenas), la persistencia y una referencia nacional. Las mejoras posteriores se evaluarán por separado y no reemplazan este pronóstico.
+> **Congelamiento realizado (20-11-2026).** El pronóstico se fijó el **20-11-2026** y se publicó en el repositorio remoto con la etiqueta anotada [`forecast-2027`](../forecast_2027/) (commit `e1f9b448`). La etiqueta registra la huella SHA-256 de las predicciones (diseño 2×2: `259d272cd55d6342a21c024b5563467b1116a23265d6b850df9bdf98b1b6111f`; C49, el pronóstico publicado: `79b7b5d6880ca50e85baab1465cd25fe349501206524314c43a07d770fcb393e`), del modelo, de la metadata y del protocolo de evaluación v2.2; la lista completa está en `forecast_2027/SHA256SUMS.txt`. El paquete está depositado además en Zenodo, con DOI [10.5281/zenodo.24401227](https://doi.org/10.5281/zenodo.24401227). La fecha de la etiqueta en el remoto es anterior a la publicación de la matrícula 2027 del SIES, prevista para julio de 2027, y queda fuera del control del autor. El contraste contra el dato oficial seguirá el protocolo congelado ([`protocolo_evaluacion_2027.md`](../forecast_2027/protocolo_evaluacion_2027.md)), con el script `evaluar_2027.py`, y será la primera evaluación prospectiva del pipeline corregido. Junto al pronóstico publicado se congelaron tres variantes (CatBoost y LightGBM, con y sin exógenas), la persistencia y una referencia nacional. Las mejoras posteriores se evaluarán por separado y no reemplazan este pronóstico.
 
 ### 24.6 · Reglas de versión y re-ejecución
 
