@@ -1,2 +1,6 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Paquete congelado del pronóstico 2027: sin conversión de fin de línea, para que las huellas SHA-256
+# de SHA256SUMS.txt coincidan byte a byte en cualquier sistema operativo.
+forecast_2027/** -text

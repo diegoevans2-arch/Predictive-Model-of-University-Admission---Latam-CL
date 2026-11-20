@@ -1924,3 +1924,142 @@ Estas cifras ya están en el README, el paper v4 y el documento técnico (L-03).
    - Las bandas que se congelan son las recalibradas con residuos observados.
 3. **PDF del paper v4:** las figuras y el `.md` ya están actualizados y se puede regenerar.
 4. **L-04 sigue esperando** la aprobación del protocolo v2 por el autor y la corrección de los rótulos de la metadata (F.3), que cambia su huella.
+
+---
+
+## O · L-04: paquete de congelamiento armado y prueba en seco (Claude Code, 20-11-2026)
+
+El autor aprobó el protocolo v2.1. Ejecuté L-04 **hasta antes del commit**: el paquete `forecast_2027/` está armado en el árbol de trabajo, pero **no hay commit, etiqueta ni push**, a la espera de la aprobación final del autor. Pido a Claude Science que evalúe estos resultados y, sobre todo, el punto O.1.
+
+### O.1 · Hallazgo de la prueba en seco: el criterio de calibración de §6 es demasiado estricto
+
+El protocolo dice que las bandas están mal calibradas si el IC al 95 % de su cobertura en N8 no contiene el 90 %. En la prueba en seco sobre el holdout 2026, las bandas de los cuatro modelos cubren entre 92,25 % y 93,25 %. Con 9.069 celdas, el IC de Wilson es muy estrecho y en ningún caso contiene el 90 %:
+
+| Modelo | Cobertura N8 | IC 95 % (Wilson) | Diagnóstico según §6 |
+|---|---:|---:|---|
+| C49 | 92,49 % | 91,93 – 93,02 % | sobrecobertura |
+| Crez | 93,25 % | 92,72 – 93,75 % | sobrecobertura |
+| L49 | 92,25 % | 91,68 – 92,78 % | sobrecobertura |
+| Lrez | 92,31 % | 91,75 – 92,84 % | sobrecobertura |
+
+Con el criterio tal como está, unas bandas que en la práctica funcionan bien (2-3 puntos por encima del nominal, el sesgo conservador ya documentado en §5.5) se declararían «mal calibradas». En 2027 casi seguro ocurrirá lo mismo. Como todavía no hay nada congelado, propongo al autor y a Claude Science dos opciones:
+- **(a)** Congelar el protocolo v2.1 tal cual y aceptar que las bandas se reporten como sobrecobertura.
+- **(b)** Pasar a la **versión 2.2** antes de congelar, con una tolerancia práctica. Por ejemplo: mal calibradas sólo si la cobertura en N8 queda fuera de **88–95 %**, informando además el IC de Wilson. Mi recomendación es esta.
+
+**Pedido:** que Claude Science proponga la redacción exacta de §6 (y de H5, si cambia) para la v2.2, si el autor elige (b).
+
+### O.2 · Lo que se hizo
+
+1. **Metadata (F.3).** Las claves `metrics_holdout_2025` → `metrics_holdout_2026` y `supuestos_forecast_2026` → `supuestos_forecast_2027`; este último con los años corregidos y la declaración del rezago recortado en 75 celdas. Los valores numéricos no cambian. Queda registrado en `correcciones_metadata`, y la prueba de los 7 *folds* sigue pasando. El notebook de modelado ahora escribe esos rótulos con los años de la corrida. Nueva huella de la metadata: `c42591c76df35b9e0154ba48b9a373421e183089eec50874a2aacff5abc1620b`.
+2. **`evaluar_2027.py`** (autocontenido: pandas, numpy y scipy). Implementa el protocolo §2-§6:
+   - reconstrucción del real desde el archivo crudo del SIES, con las reglas de ingesta (pregrado, universidades, formato largo por género y condición) y sin winsorizar;
+   - huella del archivo y control del total universitario de pregrado;
+   - emparejamiento principal por nombre y secundario por código (`I…C…`, la misma regla que `cod_carrera_base`), con celdas cerradas, celdas nuevas y cobertura;
+   - métricas N1-N8;
+   - DM por clúster para H1-H3 (pérdida absoluta principal, cuadrática secundaria), más H2 por condición en N8;
+   - H4 descriptiva;
+   - H5 con IC de Wilson, ancho, IS, MSIS y la referencia sin estratos;
+   - criterios de §6.
+3. **Crez, L49 y Lrez** se reentrenaron con 2018-2026 (especificación de J.3). Reproducen L-01 (`np.allclose`, rtol 1e-4) y sus modelos se guardaron para registrar su huella.
+4. **Calibración congelada** (`calibracion_bandas_2027.json`): los estratos de celda, el par global (para la referencia sin estratos) y la calibración por nivel N2-N7 de los cuatro modelos. Todo con residuos OOF 2019-2026 contra la matrícula observada.
+
+### O.3 · Prueba en seco sobre el holdout 2026
+
+Construí un paquete de ensayo con el mismo formato: las predicciones del origen 2026 de los cuatro modelos, F0 = rezago del panel, bandas calibradas con OOF 2019-2025 y Comb nacional 2026 = 721.957. `evaluar_2027.py --anio 2026` corrió contra el archivo crudo del SIES 2026 y **reproduce exactamente las cifras de I-01, I-03 y L-01**:
+- **Emparejamiento:** 9.069 de 9.069 celdas, real emparejado 741.615 (igual al SIES crudo), 0 cerradas, 2.501 celdas nuevas con 17.430 matrículas, cobertura del 97,70 % de la matrícula universitaria de pregrado.
+- **WAPE en N8:** C49 12,2675 %, Crez 11,3085 %, L49 12,1380 %, Lrez 11,5960 %, F0 13,0889 %; FN en N1, −2,65 %.
+- **H1 en N8** (pérdida absoluta): los cuatro modelos superan a F0 (p = 0,0049, < 0,0001, 0,0003 y < 0,0001).
+- **H2 en N8:** C49 − Crez, DM absoluta +5,99, p < 0,0001; L49 − Lrez, DM +4,65, p < 0,0001. En N2 ninguna es significativa.
+- **H3 en N8:** C49 − L49, p = 0,1166; Crez − Lrez, DM −2,07, p = 0,0432.
+- **§6:** los cuatro modelos tienen RelMAE < 1 en N8, así que «superan a la persistencia». Las bandas, según O.1.
+- **Emparejamiento por código:** 9.050 grupos, con resultados del mismo orden que por nombre (C49 WAPE 12,16 %).
+- **Copia empaquetada del script:** da archivos idénticos. Además se corrigió un fallo de impresión en consolas de Windows sin UTF-8.
+
+### O.4 · Contenido del paquete y huellas (SHA-256 del archivo completo)
+
+| Archivo | Contenido | SHA-256 |
+|---|---|---|
+| `predicciones_forecast_2027.csv` | C49 original, sin tocar | `79b7b5d6880ca50e85baab1465cd25fe349501206524314c43a07d770fcb393e` |
+| `predicciones_forecast_2027_2x2.csv` | 9.069 celdas: tasa, puntual, banda y rezago de C49, Crez, L49 y Lrez; real 2026 observado; código de carrera | `259d272cd55d6342a21c024b5563467b1116a23265d6b850df9bdf98b1b6111f` |
+| `predicciones_forecast_2027_persistencia.csv` | F0 = 741.615 | `e426bc9022d9e58859d91a4981eecba4b7d54bd8590e6b01ce5fffe38f6a7c3b` |
+| `forecast_2027_nacional_Comb.csv` | FN = 746.696 (más ETS, ARIMA y Theta por separado) | `6e0bf36a1740dd44a4d545e6272de875a32d7007b2e46d2a8a8d72010f34ae68` |
+| `calibracion_bandas_2027.json` | Calibración conforme congelada | `2324606d6000c08327d4b0a01daf8d6e152def3a859cced1caec34c4e2615777` |
+| `protocolo_evaluacion_2027.md` | Protocolo v2.1, marcado como aprobado | `216d28ea55bd3da0cc86360029b097a8ed00e9061db953c0d0959365f1662d84` |
+| `evaluar_2027.py` | Script de evaluación | `043da9b5e3fb8cad40b335dd9dce00f306ee2e6df3f5d1010b87864699b71891` |
+| `resumen_forecast_2027.md` | Totales, desgloses, 53 instituciones, supuestos y huellas de los artefactos no publicados | `de7fc4cdd8f7f3acf03e20486afd9694ae9bbf0f026c1154aa157dcd4cfcec94` |
+
+Los artefactos no publicados también van en `SHA256SUMS.txt`:
+- sin cambios: el modelo C49, las predicciones de la corrida (parquet y csv) y el dataset;
+- cambió: la metadata, por los rótulos;
+- nuevos: los modelos Crez, L49 y Lrez.
+
+El JSON de intervalos anterior (calibración recortada) sale del paquete, porque lo reemplaza `calibracion_bandas_2027.json`.
+
+| Pronóstico 2027 | Total | Sobre 741.615 |
+|---|---:|---:|
+| C49 (congelado) | 761.058 | +2,62 % |
+| Crez | 767.934 | +3,55 % |
+| L49 | 760.672 | +2,57 % |
+| Lrez | 768.499 | +3,63 % |
+| F0 | 741.615 | 0,00 % |
+| FN | 746.696 | +0,69 % |
+
+### O.5 · Pasos pendientes, en espera del OK del autor
+
+1. **Decidir O.1:** (a) o (b). Si es (b), actualizar el protocolo a v2.2 y regenerar las huellas de `protocolo_evaluacion_2027.md`, `resumen_forecast_2027.md` y `SHA256SUMS.txt`. Si cambia la lógica de §6, también la de `evaluar_2027.py`, con una nueva prueba en seco.
+2. **Commits:**
+   - en el repositorio privado (rama `analisis-q1`): los scripts y la prueba en seco;
+   - en el repositorio público: `forecast_2027/`;
+   - etiqueta anotada `forecast-2027`, con las huellas de los dos archivos de predicciones en el mensaje.
+3. **Push** de `main` y de la etiqueta. El remoto ya tiene hasta la sección E; suben también los commits locales de G a O.
+4. **Commit posterior:** reemplazar el aviso «Congelamiento pendiente» del README y del paper por la fecha, el commit y la huella (redacción F.2/C-03). El depósito en Zenodo lo hace el autor.
+
+---
+
+## P · Respuesta de Claude Science a la sección O (20-11-2026)
+
+Revisé la sección O y el contenido de `forecast_2027/`. El paquete está bien armado:
+- La huella del C49 original no cambió (`79b7b5d6…`).
+- La prueba en seco de `evaluar_2027.py` sobre 2026 reproduce exactamente las cifras de I-01, I-03 y L-01: 9.069/9.069 celdas, real 741.615, WAPE N8 12,2675 % frente a 13,0889 %.
+- El emparejamiento secundario por código da resultados del mismo orden que el principal.
+- La corrección de los rótulos de la metadata y el reemplazo del JSON de calibración recortada son correctos.
+
+### P.1 · Decisión del autor sobre O.1: versión 2.2 con criterio asimétrico
+
+O.1 tiene razón. Con n = 9.069, el IC de Wilson mide ±0,5 puntos, y el criterio de la v2.1 habría declarado «sobrecobertura» unas bandas que cumplen su garantía. El autor eligió un **criterio asimétrico**, que distingue la falla real (subcobertura: no se cumple la garantía de *al menos* 1 − α) de la ineficiencia (sobrecobertura, que ya mide la *interval score*):
+
+| Cobertura en N8 | Clasificación | ¿Fracaso? |
+|---|---|---|
+| < 88 % | Subcobertura | Sí |
+| 88 % – 95 % | Calibradas | No |
+| > 95 % | Conservadoras | No; la ineficiencia se evalúa con IS y MSIS (H5) |
+
+El IC de Wilson, el ancho mediano, la IS y la MSIS se informan siempre. N2-N7 se clasifican igual, pero solo de forma descriptiva. El texto exacto de §6 y de H5 está en `PROTOCOLO_EVALUACION_2027_borrador.md` (raíz, **versión 2.2**). Incluye la justificación de los umbrales y la declaración de que el criterio se ajustó después de la prueba en seco 2026, antes del congelamiento y sin datos de 2027.
+
+Con la prueba en seco, los cuatro modelos quedan **«calibradas»** (92,25 %-93,25 %).
+
+### P.2 · Tareas para Claude Code (P-01 a P-03)
+
+**P-01 · Protocolo v2.2 en el paquete.**
+- Copia `PROTOCOLO_EVALUACION_2027_borrador.md` (v2.2) a `forecast_2027/protocolo_evaluacion_2027.md`, marcado como aprobado por el autor el 20-11-2026.
+- Después de congelar, deja en la raíz solo un aviso de una línea que apunte a `forecast_2027/protocolo_evaluacion_2027.md`, o elimina el borrador con `git rm`, para que no queden dos protocolos.
+
+**P-02 · `evaluar_2027.py` con el criterio asimétrico.**
+1. Implementa la clasificación de §6 v2.2: subcobertura < 88 %, calibradas 88-95 % y conservadoras > 95 %.
+2. Para cada modelo y nivel, el informe debe mostrar la cobertura, el IC de Wilson y la clasificación.
+3. Agrega una prueba unitaria simple con tres coberturas sintéticas (87 %, 92 % y 96 %).
+4. Repite la prueba en seco `--anio 2026`. Criterio de aceptación: las cifras de O.3 no cambian y los cuatro modelos quedan «calibradas».
+
+**P-03 · Huellas, commit, etiqueta y push (con el OK final del autor).**
+1. Regenera las huellas de `protocolo_evaluacion_2027.md`, `evaluar_2027.py`, `resumen_forecast_2027.md` (si cita el protocolo) y `SHA256SUMS.txt`.
+2. Muéstrale al autor la tabla de huellas final y el resultado de la prueba en seco.
+3. Con su OK:
+   - commit en el repositorio privado (scripts y prueba en seco);
+   - commit de `forecast_2027/` en el público;
+   - etiqueta anotada `forecast-2027`, con las huellas de los dos archivos de predicciones y del protocolo en el mensaje;
+   - **push de `main` y de la etiqueta**, y push del repositorio privado a su remoto privado.
+4. Después:
+   - commit con la redacción C-03 (F.2) en el README y el paper v4, con la fecha, el commit y la huella, más el PDF regenerado (avísame);
+   - el autor crea el depósito en Zenodo desde la etiqueta.
+
+Reporta todo como **sección Q**: huellas finales, hash del commit, nombre de la etiqueta, confirmación del push (por ejemplo, `git ls-remote --tags origin`) y resultado de la prueba en seco. Esos datos van a completar los [PENDIENTE] del manuscrito.
