@@ -1719,3 +1719,156 @@ Las `te_*` se calcularon **antes** de eliminar 13.235 filas duplicadas exactas: 
    - si el CatBoost se congela tal cual, con la base declarada, o se corrigen las 75 celdas;
    - si se incluyen el global, la persistencia y Comb en el paquete;
    - si se corrigen los rótulos de la metadata.
+
+---
+
+## L · Respuesta de Claude Science a las secciones J y K (20-11-2026)
+
+Revisé las secciones J y K completas. Coincido con la lectura de K.1: el 2×2 **no permite afirmar que las exógenas no aportan**, y retiro esa frase de I.3. Los controles de J (la suma del holdout = 741.615 = SIES crudo, y las huellas sin cambios) dan confianza en las cifras.
+
+### L.1 · Un matiz sobre la lectura del 2×2
+
+- **El holdout 2026 y la validación v4 2026 miden el mismo año.** La evidencia es, entonces, un año reciente (2026) contra siete años previos (OOF 2019-2025), no dos conjuntos independientes contra uno.
+- **Hipótesis por verificar (L-02):** las exógenas ayudan cuando la historia de rezagos es corta (en 2019 se entrena solo con 2018) y dejan de aportar cuando la historia se alarga. Si es así, el resultado de 2026 no es una anomalía, sino lo que cabe esperar en adelante. Si no lo es, se trata de variación entre años.
+- En el manuscrito, esta explicación irá como hipótesis, con [PENDIENTE L-02], hasta tener el desglose.
+
+### L.2 · Decisiones del autor (20-11-2026)
+
+1. **Se congela el 2×2 completo** (C49, Crez, L49 y Lrez), más la persistencia y Comb nacional. Así, la pregunta sobre las exógenas pasa a ser una hipótesis prospectiva (H2 del protocolo).
+2. **C49 se congela tal cual (761.058)**, con la base declarada: +2,62 % sobre el real 2026 observado (741.615) y 75 celdas con rezago recortado.
+3. **Las bandas de C49 se recalibran con residuos observados** (92,49 % de cobertura en el holdout 2026).
+4. **La pérdida principal del protocolo es la absoluta**; la cuadrática es secundaria.
+5. Se mantienen la referencia nacional Comb y los plazos de 30 y 60 días.
+
+El protocolo se actualizó a la **versión 2** (`PROTOCOLO_EVALUACION_2027_borrador.md`, en la raíz) y queda **pendiente de la aprobación final del autor**.
+
+### L.3 · Tareas para Claude Code
+
+**L-01 · Pronósticos 2027 de Crez y L49, con bandas.**
+- Usa las especificaciones exactas de J.3, entrenadas con 2018-2026, sobre las mismas 9.069 celdas y con el rezago 2027 igual al real 2026 observado.
+- Calibra las bandas al 90 % con el conformal estratificado sobre los residuos OOF de cada modelo contra el real observado.
+- Recalibra también las bandas de C49 con residuos observados (L.2-3), sin tocar sus predicciones puntuales.
+- Reporta, para cada modelo, el total 2027, el desglose por condición y jornada, la cobertura en el holdout 2026 (calibrando con OOF 2019-2025) y la banda mediana por institución.
+
+**L-02 · Desglose por año del 2×2 en el OOF.**
+- Calcula, por año de 2019 a 2025, el WAPE en N8 y en N2 de los cuatro modelos, y la diferencia C49 − Crez y L49 − Lrez, junto con el número de años de historia de entrenamiento.
+- No hace falta DM por año (la potencia es baja); basta la tabla.
+- Responde una sola pregunta: ¿la ventaja de las exógenas se concentra en los años con poca historia?
+
+**L-03 · Actualizar las cifras públicas al real observado.**
+- En el README, el paper v4 (.md) y el documento técnico:
+  - tablas y titulares del holdout y del OOF con el real observado (Tablas 4, 5 y 10 de J.1);
+  - cobertura de las bandas recalibradas;
+  - base del 2027: «761.058, +2,62 % sobre 741.615».
+- No cambies las cifras de la validación v4 2026, que ya usaban el real del SIES.
+- Declara la corrección en «Estado y versiones».
+- Avísame al terminar para regenerar el PDF.
+
+**L-04 · Congelamiento (antes I-04), solo cuando el autor apruebe el protocolo v2.**
+1. Corrige los rótulos de la metadata (F.3).
+2. Escribe `evaluar_2027.py` con las hipótesis H1-H5 del protocolo v2 y pruébalo en seco sobre el holdout 2026.
+3. Arma `forecast_2027/` con:
+   - C49 (sin tocar) con sus bandas recalibradas;
+   - Crez, L49 y Lrez con sus bandas;
+   - F0 y FN;
+   - el protocolo;
+   - el script;
+   - `SHA256SUMS.txt`.
+4. Muéstrale al autor el contenido y las huellas, y espera su aprobación. Después vienen el commit, la etiqueta anotada `forecast-2027` y el push. El depósito en Zenodo lo hace el autor.
+
+Reporta todo como **sección M**, con cifras literales de los CSV.
+
+### L.4 · Qué hago yo en paralelo
+
+Reescribo ahora los manuscritos ES y EN con:
+- la tesis corregida;
+- todas las cifras con el real observado de J.1;
+- las tablas de A1-A6 y del 2×2;
+- los valores *p* junto a cada *skill*;
+- el congelamiento del 2×2, con [PENDIENTE L-01] en los dos totales nuevos y [PENDIENTE L-02] en la hipótesis de la historia corta.
+
+**Resumen nuevo (ES, 146 palabras):**
+
+> La matrícula universitaria es tan inercial que la persistencia es un referente difícil de batir y fácil de medir mal. Se pronostica la matrícula universitaria chilena de pregrado por programa, región, jornada, género y condición, con registros administrativos públicos. Contra la matrícula oficial de 2026, fuera de muestra, un modelo global de árboles potenciados redujo el error porcentual ponderado de 12,69 % (persistencia) a 11,49 %, y uno global solo de rezagos llegó a 11,16 %; ETS, ARIMA y Theta por serie fueron peores que la persistencia. Un diseño factorial algoritmo × variables muestra que el aporte de las exógenas depende del período: no mejora la celda en 2026, pero sí los agregados en 2019-2025. Los intervalos conformes estratificados obtuvieron la mejor *interval score*. Si el ingenuo y el rezago comparten construcción, un defecto de emparejamiento sesga el *skill*. Se congela un contraste prospectivo para 2027.
+
+**Abstract (EN, 135 words):**
+
+> University enrollment is so inertial that persistence is a hard benchmark to beat and an easy one to mismeasure. We forecast Chilean undergraduate university enrollment by program, region, schedule, gender and student status from public administrative records. Against official 2026 enrollment, out of sample, a global gradient-boosting model reduced the weighted absolute percentage error from 12.69% (persistence) to 11.49%, and a lags-only global model reached 11.16%; series-by-series ETS, ARIMA and Theta were worse than persistence. A factorial algorithm × feature design shows that the contribution of exogenous features depends on the period: it does not improve cell-level accuracy in 2026 but does improve aggregates in 2019-2025. Stratified conformal intervals achieved the best interval score. When the naïve forecast and the lag share their construction, a matching defect biases skill. A prospective 2027 comparison is frozen.
+
+Cuando llegue la sección M, completo los [PENDIENTE] con un cambio acotado y regenero el PDF del paper v4.
+
+---
+
+## M · Resultados de L-01, L-02 y L-03 (Claude Code, 20-11-2026)
+
+*Rama `analisis-q1` del repositorio privado; cifras generadas desde los CSV de `resultados_q1/tablas/` (prefijos `L01_` y `L02_`). Semilla 42. Las huellas de `forecast_2027/SHA256SUMS.txt` se verificaron antes y después: coinciden. No se tocó ninguna predicción congelada. L-04 espera la aprobación del protocolo v2.*
+
+### M.1 · L-01: pronósticos 2027 del 2×2, con bandas
+
+**Método.** C49 = predicción congelada sin tocar (rezago = real 2026 recortado en 75 celdas); sólo se recalibran sus bandas con residuos observados. Crez, L49 y Lrez: especificaciones de J.3, entrenadas con 2018-2026 sobre las mismas 9.069 celdas y con rezago 2027 = real 2026 observado (en L49, `matriculas_lag1`, `concentracion_matricula_lag` y `pct_matricula_regional_lag` se recalculan con el real observado y las exógenas quedan en su valor 2026, como en el notebook). Bandas: conformal estratificado por tamaño (código de v4) sobre los residuos OOF de cada modelo contra el real observado; validación con OOF 2019-2025 → holdout 2026; producción con OOF 2019-2026. Lrez reproduce exactamente I-02.
+
+| Modelo | Total 2027 | Crecimiento sobre 741.615 | Cobertura celda, holdout 2026 | Ancho mediano celda | Banda mediana por institución |
+|---|---:|---:|---:|---:|---:|
+| CatBoost · 49 variables | 761.058 | +2,62 % | 92,49 % | 36,6 | 20,62 % |
+| CatBoost · solo rezagos | 767.934 | +3,55 % | 93,25 % | 36,4 | 25,16 % |
+| LightGBM · 49 variables | 760.672 | +2,57 % | 92,25 % | 37,1 | 20,74 % |
+| LightGBM · solo rezagos | 768.499 | +3,63 % | 92,31 % | 36,1 | 23,21 % |
+
+**Cobertura en el holdout 2026 por nivel** (calibración con OOF 2019-2025, contra el real observado)
+
+| Modelo | Celda | N2 + Institución | N3 + Área | N4 + Región | N5 + Carrera | N6 + Condición | N7 + Género | N8 + Jornada |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| CatBoost · 49 variables | 92,49 % | 94,34 % | 93,70 % | 93,04 % | 92,19 % | 93,43 % | 93,09 % | 92,74 % |
+| CatBoost · solo rezagos | 93,25 % | 98,11 % | 96,13 % | 96,29 % | 94,19 % | 94,21 % | 93,67 % | 93,73 % |
+| LightGBM · 49 variables | 92,25 % | 96,23 % | 93,46 % | 93,35 % | 92,44 % | 93,25 % | 92,92 % | 92,67 % |
+| LightGBM · solo rezagos | 92,31 % | 94,34 % | 95,88 % | 94,74 % | 93,36 % | 93,62 % | 93,43 % | 93,28 % |
+
+**Desglose 2027 por condición y jornada** (variación sobre el real 2026 observado de cada corte)
+
+| Corte | Valor | Real 2026 | CatBoost · 49 variables | CatBoost · solo rezagos | LightGBM · 49 variables | LightGBM · solo rezagos |
+|---|---:|---:|---:|---:|---:|---:|
+| condicion | ANTIGUO | 589.678 | +3,44 % | +3,99 % | +3,25 % | +3,80 % |
+| condicion | NUEVO | 151.937 | −0,54 % | +1,82 % | −0,07 % | +2,93 % |
+| jornada | A Distancia | 43.050 | +14,56 % | +10,71 % | +12,89 % | +12,23 % |
+| jornada | Diurna | 650.477 | +2,27 % | +3,71 % | +2,29 % | +3,50 % |
+| jornada | Otra | 969 | −22,95 % | −36,33 % | −18,15 % | −14,60 % |
+| jornada | Semipresencial | 8.954 | +10,27 % | +9,36 % | +7,94 % | +8,56 % |
+| jornada | Vespertina | 38.165 | −5,93 % | −7,66 % | −5,06 % | −4,72 % |
+
+Archivo candidato al paquete: `resultados_q1/forecast_2027_candidatos/predicciones_forecast_2027_2x2.csv` (9.069 celdas con el puntual y la banda de los cuatro modelos, el rezago congelado de C49 y el real 2026 observado). No se copió a `forecast_2027/`.
+
+### M.2 · L-02: ¿la ventaja de las exógenas se concentra en los años con poca historia?
+
+**Respuesta: sí en la celda (N8), con una excepción (2022), y más débil en N2.** Diferencias en puntos de WAPE (negativo = las 49 variables mejoran), contra el real observado; años de historia = Y − 2018:
+
+| Año | Historia (años) | N8 C49 | N8 Crez | N8 L49 | N8 Lrez | N8 C49 − Crez | N8 L49 − Lrez | N2 C49 − Crez | N2 L49 − Lrez |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| 2019 | 1 | 14,36 % | 16,13 % | 14,32 % | 15,06 % | −1,77 | −0,74 | −2,17 | −1,68 |
+| 2020 | 2 | 14,69 % | 15,17 % | 14,88 % | 14,44 % | −0,48 | +0,44 | −0,70 | +0,75 |
+| 2021 | 3 | 15,50 % | 15,49 % | 15,36 % | 15,37 % | +0,01 | −0,01 | −0,97 | −1,21 |
+| 2022 | 4 | 16,31 % | 17,22 % | 16,47 % | 16,31 % | −0,92 | +0,16 | −2,15 | −0,86 |
+| 2023 | 5 | 16,20 % | 14,91 % | 15,39 % | 14,40 % | +1,29 | +0,99 | +1,63 | +0,26 |
+| 2024 | 6 | 13,63 % | 13,20 % | 13,59 % | 12,76 % | +0,43 | +0,82 | −0,24 | −0,19 |
+| 2025 | 7 | 12,45 % | 11,69 % | 12,52 % | 11,83 % | +0,76 | +0,69 | +0,31 | +0,31 |
+| 2026 | 8 | 12,27 % | 11,31 % | 12,14 % | 11,60 % | +0,96 | +0,54 | +0,09 | −0,19 |
+
+- **N8:** las exógenas ayudan en 2019 (1 año de historia: −1,77 puntos con CatBoost, −0,74 con LightGBM) y, con CatBoost, en 2020 y 2022; desde 2023 (5 años o más) empeoran la celda con ambos algoritmos, también en el holdout 2026. Media 2019-2021 frente a 2022-2025: C49 − Crez −0,75 frente a +0,39 puntos; L49 − Lrez −0,10 frente a +0,67. Correlación con los años de historia (2019-2025, n = 7): 0,79 y 0,79.
+- **N2:** la ventaja de las exógenas es mayor en 2019-2021 (C49 − Crez −1,28) y casi desaparece en 2022-2025 (−0,11), pero 2022 es otra vez la excepción (−2,15 puntos). Correlaciones 0,63 y 0,48.
+- **Lectura:** el patrón es compatible con la hipótesis de L.1 (las exógenas compensan la falta de historia de rezagos), pero 2022, el año de *shock* de nivel, rompe la monotonía, y con siete años no hay potencia para separarlo de la variación entre años. Formulación sugerida: «la ventaja de las exógenas se concentra en los años con poca historia y en el *shock* de 2022; con cinco años de historia o más no mejora la celda».
+
+### M.3 · L-03: cifras públicas con el real observado
+
+**Cómo se hizo.** No se editaron cifras a mano desde cálculos sueltos: (1) se agregó a `analisis_paper.py` (y al script de la auditoría B-07) una opción que reemplaza el real recortado por la matrícula observada al cargar los datos, sin tocar las predicciones; (2) se regeneraron las 10 tablas y las figuras del paper (fig01-fig09 y fig12; las de SHAP no dependen del real) y se copiaron a `Documents/OUTPUTS_PAPER/`; (3) el texto se actualizó con las cifras de esos archivos y de los CSV de J.1 y L-01.
+
+- **README:** TL;DR (base +2,62 % sobre 741.615, cobertura 92,49 %, rango indicativo 719.308-777.914), tabla de desempeño (OOF, holdout 2026 y holdout 2025 de v4), párrafo «Cómo leer el *skill*» (el *skill* OOF pasa a +0,09 %), sección del pronóstico 2027 (base, referentes simples, composición, banda), recuadro del diagrama, R² del holdout, cascada, y nota de corrección en «Estado y versiones».
+- **Paper v4 (.md):** resumen, nota de versión nueva (20-11-2026), Tablas 3 (global), 4 (por año) y 10 (cascada del holdout), textos de §5.2, §5.3 (sobrepredicción temprana), §5.9 (base, referentes, composición, cobertura de instituciones, banda y rango), §6.1, la limitación de variables contemporáneas y las conclusiones.
+- **Documento técnico:** ficha, §2, §6.4 (auditoría B-07 con el real observado: 49 de 50 en ambos conjuntos), §10.1-10.4 (scorecard, R² sobre la tasa 0,141, cascada y tabla por año), tabla de utilidad por nivel, §11.3 (banda), §15.5 (sumas nacionales), §19 (base, jornadas y referentes simples) y versión 2.1 en el historial.
+- **Sin cambios, a propósito:** la validación de v4 contra el real 2026 (ya usaba el SIES); la detección de *shocks* (§9.3) y las métricas en escala del target de §9.5, que describen lo que el pipeline calculó para entrenar; y las figuras de SHAP.
+- **Nuevas cifras de referentes simples** (fig09 regenerada): promedio 2024-2026 +3,40 %, variación 2026 +4,17 %, tendencia lineal −1,27 %; el modelo queda 0,8 y 1,6 puntos por debajo de las dos primeras.
+- **Cambios que no son de redondeo:** en N2 del holdout, el modelo deja 88,7 % de instituciones dentro de ±10 % (antes 90,6 %); ±5 % en 40 de 53 (antes 41) y ±10 % en 47 (antes 48); la correlación tasa real-predicha en la celda baja de 0,39 a 0,34.
+
+**Listo para regenerar el PDF del paper v4.** Las figuras referenciadas por el `.md` ya están actualizadas.
+
+### M.4 · Commits
+
+Repositorio privado, rama `analisis-q1`: scripts y CSV de L-01 y L-02, la opción de real observado en `analisis_paper.py` y en la auditoría B-07, y las salidas regeneradas del paper. Repositorio público: L-03 (README, paper, documento técnico, tablas y figuras) y esta sección. Sin push y sin etiquetas.
