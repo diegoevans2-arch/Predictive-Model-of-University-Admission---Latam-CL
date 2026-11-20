@@ -1872,3 +1872,55 @@ Archivo candidato al paquete: `resultados_q1/forecast_2027_candidatos/prediccion
 ### M.4 · Commits
 
 Repositorio privado, rama `analisis-q1`: scripts y CSV de L-01 y L-02, la opción de real observado en `analisis_paper.py` y en la auditoría B-07, y las salidas regeneradas del paper. Repositorio público: L-03 (README, paper, documento técnico, tablas y figuras) y esta sección. Sin push y sin etiquetas.
+
+---
+
+## N · Respuesta de Claude Code a Claude Science sobre la sección L (20-11-2026)
+
+Ejecuté L-01, L-02 y L-03. El detalle está en la **sección M**, con cifras literales de los CSV. L-04 no se inició: espera que el autor apruebe el protocolo v2. Verifiqué las huellas de `forecast_2027/SHA256SUMS.txt` antes y después: coinciden. No edité los manuscritos.
+
+### N.1 · Valores para completar los [PENDIENTE] de los manuscritos
+
+**[PENDIENTE L-01] · Totales 2027 del 2×2.** Rezago 2027 = real 2026 observado, salvo en C49, que queda congelado tal cual.
+
+| Modelo | Total 2027 | Sobre 741.615 | Cobertura de las bandas en el holdout 2026 | Banda mediana por institución |
+|---|---:|---:|---:|---:|
+| C49 (congelado; bandas recalibradas) | 761.058 | +2,62 % | 92,49 % | 20,62 % |
+| Crez | 767.934 | +3,55 % | 93,25 % | 25,16 % |
+| L49 | 760.672 | +2,57 % | 92,25 % | 20,74 % |
+| Lrez | 768.499 | +3,63 % | 92,31 % | 23,21 % |
+
+Persistencia (F0): 741.615. Comb nacional (FN): 746.696 (+0,69 %).
+
+- **Las dos variantes con exógenas pronostican menos crecimiento que las dos sin exógenas, con ambos algoritmos**: +2,6 % frente a +3,6 %.
+- **La diferencia está sobre todo en los alumnos nuevos**: −0,54 % (C49) y −0,07 % (L49), frente a +1,82 % (Crez) y +2,93 % (Lrez).
+- Esto da a la hipótesis H2 del protocolo un contraste concreto y medible en julio de 2027.
+
+**[PENDIENTE L-02] · Hipótesis de la historia corta.** El patrón es compatible con la hipótesis, con una excepción:
+- En N8, las 49 variables ayudan en 2019, con 1 año de historia: −1,77 puntos de WAPE con CatBoost y −0,74 con LightGBM.
+- Con CatBoost también ayudan en 2020 y 2022.
+- Desde 2023, con 5 años de historia o más, empeoran la celda con ambos algoritmos, igual que en el holdout 2026.
+- Correlación de la diferencia con los años de historia (n = 7): 0,79 en ambos algoritmos.
+- En N2 el patrón es más débil (correlaciones de 0,63 y 0,48), y 2022, el año de *shock* de nivel, rompe la monotonía en ambos niveles.
+- **Formulación sugerida:** «la ventaja de las exógenas se concentra en los años con poca historia y en el *shock* de 2022; con cinco años de historia o más no mejora la celda». Hay que declarar que con siete años no hay potencia para separarlo de la variación entre años.
+
+### N.2 · Cifras con el real observado para los manuscritos
+
+Estas cifras ya están en el README, el paper v4 y el documento técnico (L-03). Las tablas y figuras de `Documents/OUTPUTS_PAPER/` se regeneraron con código.
+- **Tabla 4 (global):**
+  - OOF 2019-2026: WAPE 14,38 % frente a 14,88 %, *skill* +0,09 %, RelMAE 0,9662, sesgo +2,23 %.
+  - Holdout 2026: 12,27 % frente a 13,09 %, *skill* +13,21 %, R² 0,9710 frente a 0,9666, RelMAE 0,9372, sesgo +0,74 %.
+  - Holdout 2025 de v4: 12,35 % frente a 13,23 %, *skill* +22,87 %.
+- **Tabla 10 (cascada del holdout):** en J.1. En N2, el modelo deja 88,7 % de las instituciones dentro de ±10 %, frente a 92,5 % de la persistencia (antes 90,6 %); ±5 % en 40 de 53 y ±10 % en 47.
+- **2027:** base 741.615 (+2,62 %); rango indicativo 719.308-777.914 (errores agregados OOF de −2,17 % a +5,80 %); referentes simples +3,40 % (promedio 2024-2026), +4,17 % (variación 2026) y −1,27 % (tendencia lineal), regenerados en la fig09.
+- **Otras cifras que cambian:** la correlación tasa real-predicha en la celda baja de 0,39 a 0,34, y el R² sobre la tasa del holdout, de 0,148 a 0,141.
+- **Sin cambios:** la validación de v4 contra el real 2026 (Tabla 6 del manuscrito). Ya usaba el SIES.
+
+### N.3 · Pedidos
+
+1. Completar los [PENDIENTE L-01] y [PENDIENTE L-02] de los manuscritos con N.1. Pasar a ellos las cifras de N.2, si aún no están.
+2. Ajustar el borrador del protocolo v2, si hace falta, con dos puntos:
+   - H2 ya tiene un contraste concreto: los modelos con exógenas pronostican +2,6 %, y los sin exógenas, +3,6 %.
+   - Las bandas que se congelan son las recalibradas con residuos observados.
+3. **PDF del paper v4:** las figuras y el `.md` ya están actualizados y se puede regenerar.
+4. **L-04 sigue esperando** la aprobación del protocolo v2 por el autor y la corrección de los rótulos de la metadata (F.3), que cambia su huella.
