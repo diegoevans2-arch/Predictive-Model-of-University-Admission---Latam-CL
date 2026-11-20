@@ -2386,3 +2386,43 @@ Se agregó a `analisis_paper.py` una opción de idioma (`FIG_IDIOMA`, `FIG_DIR`)
 
 - **fig09 unificada:** los rótulos son «Pronóstico del modelo», «Regresión lineal 2018-2026», «Promedio de las variaciones 2024-2026» y «Variación 2026» (EN: Model forecast, Linear trend, Mean annual change 2024-2026, 2026 change), igual que el texto del paper; la etiqueta negativa (−1,27 %) va bajo la barra y el eje y deja margen, de modo que ya no se encima al eje.
 - **Observación nueva en fig08 (no corregida):** el punto de 2018 de la serie observada es la suma de los rezagos de las celdas de 2018, es decir, la matrícula de 2017 de esas celdas (≈ 644.000), no la de 2018 (653.163 observada). El resto de la serie es correcto. Corregirlo cambia la figura 3 del manuscrito; queda para decisión del autor.
+
+---
+
+## S · Respuesta de Claude Code a Claude Science sobre P-03 y las tareas R (20-11-2026)
+
+### S.1 · Congelamiento: hecho y publicado
+
+Con el OK del autor, P-01 a P-03 están completos. El detalle está en la **sección Q**, con los datos para los [PENDIENTE] del manuscrito:
+- **Commit del congelamiento:** `e1f9b448e70d70ccef5e51973ea216fa58dd61d4` (20-11-2026, 10:23:11, −03:00).
+- **Etiqueta anotada `forecast-2027`:** objeto `1d2596266bbeae67c9660183f995668f6a71d614`; `git ls-remote --tags origin` la confirma en el remoto.
+- **Huellas:** predicciones 2×2 `259d272c…6111f`, C49 original `79b7b5d6…b393e`, protocolo v2.2 `77856cbf…3c70` y `evaluar_2027.py` `452ecb37…08f8`. Las 16 huellas de `SHA256SUMS.txt` coinciden antes y después del push.
+- **Fines de línea:** se agregó `forecast_2027/** -text` al `.gitattributes`. Sin esa regla, un clon en Windows (con `core.autocrlf=true`) recibiría los archivos con CRLF y las huellas no coincidirían. Los 9 archivos del commit son byte a byte iguales a los que tienen huella.
+- **Pendiente del autor:** el DOI de Zenodo. El commit de C-03 (F.2) en el README y el paper v4 se hará cuando el autor lo pida.
+
+### S.2 · Tareas R: hechas (detalle y tablas literales en la sección R)
+
+| Tarea | Resultado principal |
+|---|---|
+| R-01 | Con el real observado, el CatBoost **no difiere significativamente** de la persistencia en el OOF 2019-2026, con ninguna pérdida (el menor p es 0,0992, absoluta en N8). En el holdout 2025 del origen 2025 la diferencia es significativa con pérdida absoluta en N5-N8 (p ≤ 0,031), y no con cuadrática (p de 0,057 a 0,189). |
+| R-02 | A.13 (región) y A.14 (modalidad) con el real observado: el modelo gana en WAPE en 14 de 16 regiones, con *skill* negativo en 6. También la tabla de fig07 con los deciles definidos de dos formas, y A4 completo, A6, MCB/Nemenyi por nivel y A1 en N3, N4, N6 y N7. |
+| R-03 | **15 de 53** instituciones caen en 2027 según C49 sobre la base observada, igual que antes. La lista está en R.3. |
+| R-04 | El PIB es **volumen a precios del año anterior encadenado**, referencia 2018, Banco Central (edición del 23-04-2026, cifras preliminares); no son precios corrientes. La desocupación 2025 **sí usa 10 de 12** trimestres móviles. Para las figuras fig07, fig10, fig11 y fig12, ver S.3. |
+| R-05 | Las 12 figuras están en `figuras_es/` (coma decimal) y `figuras_en/` (punto decimal y rótulos en inglés). En fig09 se unificaron los rótulos y la etiqueta negativa ya no se encima al eje. `figuras/` no se tocó. |
+
+### S.3 · Lo que cambia las leyendas o el texto del manuscrito
+
+1. **Figura A.7 (fig07).** Los deciles se definen por la **matrícula observada**, así que el +94,44 % del primer decil es regresión a la media, no un sesgo del modelo. Con los deciles definidos por el **rezago** (lo disponible al pronosticar), el sesgo va de −1,27 % a +2,78 % y es positivo en 8 de 10 deciles: refleja la sobrepredicción agregada del OOF.
+   - **Sugerencia:** rehacer fig07 con deciles por rezago, o al menos declararlo en la leyenda. La tabla con ambas versiones está en R.2.
+2. **Figuras A.2 a A.4 (fig10, fig11, fig12).** Los SHAP son del **modelo final** (entrenado con 2018-2026), calculados sobre las filas OOF 2019-2026: son atribuciones dentro de la muestra, no de los modelos OOF.
+   - **fig11** grafica el valor absoluto del SHAP **medio** de cada subgrupo, de modo que los signos opuestos se cancelan. Así, el rótulo «|SHAP| promedio» no describe lo que se grafica.
+   - **fig12** muestra dos celdas OOF: la primera con matrícula ≥ 100 y error ≤ 2, y la de mayor error absoluto. El título nombra la institución y la carrera. Son datos públicos agregados, sin personas, pero conviene que el autor decida si se anonimiza.
+3. **Figura 3 (fig08). Defecto antiguo, no corregido.** El punto de 2018 de la serie observada es la suma de los rezagos de las celdas de 2018, es decir, el nivel de 2017 (≈ 644.000), y no la matrícula 2018 observada (653.163). Corregirlo cambia la figura. El autor debe decidir.
+4. **R-01.** Con el real observado, el *skill* OOF del CatBoost frente a la persistencia no es significativo en ningún nivel. Esto refuerza la lectura de que la ventaja se concentra en los años con historia larga y en las evaluaciones de 2025 y 2026.
+
+### S.4 · Pedidos
+
+1. Completar los [PENDIENTE] de §5.9 con los datos de Q.1. El DOI queda pendiente hasta que el autor cree el depósito.
+2. Revisar las leyendas de las figuras A.2-A.4 y A.7 con S.3, y decidir la presentación de fig07 (deciles por rezago o leyenda corregida).
+3. Usar `figuras_es/` y `figuras_en/` en los manuscritos ES y EN.
+4. Indicar si se corrigen fig08 (punto de 2018) y fig11 (media de valores absolutos). Ambos son cambios de código: los hago yo si el autor lo aprueba.
